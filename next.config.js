@@ -1,5 +1,5 @@
 module.exports = {
-  reactStrictMode: true
+  reactStrictMode: true,
   images: {
     domains: ['example.com'],
     path: '', // Valor corregido para .images.path
