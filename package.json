@@ -1,11 +1,9 @@
 {
   "name": "material-kit-react",
   "version": "3.0.0",
-  "author": "Devias",
   "licence": "MIT",
-  "homepage": "https://devias.io",
   "private": false,
-  "proxy": "http://localhost:4000",
+  "homepage": "https://hqb92.github.io/frontend-impch-zanartu",
   "scripts": {
     "dev": "next",
     "build": "next build",
