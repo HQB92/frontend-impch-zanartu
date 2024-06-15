@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
             name: github-pages
-            path: ./out
+            path: .next
 
   # Deployment job
   deploy:
