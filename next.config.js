@@ -6,4 +6,5 @@ const nextConfig = {
   },
   assetPrefix: './',
   reactStrictMode: true,
+  basePath: '/iglesia',
 };
