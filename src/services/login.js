@@ -1,4 +1,8 @@
 const axios = require('axios');
+//.env
+require('dotenv').config();
+const {URL} = process.env;
+
 const login = async (email, password) => {
   let data = JSON.stringify({
     username: email,
@@ -8,7 +12,7 @@ const login = async (email, password) => {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'https://pzh3nv4b-4000.brs.devtunnels.ms/auth/login',
+    url: URL+'auth/login',
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
