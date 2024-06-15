@@ -1,18 +1,14 @@
 const axios = require('axios');
-//.env
-require('dotenv').config();
-const {URL} = process.env;
-
+const detenv = require('dotenv');
 const login = async (email, password) => {
   let data = JSON.stringify({
     username: email,
     password: password,
   });
-
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: URL+'auth/login',
+    url: `${process.env.NEXT_PUBLIC_URL}${process.env.NEXT_PUBLIC_PATHLOGIN}`,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
