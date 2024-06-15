@@ -1,4 +1,4 @@
-const nextConfig = {
+module.exports = {
   output: 'export',
   images: {
     loader: 'akamai',
