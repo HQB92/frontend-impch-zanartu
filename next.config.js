@@ -7,4 +7,5 @@ module.exports = {
   assetPrefix: './',
   reactStrictMode: true,
   basePath: '/iglesia',
+  distDir: '/dist',
 };
