@@ -75,6 +75,11 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          patch: .next
 
   # Deployment job
   deploy:
