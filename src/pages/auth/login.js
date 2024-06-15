@@ -111,11 +111,6 @@ const Page = () => {
                 <Button fullWidth size="large" sx={{ mt: 4 }} type="submit" variant="contained">
                   Iniciar Sección
                 </Button>
-                <Alert color="primary" severity="info" sx={{ mt: 4 }}>
-                  <div>
-                    You can use <b>demo@devias.io</b> and password <b>Password123!</b>
-                  </div>
-                </Alert>
               </form>
             )}
           </div>
