@@ -75,8 +75,6 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
-      - name: Remove symbolic links
-        run: find ./out -type l -exec rm -f {} \;
       - name: Verify directory size
         run: du -sh ./out
       - name: Upload artifact
