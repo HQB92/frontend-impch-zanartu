@@ -55,6 +55,7 @@ export const AccountProfileDetails = () => {
                   onChange={handleChange}
                   required
                   value={values.firstName}
+                  disabled={true}
                 />
               </Grid>
               <Grid xs={12} md={6}>
@@ -65,6 +66,7 @@ export const AccountProfileDetails = () => {
                   onChange={handleChange}
                   required
                   value={values.lastName}
+                  disabled={true}
                 />
               </Grid>
               <Grid xs={12} md={6}>
@@ -75,6 +77,7 @@ export const AccountProfileDetails = () => {
                   onChange={handleChange}
                   required
                   value={values.email}
+                  disabled={true}
                 />
               </Grid>
               <Grid xs={12} md={6}>
@@ -85,6 +88,7 @@ export const AccountProfileDetails = () => {
                   onChange={handleChange}
                   type="number"
                   value={values.phone}
+                  disabled={true}
                 />
               </Grid>
               <Grid xs={12} md={6}>
@@ -94,6 +98,7 @@ export const AccountProfileDetails = () => {
                   name="country"
                   onChange={handleChange}
                   required
+                  disabled={true}
                   value={values.country}
                 />
               </Grid>
@@ -107,6 +112,7 @@ export const AccountProfileDetails = () => {
                   select
                   SelectProps={{ native: true }}
                   value={values.state}
+                  disabled={true}
                 >
                   {states.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -120,7 +126,7 @@ export const AccountProfileDetails = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Button variant="contained">Guardar</Button>
+          <Button variant="contained" disabled={true}>Guardar</Button>
         </CardActions>
       </Card>
     </form>

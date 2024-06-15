@@ -6,6 +6,7 @@ import { AccountProfileDetails } from "src/sections/account/account-profile-deta
 import { SettingsPassword } from "src/sections/settings/settings-password";
 
 const Page = () => (
+
   <>
     <Head>
       <title>Mi Perfil</title>

@@ -60,7 +60,7 @@ export const items = [
       },
       {
         title: 'Nuevo',
-        path: '/members/new',
+        path: '/members/register',
         icon: (
             <SvgIcon fontSize="small">
               <AddBoxIcon/>

@@ -49,7 +49,7 @@ export const AccountProfile = () => (
     </CardContent>
     <Divider />
     <CardActions>
-      <Button fullWidth variant="text">
+      <Button fullWidth variant="text" disabled={true}>
         Cambiar Foto de Perfil
       </Button>
     </CardActions>

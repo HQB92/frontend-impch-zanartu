@@ -210,7 +210,7 @@ const RegisterMember = (props)=>{
         children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)(material_.Card, {
             children: [
                 /*#__PURE__*/ jsx_runtime_.jsx(material_.CardHeader, {
-                    subheader: "La informacion que puedes editar",
+                    subheader: "La informacion que puedes edit",
                     title: "Mis Datos"
                 }),
                 /*#__PURE__*/ jsx_runtime_.jsx(material_.CardContent, {
