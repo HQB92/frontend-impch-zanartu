@@ -27,34 +27,43 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: emscripten/emsdk
 
     steps:
-      - uses: actions/checkout@v3
-      - run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DEMSCRIPTEN=ON
-      - run: cmake --build build --config ${{env.BUILD_TYPE}}
-      - uses: actions/upload-artifact@master
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          name: page
-          path: build
-          if-no-files-found: error
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          cname: example.com
+          commit_message: "Deploy ${{ github.sha }}"
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-
     steps:
-      - uses: actions/download-artifact@master
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: page
-          path: .
-      - uses: actions/configure-pages@v1
-      - uses: actions/upload-pages-artifact@v1
-        with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          cname: example.com
+          commit_message: "Deploy ${{ github.sha }}"
