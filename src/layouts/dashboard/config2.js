@@ -12,6 +12,15 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 
 export const items = [
   {
+    title: 'Reportes',
+    path: '/',
+    icon: (
+        <SvgIcon fontSize="small">
+          <ChartBarIcon />
+        </SvgIcon>
+    ),
+  },
+  {
     title: 'Usuarios',
     path: '/customers',
     icon: (
@@ -48,26 +57,42 @@ export const items = [
           <PeopleIcon />
         </SvgIcon>
     ),
-    subItems: [
-      {
-        title: 'Listado',
-        path: '/members',
-        icon: (
-            <SvgIcon fontSize="small">
-              <ListAltIcon/>
-            </SvgIcon>
-        ),
-      },
-      {
-        title: 'Nuevo',
-        path: '/members/new',
-        icon: (
-            <SvgIcon fontSize="small">
-              <AddBoxIcon/>
-            </SvgIcon>
-        ),
-      }
-    ],
+  },
+  {
+    title: 'Iglesias',
+    path: '/churchs',
+    icon: (
+        <SvgIcon fontSize="small">
+          <ChurchIcon />
+        </SvgIcon>
+    ),
+  },
+  {
+    title: 'Ofrendas',
+    path: '/companies',
+    icon: (
+        <SvgIcon fontSize="small">
+          <MonetizationOnIcon />
+        </SvgIcon>
+    ),
+  },
+  {
+    title: 'Inventario',
+    path: '/inventory',
+    icon: (
+        <SvgIcon fontSize="small">
+          <InventoryIcon />
+        </SvgIcon>
+    ),
+  },
+  {
+    title: 'Gastos',
+    path: '/expenses',
+    icon: (
+        <SvgIcon fontSize="small">
+          <ShoppingBagIcon />
+        </SvgIcon>
+    ),
   },
   {
     title: 'Mi Perfil',
@@ -79,3 +104,4 @@ export const items = [
     ),
   },
 ];
+

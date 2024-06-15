@@ -4,13 +4,9 @@ import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
-  Alert,
   Box,
   Button,
-  FormHelperText,
   Stack,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -43,10 +39,6 @@ const Page = () => {
     },
   });
 
-  const handleMethodChange = useCallback((event, value) => {
-    setMethod(value);
-  }, []);
-
   return (
     <>
       <Head>
@@ -74,9 +66,6 @@ const Page = () => {
             <Stack spacing={2} sx={{ mb: 4 }}>
               <Typography variant="h4">Iniciar Sección</Typography>
             </Stack>
-            <Tabs onChange={handleMethodChange} sx={{ mb: 3 }} value={method}>
-              <Tab label="Username" value="email" />
-            </Tabs>
             {method === "email" && (
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Stack spacing={3}>
