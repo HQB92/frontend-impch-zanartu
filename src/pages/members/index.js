@@ -16,7 +16,8 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import {useQuery,gql} from "@apollo/client";
+import {useLazyQuery,gql} from "@apollo/client";
+import Loader from "../../components/loader";
 
 
 
@@ -52,7 +53,7 @@ const useCustomerIds = (customers) => {
 
 
 const Page = () => {
-  const {data, loading, error} = useQuery(gql`query GetAll {
+  const [getMember, {data, loading, error}] = useLazyQuery(gql`query GetAll {
     Member {
       getAll {
         rut
@@ -69,8 +70,7 @@ const Page = () => {
   }`);
 
 
-  const [response, setResponse] = useState({});
-
+  const [response, setResponse] = useState(data?.Member?.getAll || []);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const customers = useCustomers(page, rowsPerPage, response);
@@ -87,13 +87,17 @@ const Page = () => {
 
   useEffect(
     () => {
-        if (data){
-          refetch()
-        }
+        console.log(" antes useEffect",data)
+      if(!data){
+        getMember();
+        console.log(" despues useEffect",data)
+        setResponse(data?.Member?.getAll || [])
+      }
     },[response]
   )
   return (
-    <>
+    <> {loading ? <Loader/>:
+        <>
       <Head>
         <title>Miembros</title>
       </Head>
@@ -126,7 +130,7 @@ const Page = () => {
             </Stack>
             <CustomersSearch />
             <CustomersTable
-              count={data?.length}
+              count={response.length}
               items={customers}
               onDeselectAll={customersSelection.handleDeselectAll}
               onDeselectOne={customersSelection.handleDeselectOne}
@@ -141,6 +145,8 @@ const Page = () => {
           </Stack>
         </Container>
       </Box>
+          </>
+    }
     </>
   );
 };
