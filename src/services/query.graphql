@@ -1,0 +1,15 @@
+query  miProfile($rut: ID!) {
+    Member {
+        getByRut(rut: $rut) {
+            names
+            lastNameDad
+            lastNameMom
+            address
+            email
+            mobile
+        }
+    }
+}
+
+
+

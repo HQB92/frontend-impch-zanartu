@@ -13,6 +13,7 @@
     "lint-fix": "next lint --fix"
   },
   "dependencies": {
+    "@apollo/client": "^3.10.5",
     "@emotion/cache": "11.10.5",
     "@emotion/react": "^11.10.6",
     "@emotion/server": "11.10.0",
@@ -30,6 +31,7 @@
     "dotenv": "^16.4.5",
     "formik": "2.2.9",
     "next": "13.1.6",
+    "next-plugin-graphql": "^0.0.2",
     "nprogress": "0.2.0",
     "prop-types": "15.8.1",
     "react": "18.2.0",

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
 import login from "../services/login";
+import { useQuery, gql } from "@apollo/client";
 
 const HANDLERS = {
   INITIALIZE: 'INITIALIZE',
@@ -131,6 +132,7 @@ export const AuthProvider = (props) => {
     const token = await login(email, password);
     console.log('token', token);
 
+
     let user ={};
     //decode token
     if(token){
@@ -146,6 +148,7 @@ export const AuthProvider = (props) => {
         window.sessionStorage.setItem('authenticated', 'true');
         window.sessionStorage.setItem('token', token);
         window.sessionStorage.setItem('user', JSON.stringify(user));
+
         dispatch({
           type: HANDLERS.SIGN_IN,
           payload: user
@@ -172,6 +175,7 @@ export const AuthProvider = (props) => {
     window.sessionStorage.removeItem('authenticated');
     window.sessionStorage.removeItem('token');
     window.sessionStorage.removeItem('user');
+    window.sessionStorage.removeItem('profile');
     dispatch({
       type: HANDLERS.SIGN_OUT
     });

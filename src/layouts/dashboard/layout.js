@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { withAuthGuard } from "src/hocs/with-auth-guard";
 import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
+import { useQuery, gql} from "@apollo/client";
 
 const SIDE_NAV_WIDTH = 302;
 
@@ -24,6 +25,27 @@ const LayoutContainer = styled("div")({
 });
 
 export const Layout = withAuthGuard((props) => {
+  const user = window.sessionStorage.getItem("user");
+  const { rut } = JSON.parse(user) || {};
+  console.log("rut", rut);
+  const { data, error, loading } = useQuery(gql`
+    query miProfile($rut: ID!) {
+      Member {
+        getByRut(rut: $rut) {
+          names
+          lastNameDad
+          lastNameMom
+          address
+          email
+          mobile
+        }
+      }
+    }
+  `, {
+    variables: { rut: rut } // Utiliza "variables" en lugar de "variable"
+  });
+  const  profileSave = JSON.parse(window.sessionStorage.getItem("profile"));
+
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
@@ -37,6 +59,18 @@ export const Layout = withAuthGuard((props) => {
   useEffect(
     () => {
       handlePathnameChange();
+      if(data) {
+        const profile = {
+          rut: rut,
+          names: data?.Member?.getByRut?.names,
+          lastNameDad: data?.Member?.getByRut?.lastNameDad,
+          lastNameMom: data?.Member?.getByRut?.lastNameMom,
+          address: data?.Member.getByRut?.address,
+          email: data?.Member?.getByRut?.email,
+          mobile: data?.Member?.getByRut?.mobile
+        }
+        window.sessionStorage.setItem("profile", JSON.stringify(profile));
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pathname]

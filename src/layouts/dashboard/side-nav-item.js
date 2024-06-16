@@ -33,7 +33,7 @@ export const SideNavItem = (props) => {
   };
 
   return (
-    <li>
+    <>
       <ButtonBase
         sx={{
           alignItems: 'center',
@@ -100,7 +100,7 @@ export const SideNavItem = (props) => {
           ))}
         </Collapse>
       )}
-    </li>
+    </>
   );
 };
 

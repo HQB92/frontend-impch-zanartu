@@ -13,19 +13,20 @@ import {
 
 const states = [
   {
-    value: "Chillán",
-    label: "Chillán",
+    value: "Chile",
+    label: "Chile",
   },
 ];
 
 export const AccountProfileDetails = () => {
+  const profile = JSON.parse(window.sessionStorage.getItem("profile"));
   const [values, setValues] = useState({
-    firstName: "Hugo",
-    lastName: "Quinteros",
-    email: "hquinteros@ing.ucsc.cl",
-    phone: "997941598",
+    firstName: profile.names,
+    lastName: profile.lastNameDad,
+    email: profile.email,
+    phone: profile.mobile,
+    country: profile.address,
     state: "Chillán",
-    country: "Chile",
   });
 
   const handleChange = useCallback((event) => {
@@ -99,7 +100,7 @@ export const AccountProfileDetails = () => {
                   onChange={handleChange}
                   required
                   disabled={true}
-                  value={values.country}
+                  value={values.state}
                 />
               </Grid>
               <Grid xs={12} md={6}>
@@ -111,7 +112,7 @@ export const AccountProfileDetails = () => {
                   required
                   select
                   SelectProps={{ native: true }}
-                  value={values.state}
+                  value={values.country}
                   disabled={true}
                 >
                   {states.map((option) => (

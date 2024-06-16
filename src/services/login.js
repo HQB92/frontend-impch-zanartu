@@ -21,7 +21,7 @@ const login = async (email, password) => {
   const response = await axios
     .request(config)
     .then((response) => {
-      return JSON.stringify(response.data.token);
+      return response.data.token;
     })
     .catch((error) => {
       console.log(error);

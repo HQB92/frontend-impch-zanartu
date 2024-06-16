@@ -8,6 +8,7 @@ export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
   const router = useRouter();
   const auth = useAuth();
+  const profile = JSON.parse(window.sessionStorage.getItem("profile"));
 
   const handleSignOut = useCallback(() => {
     onClose?.();
@@ -24,7 +25,7 @@ export const AccountPopover = (props) => {
       }}
       onClose={onClose}
       open={open}
-      PaperProps={{ sx: { width: 200 } }}
+      PaperProps={{ sx: { width: 250 } }}
     >
       <Box
         sx={{
@@ -34,7 +35,7 @@ export const AccountPopover = (props) => {
       >
         <Typography variant="overline">Cuenta</Typography>
         <Typography color="text.secondary" variant="body2">
-          Hugo Quinteros
+            {profile?.names} {profile?.lastNameDad} {profile?.lastNameMom}
         </Typography>
       </Box>
       <Divider />

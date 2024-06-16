@@ -5,41 +5,42 @@ import { AccountProfile } from "src/sections/account/account-profile";
 import { AccountProfileDetails } from "src/sections/account/account-profile-details";
 import { SettingsPassword } from "src/sections/settings/settings-password";
 
-const Page = () => (
+const Page = () => {
 
-  <>
-    <Head>
-      <title>Mi Perfil</title>
-    </Head>
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        py: 8,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Stack spacing={3}>
-          <div>
-            <Typography variant="h4">Mi Perfil</Typography>
-          </div>
-          <div>
-            <Grid container spacing={3}>
-              <Grid xs={12} md={6} lg={4}>
-                <AccountProfile />
+  return (
+    <>
+      <Head>
+        <title>Mi Perfil</title>
+      </Head>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Stack spacing={3}>
+            <div>
+              <Typography variant="h4">Mi Perfil</Typography>
+            </div>
+            <div>
+              <Grid container spacing={3}>
+                <Grid xs={12} md={6} lg={4}>
+                  <AccountProfile />
+                </Grid>
+                <Grid xs={12} md={6} lg={8}>
+                  <AccountProfileDetails />
+                </Grid>
               </Grid>
-              <Grid xs={12} md={6} lg={8}>
-                <AccountProfileDetails />
-              </Grid>
-            </Grid>
-          </div>
-        </Stack>
-        <SettingsPassword />
-      </Container>
-    </Box>
-  </>
-);
-
+            </div>
+          </Stack>
+          <SettingsPassword />
+        </Container>
+      </Box>
+    </>
+  );
+};
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default Page;
