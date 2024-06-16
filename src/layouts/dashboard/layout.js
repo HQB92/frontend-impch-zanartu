@@ -70,10 +70,11 @@ export const Layout = withAuthGuard((props) => {
           mobile: data?.Member?.getByRut?.mobile
         }
         window.sessionStorage.setItem("profile", JSON.stringify(profile));
+      }else{
+        window.sessionStorage.setItem("profile", JSON.stringify({}));
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pathname]
+
+    },[pathname]
   );
 
   return (
