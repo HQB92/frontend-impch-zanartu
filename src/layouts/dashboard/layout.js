@@ -41,7 +41,8 @@ export const Layout = withAuthGuard((props) => {
       }
     }
   `, {
-    variables: { rut: rut } // Utiliza "variables" en lugar de "variable"
+    variables: { rut: rut },
+    fetchPolicy:'no-cache'
   });
   const  profileSave = JSON.parse(window.sessionStorage.getItem("profile"));
 

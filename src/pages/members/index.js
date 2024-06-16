@@ -65,9 +65,10 @@ const Page = () => {
         dateOfBirth
         probationStartDate
         fullMembershipDate
-      }
-    }
-  }`);
+      },
+      
+    },
+  }`, {fetchPolicy: 'no-cache'});
 
 
   const [response, setResponse] = useState(data?.Member?.getAll || []);
