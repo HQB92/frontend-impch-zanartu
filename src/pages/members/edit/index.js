@@ -51,7 +51,6 @@ const useCustomerIds = (customers) => {
 
 const Page = (props) => {
   const router = useRouter();
-  console.log(router.query.id);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const customers = useCustomers(page, rowsPerPage);

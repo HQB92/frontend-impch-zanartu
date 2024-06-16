@@ -10,7 +10,6 @@ const httpLink = new HttpLink({
 
 let token = typeof window !== 'undefined' ? window.sessionStorage.getItem('token') : null;
 token= token?.split('"').join('');
-console.log("token",`Bearer ${token}`);
 const authLink = setContext((_, { headers }) => {
     return {
         headers: {

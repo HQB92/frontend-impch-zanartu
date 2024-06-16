@@ -185,7 +185,6 @@ const RegisterMember = (props)=>{
             [event.target.name]: event.target.value
         });
     };
-    console.log(member);
     const handleFormato = ()=>{
         if ((0,rut_utilities_.validateRut)(member.rut)) {
             setMember({

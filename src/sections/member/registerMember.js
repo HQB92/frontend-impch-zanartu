@@ -46,7 +46,6 @@ export const RegisterMember = (props) => {
       [event.target.name]: event.target.value,
     });
   };
-  console.log(member);
   const handleFormato = () => {
     if (validateRut(member.rut)) {
       setMember({

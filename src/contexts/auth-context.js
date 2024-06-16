@@ -130,9 +130,6 @@ export const AuthProvider = (props) => {
 
   const signIn = async (email, password) => {
     const token = await login(email, password);
-    console.log('token', token);
-
-
     let user ={};
     //decode token
     if(token){

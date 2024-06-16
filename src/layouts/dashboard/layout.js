@@ -27,7 +27,6 @@ const LayoutContainer = styled("div")({
 export const Layout = withAuthGuard((props) => {
   const user = window.sessionStorage.getItem("user");
   const { rut } = JSON.parse(user) || {};
-  console.log("rut", rut);
   const { data, error, loading } = useQuery(gql`
     query miProfile($rut: ID!) {
       Member {
