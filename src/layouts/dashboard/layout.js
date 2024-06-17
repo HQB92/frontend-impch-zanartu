@@ -4,7 +4,9 @@ import { styled } from "@mui/material/styles";
 import { withAuthGuard } from "src/hocs/with-auth-guard";
 import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
-import { useQuery, gql} from "@apollo/client";
+import { useLazyQuery, gql } from "@apollo/client";
+import Loader from "../../components/loader";
+import {GET_PROFILE} from "../../services/query";
 
 const SIDE_NAV_WIDTH = 302;
 
@@ -24,27 +26,15 @@ const LayoutContainer = styled("div")({
   width: "100%",
 });
 
+
+
 export const Layout = withAuthGuard((props) => {
   const user = window.sessionStorage.getItem("user");
   const { rut } = JSON.parse(user) || {};
-  const { data, error, loading } = useQuery(gql`
-    query miProfile($rut: ID!) {
-      Member {
-        getByRut(rut: $rut) {
-          names
-          lastNameDad
-          lastNameMom
-          address
-          email
-          mobile
-        }
-      }
-    }
-  `, {
-    variables: { rut: rut },
-    fetchPolicy:'no-cache'
+  const [miProfile, { data, error, loading }] = useLazyQuery(GET_PROFILE, {
+    fetchPolicy: 'no-cache'
   });
-  const  profileSave = JSON.parse(window.sessionStorage.getItem("profile"));
+  const profileSave = JSON.parse(window.sessionStorage.getItem("profile"));
 
   const { children } = props;
   const pathname = usePathname();
@@ -56,34 +46,42 @@ export const Layout = withAuthGuard((props) => {
     }
   }, [openNav]);
 
-  useEffect(
-    () => {
-      handlePathnameChange();
-      if(data) {
-        const profile = {
-          rut: rut,
-          names: data?.Member?.getByRut?.names,
-          lastNameDad: data?.Member?.getByRut?.lastNameDad,
-          lastNameMom: data?.Member?.getByRut?.lastNameMom,
-          address: data?.Member.getByRut?.address,
-          email: data?.Member?.getByRut?.email,
-          mobile: data?.Member?.getByRut?.mobile
-        }
-        window.sessionStorage.setItem("profile", JSON.stringify(profile));
-      }else{
-        window.sessionStorage.setItem("profile", JSON.stringify({}));
-      }
+  useEffect(() => {
+    handlePathnameChange();
+  }, [pathname, handlePathnameChange]);
 
-    },[pathname]
-  );
+  useEffect(() => {
+    miProfile({ variables: { rut: rut } });
+  }, [miProfile, rut]);
+
+  useEffect(() => {
+    if (data) {
+      const profile = {
+        rut: rut,
+        names: data?.Member?.getByRut?.names,
+        lastNameDad: data?.Member?.getByRut?.lastNameDad,
+        lastNameMom: data?.Member?.getByRut?.lastNameMom,
+        address: data?.Member?.getByRut?.address,
+        email: data?.Member?.getByRut?.email,
+        mobile: data?.Member?.getByRut?.mobile,
+      };
+      window.sessionStorage.setItem("profile", JSON.stringify(profile));
+      console.log("profile", profile);
+    } else if (error) {
+      console.error("Error fetching profile:", error);
+      window.sessionStorage.setItem("profile", JSON.stringify({}));
+    }
+  }, [data, error, rut]);
 
   return (
-    <>
-      <TopNav onNavOpen={() => setOpenNav(true)} />
-      <SideNav onClose={() => setOpenNav(false)} open={openNav} />
-      <LayoutRoot>
-        <LayoutContainer>{children}</LayoutContainer>
-      </LayoutRoot>
-    </>
+      <>
+        <TopNav onNavOpen={() => setOpenNav(true)} />
+        <SideNav onClose={() => setOpenNav(false)} open={openNav} />
+        <LayoutRoot>
+          <LayoutContainer>{children}</LayoutContainer>
+        </LayoutRoot>
+        {loading && <Loader />}
+        {error && <p>Error loading profile</p>}
+      </>
   );
 });

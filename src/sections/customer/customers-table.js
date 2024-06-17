@@ -36,6 +36,7 @@ export const CustomersTable = (props) => {
     rowsPerPage = 0,
     selected = [],
   } = props;
+  console.log('items', items);
 
   const selectedSome = selected.length > 0 && selected.length < items.length;
   const selectedAll = items.length > 0 && selected.length === items.length;
@@ -69,11 +70,11 @@ export const CustomersTable = (props) => {
             </TableHead>
             <TableBody>
               {items.map((customer) => {
-                const isSelected = selected.includes(customer.id);
+                const isSelected = selected.includes(customer.rut);
 
 
                 return (
-                  <TableRow hover key={customer.id} selected={isSelected}>
+                  <TableRow hover key={customer.rut} selected={isSelected}>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
                         <Avatar src={'/assets/avatars/avatar-cao-yu.png'}>
@@ -97,7 +98,7 @@ export const CustomersTable = (props) => {
                         startIcon={<EditIcon style={{ marginRight: '-9px' }} />}
                         variant="contained"
                         component={NextLink}
-                        href={`/members/editar?id=${customer.rut}`}
+                        href={`/members/editar?member=${customer}`}
                       />{' '}
                       <Button
                         size="large"

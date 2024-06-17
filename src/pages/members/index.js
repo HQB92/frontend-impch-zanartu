@@ -1,6 +1,5 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
-import { subDays, subHours } from 'date-fns';
 import NextLink from 'next/link';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {
@@ -16,64 +15,40 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import {useLazyQuery,gql} from "@apollo/client";
+import { useLazyQuery, gql } from "@apollo/client";
 import Loader from "../../components/loader";
+import {GET_ALL_MEMBERS} from "../../services/query";
 
 
 
-const now = new Date();
-
-/*const data = [
-  {
-    id: '5e887ac47eed253091be10cb',
-    address: {
-      city: 'Cleveland',
-      country: 'USA',
-      state: 'Ohio',
-      street: '2849 Fulton Street',
-    },
-    avatar: '/assets/avatars/avatar-carson-darrin.png',
-    createdAt: subDays(subHours(now, 7), 1).getTime(),
-    email: 'carson.darrin@devias.io',
-    name: 'Carson Darrin',
-    phone: '304-428-3097',
-  },
-];*/
-const useCustomers = (page, rowsPerPage, data) => {
+const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
-    return applyPagination(data, page, rowsPerPage);
-  }, [page, rowsPerPage]);
+    return applyPagination(response, page, rowsPerPage);
+  }, [page, rowsPerPage, response]);
 };
 
 const useCustomerIds = (customers) => {
   return useMemo(() => {
-    return customers?.map((customer) => customer.id);
+    return customers.map((customer) => customer.rut);
   }, [customers]);
 };
 
-
 const Page = () => {
-  const [getMember, {data, loading, error}] = useLazyQuery(gql`query GetAll {
-    Member {
-      getAll {
-        rut
-        names
-        lastNameDad
-        lastNameMom
-        address
-        mobile
-        dateOfBirth
-        probationStartDate
-        fullMembershipDate
-      },
-      
-    },
-  }`, {fetchPolicy: 'no-cache'});
-
-
-  const [response, setResponse] = useState(data?.Member?.getAll || []);
+  const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
+
+  useEffect(() => {
+    getMember();
+  }, [getMember]);
+
+  useEffect(() => {
+    if (data) {
+      setResponse(data.Member.getAll || []);
+    }
+  }, [data]);
+
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
   const customersSelection = useSelection(customersIds);
@@ -86,69 +61,59 @@ const Page = () => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  useEffect(
-    () => {
-        console.log(" antes useEffect",data)
-      if(!data){
-        getMember();
-        console.log(" despues useEffect",data)
-        setResponse(data?.Member?.getAll || [])
-      }
-    },[response]
-  )
+  if (loading) return <Loader />;
+  if (error) return <p>Error loading members</p>;
+
   return (
-    <> {loading ? <Loader/>:
-        <>
-      <Head>
-        <title>Miembros</title>
-      </Head>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8,
-        }}
-      >
-        <Container maxWidth="xl">
-          <Stack spacing={3}>
-            <Stack direction="row" justifyContent="space-between" spacing={4}>
-              <Stack spacing={1}>
-                <Typography variant="h4">Miembros</Typography>
+      <>
+        <Head>
+          <title>Miembros</title>
+        </Head>
+        <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              py: 8,
+            }}
+        >
+          <Container maxWidth="xl">
+            <Stack spacing={3}>
+              <Stack direction="row" justifyContent="space-between" spacing={4}>
+                <Stack spacing={1}>
+                  <Typography variant="h4">Miembros</Typography>
+                </Stack>
+                <div>
+                  <Button
+                      color="primary"
+                      component={NextLink}
+                      href="/members/register"
+                      variant="contained"
+                  >
+                    <SvgIcon fontSize="small">
+                      <PlusIcon />
+                    </SvgIcon>
+                    Nuevo Miembro
+                  </Button>
+                </div>
               </Stack>
-              <div>
-                <Button
-                  color="primary"
-                  component={NextLink}
-                  href="/members/register"
-                  variant="contained"
-                >
-                  <SvgIcon fontSize="small">
-                    <PlusIcon />
-                  </SvgIcon>
-                  Nuevo Miembro
-                </Button>
-              </div>
+              <CustomersSearch />
+              <CustomersTable
+                  count={response.length}
+                  items={customers}
+                  onDeselectAll={customersSelection.handleDeselectAll}
+                  onDeselectOne={customersSelection.handleDeselectOne}
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleRowsPerPageChange}
+                  onSelectAll={customersSelection.handleSelectAll}
+                  onSelectOne={customersSelection.handleSelectOne}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  selected={customersSelection.selected}
+              />
             </Stack>
-            <CustomersSearch />
-            <CustomersTable
-              count={response.length}
-              items={customers}
-              onDeselectAll={customersSelection.handleDeselectAll}
-              onDeselectOne={customersSelection.handleDeselectOne}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={customersSelection.handleSelectAll}
-              onSelectOne={customersSelection.handleSelectOne}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              selected={customersSelection.selected}
-            />
-          </Stack>
-        </Container>
-      </Box>
-          </>
-    }
-    </>
+          </Container>
+        </Box>
+      </>
   );
 };
 
