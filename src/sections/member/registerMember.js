@@ -69,6 +69,10 @@ export const RegisterMember = (props) => {
   }, [member.rut]);
 
 
+  if(error) return <Alert severity="error">{error.message}</Alert>
+  if(loading) return <Alert severity="info"><Loader/></Alert>
+    if(data) return <Alert severity="success">Miembro Registrado</Alert>
+
 
   return (
     <>
