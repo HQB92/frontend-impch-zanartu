@@ -13,15 +13,17 @@ import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
 import { useLazyQuery } from "@apollo/client";
 import { COUNT_ALL_MEMBERS} from "../services/query";
 import {useEffect} from "react";
+import Loader from "../components/loader";
 
 const now = new Date();
 
 const Page = () => {
-  const [getCountMembers, { data }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
+  const [getCountMembers, { data, loading }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
 
-    useEffect(() => {
-        getCountMembers();
-    }, []);
+  useEffect(() => {
+    getCountMembers();
+  }, []);
+  if(loading) return <Loader/>
   return (
   <>
     <Head>
