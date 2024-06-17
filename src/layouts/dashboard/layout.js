@@ -48,7 +48,7 @@ export const Layout = withAuthGuard((props) => {
 
   useEffect(() => {
     handlePathnameChange();
-  }, [pathname, handlePathnameChange]);
+  }, [pathname]);
 
   useEffect(() => {
     miProfile({ variables: { rut: rut } });
