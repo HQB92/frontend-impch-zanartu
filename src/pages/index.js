@@ -10,10 +10,19 @@ import { OverviewTasksProgress } from 'src/sections/overview/overview-tasks-prog
 import { OverviewTotalCustomers } from 'src/sections/overview/overview-total-customers';
 import { OverviewTotalProfit } from 'src/sections/overview/overview-total-profit';
 import { OverviewTraffic } from 'src/sections/overview/overview-traffic';
+import { useLazyQuery } from "@apollo/client";
+import { COUNT_ALL_MEMBERS} from "../services/query";
+import {useEffect} from "react";
 
 const now = new Date();
 
-const Page = () => (
+const Page = () => {
+  const [getCountMembers, { data }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
+
+    useEffect(() => {
+        getCountMembers();
+    }, []);
+  return (
   <>
     <Head>
       <title>Dashboard</title>
@@ -31,7 +40,7 @@ const Page = () => (
             <OverviewBudget positive sx={{ height: '100%' }} value="$240.000" />
           </Grid>
           <Grid xs={12} sm={6} lg={4}>
-            <OverviewTotalCustomers sx={{ height: '100%' }} value="450" />
+            <OverviewTotalCustomers sx={{ height: '100%' }} value={ data?.Member?.count} />
           </Grid>
           <Grid xs={12} sm={6} lg={4}>
             <OverviewTotalProfit sx={{ height: '100%' }} value="$550.000" />
@@ -75,7 +84,7 @@ const Page = () => (
       </Container>
     </Box>
   </>
-);
+);}
 
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 

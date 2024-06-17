@@ -35,6 +35,14 @@ const GET_ALL_MEMBERS = gql`
     }
 `;
 
-export { GET_PROFILE, GET_ALL_MEMBERS };
+const COUNT_ALL_MEMBERS = gql`
+    query Count {
+        Member {
+            count
+        }
+    }
+`;
+
+export { GET_PROFILE, GET_ALL_MEMBERS, COUNT_ALL_MEMBERS};
 
 
