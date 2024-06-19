@@ -66,7 +66,7 @@ export const TopNav = (props) => {
                 height: 70,
                 width: 70,
               }}
-              src="/assets/avatars/avatar-cao-yu.png"
+              src="/assets/avatars/hombre.png"
             />
           </Stack>
         </Stack>

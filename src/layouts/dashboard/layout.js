@@ -73,6 +73,8 @@ export const Layout = withAuthGuard((props) => {
     }
   }, [data, error, rut]);
 
+  if(loading) <Loader/>
+
   return (
       <>
         <TopNav onNavOpen={() => setOpenNav(true)} />
