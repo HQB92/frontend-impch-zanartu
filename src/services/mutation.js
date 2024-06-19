@@ -22,4 +22,14 @@ const UPDATE_PASSWORD = gql`
   }
 }`;
 
-export { CREATE_MEMBER, UPDATE_PASSWORD };
+const DELETE_MEMBER = gql`
+mutation Delete($rut: String!) {
+  Member {
+    delete(rut: $rut) {
+      code
+      message
+    }
+  }
+}`;
+
+export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER };

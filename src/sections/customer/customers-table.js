@@ -14,13 +14,15 @@ import {
   TablePagination,
   TableRow,
   Typography,
-  SvgIcon,
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from 'next/router';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useMutation } from "@apollo/client";
+import { DELETE_MEMBER } from "../../services/mutation";
+import Loader from "../../components/loader";
 
 export const CustomersTable = (props) => {
   const {
@@ -35,14 +37,18 @@ export const CustomersTable = (props) => {
     page = 0,
     rowsPerPage = 0,
     selected = [],
+    setLoadingDelete = () => {}
   } = props;
-  console.log('items', items);
 
   const selectedSome = selected.length > 0 && selected.length < items.length;
   const selectedAll = items.length > 0 && selected.length === items.length;
-  const router = useRouter();
-  const handleClick = () => {
-    alert('¿Está seguro que desea eliminar este miembro?');
+  const [deleteMember,{data, loading, error}] = useMutation(DELETE_MEMBER);
+  const deleteRut = (rut) => {
+    console.log('loading', loading);
+    setLoadingDelete(loading);
+    return () => {
+      deleteMember({variables: {rut}});
+    };
   };
   function formatDate(isoDate) {
     const date = new Date(isoDate);
@@ -51,11 +57,10 @@ export const CustomersTable = (props) => {
     const year = date.getUTCFullYear();
     return `${day}-${month}-${year}`;
   }
-
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{ minWidth: 800 }}>
+        <Box sx={{ minWidth: 1200 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -65,14 +70,12 @@ export const CustomersTable = (props) => {
                 <TableCell>Fecha Nacimiento</TableCell>
                 <TableCell>Fecha Probando</TableCell>
                 <TableCell>Fecha Plena</TableCell>
-                <TableCell></TableCell>
+                <TableCell>Editar / Borrar</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((customer) => {
                 const isSelected = selected.includes(customer.rut);
-
-
                 return (
                   <TableRow hover key={customer.rut} selected={isSelected}>
                     <TableCell>
@@ -81,7 +84,7 @@ export const CustomersTable = (props) => {
                           {getInitials(customer.name)}
                         </Avatar>
                         <Typography variant="subtitle2">
-                          {customer?.names}
+                          {customer?.names} { customer.lastNameDad} {customer.lastNameMom}
                         </Typography>
                       </Stack>
                     </TableCell>
@@ -89,16 +92,16 @@ export const CustomersTable = (props) => {
                       {customer?.address}
                     </TableCell>
                     <TableCell>+56 {customer.mobile}</TableCell>
-                    <TableCell>{formatDate(customer?.dateOfBirth)}</TableCell>
-                    <TableCell>{formatDate(customer?.probationStartDate)}</TableCell>
-                    <TableCell>{formatDate(customer?.fullMembershipDate)}</TableCell>
+                    <TableCell >{formatDate(customer?.dateOfBirth)}</TableCell>
+                    <TableCell>{customer?.probationStartDate ? formatDate(customer?.probationStartDate): ""}</TableCell>
+                    <TableCell>{customer?.fullMembershipDate ? formatDate(customer?.fullMembershipDate) : ""}</TableCell>
                     <TableCell>
                       <Button
                         size="large"
                         startIcon={<EditIcon style={{ marginRight: '-9px' }} />}
                         variant="contained"
                         component={NextLink}
-                        href={`/members/editar?member=${customer}`}
+                        href={`/members/edit?rut=${customer.rut}`}
                       />{' '}
                       <Button
                         size="large"
@@ -108,7 +111,9 @@ export const CustomersTable = (props) => {
                           <DeleteForeverIcon style={{ marginRight: '-9px' }} />
                         }
                         variant="contained"
-                        onClick={handleClick}
+                        component={NextLink}
+                        href="/members"
+                        onClick={deleteRut(customer.rut)}
                       />
                     </TableCell>
                   </TableRow>
@@ -143,4 +148,5 @@ CustomersTable.propTypes = {
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
   selected: PropTypes.array,
+  setLoadingDelete: PropTypes.func
 };

@@ -19,6 +19,7 @@ import { CREATE_MEMBER } from "../../services/mutation";
 import { useMutation } from "@apollo/client";
 import {Loader} from "react-feather";
 import {Alert} from "@mui/lab";
+import NextLink from "next/link";
 
 export const RegisterMember = (props) => {
   const [values, setValues] = useState({
@@ -67,6 +68,14 @@ export const RegisterMember = (props) => {
   useEffect(() => {
     handleFormato();
   }, [member.rut]);
+
+  useEffect(() => {
+    if(data) {
+  const timer = setTimeout(() => {
+        NextLink("/members");
+        }, 3000);
+        return () => clearTimeout(timer);}
+  }, []);
 
 
   if(error) return <Alert severity="error">{error.message}</Alert>

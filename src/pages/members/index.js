@@ -15,7 +15,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
 import { CustomersSearch } from 'src/sections/customer/customers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import { useLazyQuery, gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
 import {GET_ALL_MEMBERS} from "../../services/query";
 
@@ -34,6 +34,7 @@ const useCustomerIds = (customers) => {
 };
 
 const Page = () => {
+  const [LoadingDelete, setLoadingDelete] = useState(false)
   const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -48,6 +49,13 @@ const Page = () => {
       setResponse(data.Member.getAll || []);
     }
   }, [data]);
+  useEffect(() => {
+    console.log('LoadingDelete', LoadingDelete)
+    if (LoadingDelete){
+      getMember()
+    }
+
+  }, [LoadingDelete]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
@@ -109,6 +117,8 @@ const Page = () => {
                   page={page}
                   rowsPerPage={rowsPerPage}
                   selected={customersSelection.selected}
+                  loading={LoadingDelete}
+                  setLoading={setLoadingDelete}
               />
             </Stack>
           </Container>
