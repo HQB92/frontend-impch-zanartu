@@ -65,6 +65,19 @@ export const RegisterMember = (props) => {
       return match.toUpperCase();
     });
   };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  };
+
+  const handleBlur = (field) => {
+    if (member[field]) {
+      setMember({ ...member, [field]: formatDate(member[field]) });
+    }
+    setValues({ ...values, [field]: false });
+  };
+
   useEffect(() => {
     handleFormato();
   }, [member.rut]);
@@ -77,10 +90,8 @@ export const RegisterMember = (props) => {
         return () => clearTimeout(timer);}
   }, []);
 
-
-  if(error) return <Alert severity="error">{error.message}</Alert>
   if(loading) return <Alert severity="info"><Loader/></Alert>
-    if(data) return <Alert severity="success">Miembro Registrado</Alert>
+  if(data) return <Alert severity="success">Miembro Registrado</Alert>
 
 
   return (
@@ -181,9 +192,7 @@ export const RegisterMember = (props) => {
                     onFocus={() => {
                       setValues({ ...values, dateOfBirth: true });
                     }}
-                    onBlur={() => {
-                      setValues({ ...values, dateOfBirth: false });
-                    }}
+                    onBlur={() => handleBlur('dateOfBirth')}
                     type={values.dateOfBirth ? 'date' : 'text'}
                     required
                     onChange={(e) =>
@@ -199,9 +208,7 @@ export const RegisterMember = (props) => {
                     onFocus={() => {
                       setValues({ ...values, probationStartDate: true });
                     }}
-                    onBlur={() => {
-                      setValues({ ...values, probationStartDate: false });
-                    }}
+                    onBlur={() => handleBlur('probationStartDate')}
                     type={values.probationStartDate ? 'date' : 'text'}
                     onChange={(e) =>
                       setMember({ ...member, probationStartDate: e.target.value })
@@ -216,9 +223,7 @@ export const RegisterMember = (props) => {
                     onFocus={() => {
                       setValues({ ...values, fullMembershipDate: true });
                     }}
-                    onBlur={() => {
-                      setValues({ ...values, fullMembershipDate: false });
-                    }}
+                    onBlur={() => handleBlur('fullMembershipDate')}
                     type={values.fullMembershipDate ? 'date' : 'text'}
                     onChange={(e) =>
                       setMember({ ...member, fullMembershipDate: e.target.value })
