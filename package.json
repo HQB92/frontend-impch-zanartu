@@ -1,9 +1,7 @@
 {
-  "name": "material-kit-react",
-  "version": "3.0.0",
+  "name": "frontend-impch-zanartu",
+  "version": "1.0.0",
   "licence": "MIT",
-  "private": false,
-  "homepage": "https://hqb92.github.io/frontend-impch-zanartu",
   "scripts": {
     "dev": "next",
     "build": "next build",
@@ -39,7 +37,9 @@
     "react-dom": "18.2.0",
     "react-feather": "^2.0.10",
     "simplebar-react": "^3.2.1",
-    "yup": "1.0.0"
+    "yup": "1.0.0",
+    "braces": ">=3.0.3",
+    "postcss": ">=8.4.31"
   },
   "devDependencies": {
     "@types/node": "18.13.0",
