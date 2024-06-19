@@ -85,20 +85,20 @@ export const Churchs = [
 ];
 export const stateCivil = [
   {
-    value: "1",
-    label: 'Solter@',
+    value: "Soltero(a)",
+    label: 'Soltero(a)',
   },
   {
-    value: "2",
-    label: 'Casad@',
+    value: "Divorciado(a)",
+    label: 'Casado(a)',
   },
   {
-    value: "3",
-    label: 'Divorciad@',
+    value: "Divorciado(a)",
+    label: 'Divorciado(a)',
   },
   {
-    value: "4",
-    label: 'Viud@',
+    value: "Viudo(a)",
+    label: 'Viudo(a)',
   },
 ];
 
