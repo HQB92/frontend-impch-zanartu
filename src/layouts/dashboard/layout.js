@@ -7,6 +7,7 @@ import { TopNav } from "./top-nav";
 import { useLazyQuery, gql } from "@apollo/client";
 import Loader from "../../components/loader";
 import {GET_PROFILE} from "../../services/query";
+import {Alert} from "@mui/lab";
 
 const SIDE_NAV_WIDTH = 302;
 
@@ -74,7 +75,6 @@ export const Layout = withAuthGuard((props) => {
   }, [data, error, rut]);
 
   if(loading) <Loader/>
-
   return (
       <>
         <TopNav onNavOpen={() => setOpenNav(true)} />
@@ -82,8 +82,7 @@ export const Layout = withAuthGuard((props) => {
         <LayoutRoot>
           <LayoutContainer>{children}</LayoutContainer>
         </LayoutRoot>
-        {loading && <Loader />}
-        {error && <p>Error loading profile</p>}
+        {error && <Alert severity="error">Error al cargar perfil</Alert>}
       </>
   );
 });

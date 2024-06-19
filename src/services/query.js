@@ -43,6 +43,30 @@ const COUNT_ALL_MEMBERS = gql`
     }
 `;
 
-export { GET_PROFILE, GET_ALL_MEMBERS, COUNT_ALL_MEMBERS};
+const GET_MEMBER_BY_RUT = gql`
+    query GetMemberByRut($rut: ID!) {
+        Member {
+            getByRut(rut: $rut) {
+                rut,
+                names,
+                lastNameDad,
+                lastNameMom,
+                dateOfBirth,
+                address,
+                telephone,
+                mobile,
+                email,
+                maritalStatus,
+                probationStartDate,
+                fullMembershipDate,
+                churchId,
+                statusId,
+                userId,
+                sexo,
+            }
+        }
+    }
+`;
+export { GET_PROFILE, GET_ALL_MEMBERS, COUNT_ALL_MEMBERS, GET_MEMBER_BY_RUT};
 
 

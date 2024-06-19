@@ -32,4 +32,14 @@ mutation Delete($rut: String!) {
   }
 }`;
 
-export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER };
+const UPDATE_MEMBER = gql`
+mutation Update($member: MemberInput!) {
+    Member {
+        update(member: $member) {
+        code
+        message
+        }
+    }
+}`;
+
+export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER};

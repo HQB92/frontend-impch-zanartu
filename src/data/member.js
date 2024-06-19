@@ -51,35 +51,35 @@ export const Churchs = [
     label: 'Zañartu',
   },
   {
-    value: 2,
+    value: 3,
     label: 'Oro Verde',
   },
   {
-    value: 3,
+    value: 4,
     label: 'El Parron',
   },
   {
-    value: 4,
+    value: 5,
     label: 'La Hermosa',
   },
   {
-    value: 5,
+    value: 6,
     label: 'Malloa Norte',
   },
   {
-    value: 6,
+    value: 7,
     label: 'Malloa Sur',
   },
   {
-    value: 7,
+    value: 8,
     label: 'Huape',
   },
   {
-    value: 8,
+    value: 9,
     label: 'Quinchamali',
   },
   {
-    value: 9,
+    value: 10,
     label: 'Confluencia',
   },
 ];
@@ -89,7 +89,7 @@ export const stateCivil = [
     label: 'Soltero(a)',
   },
   {
-    value: "Divorciado(a)",
+    value: "Casado(a)",
     label: 'Casado(a)',
   },
   {
