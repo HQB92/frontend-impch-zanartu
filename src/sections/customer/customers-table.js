@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useMutation } from "@apollo/client";
 import { DELETE_MEMBER } from "../../services/mutation";
-import Loader from "../../components/loader";
+
 
 export const CustomersTable = (props) => {
   const {
@@ -80,7 +80,7 @@ export const CustomersTable = (props) => {
                   <TableRow hover key={customer.rut} selected={isSelected}>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        <Avatar src={'/assets/avatars/avatar-cao-yu.png'}>
+                        <Avatar src={customer.sexo === 'Masculino' ? '/assets/avatars/hombre.png' : '/assets/avatars/mujer.png'}>
                           {getInitials(customer.name)}
                         </Avatar>
                         <Typography variant="subtitle2">

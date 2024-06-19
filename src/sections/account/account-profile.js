@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 
 const user = {
-  avatar: "/assets/avatars/avatar-cao-yu.png",
+  avatar: "/assets/avatars/hombre.png",
   city: "Chile",
   country: "Chillán",
   timezone: "GTM-4",
