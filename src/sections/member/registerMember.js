@@ -56,6 +56,7 @@ export const RegisterMember = (props) => {
   }, [props?.dataEdit]);
 
   useEffect(() => {
+
     if (member.rut) {
       handleFormato();
     }
@@ -70,6 +71,7 @@ export const RegisterMember = (props) => {
   }, [data, dataUpdate]);
 
   const handleChange = (event) => {
+    console.log(event)
     const { name, value } = event.target;
     setMember((prev) => ({
       ...prev,
@@ -94,7 +96,7 @@ export const RegisterMember = (props) => {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return null;
+    if (!dateStr || dateStr === 'null') return null; // Modificación aquí
     return dateStr.split('T')[0];
   };
 
@@ -129,8 +131,8 @@ export const RegisterMember = (props) => {
                         name="rut"
                         value={member.rut}
                         onChange={handleChange}
-                        helperText={(!validateRut(member.rut) && member.rut.length < 9) && 'Rut inválido'}
-                        error={!validateRut(member.rut) && member.rut.length < 9}
+                        helperText={member.rut.length >= 8 && (!validateRut(member.rut) && "rut invalid")}
+                        error={member.rut.length >= 8 && (!validateRut(member.rut))}
                         required
                         disabled={!!props?.dataEdit}
                     />
@@ -165,9 +167,10 @@ export const RegisterMember = (props) => {
                         value={member.lastNameMom}
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
+                        InputLabelProps={{ shrink: true }}
                         name="dateOfBirth"
                         label="Fecha de Nacimiento"
                         type="date"
@@ -176,9 +179,10 @@ export const RegisterMember = (props) => {
                         value={member.dateOfBirth}
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
+                        InputLabelProps={{ shrink: true }}
                         name="probationStartDate"
                         label="Fecha Miembro Probando"
                         type="date"
@@ -186,14 +190,49 @@ export const RegisterMember = (props) => {
                         value={member.probationStartDate}
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
+                        InputLabelProps={{ shrink: true }}
                         name="fullMembershipDate"
                         label="Fecha Plena comunión"
                         type="date"
                         onChange={handleChange}
                         value={member.fullMembershipDate}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                        fullWidth
+                        label="Teléfono Móvil"
+                        name="mobile"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg" alt="Chile Flag"
+                                 style={{height: 15, marginRight: 2}}/>
+                            +56
+                          </InputAdornment>,
+                        }}
+                        error={!!(member.mobile && member.mobile.length !== 9)}
+                        helperText={member.mobile && member.mobile.length !== 9 && 'El número debe tener 9 dígitos'}
+                        onChange={handleChange}
+                        value={member.mobile}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                        fullWidth
+                        label="Teléfono Fijo"
+                        name="telephone"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg" alt="Chile Flag"
+                                 style={{height: 15, marginRight: 2}}/>
+                            +56
+                          </InputAdornment>,
+                        }}
+                        onChange={handleChange}
+                        value={member.telephone}
                     />
                   </Grid>
                   <Grid item xs={12} md={4}>
@@ -206,33 +245,7 @@ export const RegisterMember = (props) => {
                         value={member.email}
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
-                    <TextField
-                        fullWidth
-                        label="Teléfono Móvil"
-                        name="mobile"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start">+56</InputAdornment>,
-                        }}
-                        error={!!(member.mobile && member.mobile.length !== 9)}
-                        helperText={member.mobile && member.mobile.length !== 9 && 'El número debe tener 9 dígitos'}
-                        onChange={handleChange}
-                        value={member.mobile}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={2}>
-                    <TextField
-                        fullWidth
-                        label="Teléfono Fijo"
-                        name="telephone"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start">+56</InputAdornment>,
-                        }}
-                        onChange={handleChange}
-                        value={member.telephone}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={5}>
                     <TextField
                         fullWidth
                         label="Dirección"
