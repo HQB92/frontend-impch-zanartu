@@ -8,28 +8,19 @@ import {
   CardHeader,
   Divider,
   TextField,
-  Unstable_Grid2 as Grid,
+  Grid,
   MenuItem,
   InputAdornment,
 } from '@mui/material';
 import { Churchs, stateChurch, stateCivil } from '../../data/member';
 import { validateRut, formatRut, RutFormat } from '@fdograph/rut-utilities';
-
 import { CREATE_MEMBER, UPDATE_MEMBER } from "../../services/mutation";
 import { useMutation } from "@apollo/client";
 import { Loader } from "react-feather";
 import { Alert } from "@mui/lab";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
-import {date} from "yup";
 
 export const RegisterMember = (props) => {
-  const [values, setValues] = useState({
-    dateOfBirth: false,
-    probationStartDate: false,
-    fullMembershipDate: false,
-  });
-
   const initialState = {
     rut: '',
     names: '',
@@ -48,64 +39,69 @@ export const RegisterMember = (props) => {
     sexo: '',
   };
 
-  const [member, setMember] = useState(props ? props?.dataEdit : initialState);
+  const [member, setMember] = useState(initialState);
   const [createMember, { data, loading, error }] = useMutation(CREATE_MEMBER);
   const [updateMember, { data: dataUpdate, loading: loadingUpdate, error: errorUpdate }] = useMutation(UPDATE_MEMBER);
   const router = useRouter();
 
+  useEffect(() => {
+    if (props?.dataEdit) {
+      setMember({
+        ...props.dataEdit,
+        dateOfBirth: formatDate(props.dataEdit.dateOfBirth),
+        probationStartDate: formatDate(props.dataEdit.probationStartDate),
+        fullMembershipDate: formatDate(props.dataEdit.fullMembershipDate),
+      });
+    }
+  }, [props?.dataEdit]);
+
+  useEffect(() => {
+    if (member.rut) {
+      handleFormato();
+    }
+  }, [member.rut]);
+
+  useEffect(() => {
+    if (data || dataUpdate) {
+      setTimeout(() => {
+        router.push('/members');
+      }, 3000);
+    }
+  }, [data, dataUpdate]);
+
   const handleChange = (event) => {
-    setMember({
-      ...member,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+    setMember((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleFormato = () => {
-    if (validateRut(member?.rut)) {
-      setMember({
-        ...member,
-        rut: formatRut(member?.rut, RutFormat.DOTS_DASH),
-      });
+    if (validateRut(member.rut)) {
+      setMember((prev) => ({
+        ...prev,
+        rut: formatRut(member.rut, RutFormat.DOTS_DASH),
+      }));
     }
   };
 
-  const handleUppercase = (data) => {
-    return data.toLowerCase().replace(/(^|\s)\w/g, (match) => match.toUpperCase());
-  };
+  const handleUppercase = (data) => data.toLowerCase().replace(/(^|\s)\w/g, (match) => match.toUpperCase());
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return '';
     const date = new Date(dateStr);
-    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    return `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   };
 
   const handleBlur = (field) => {
     if (member[field]) {
-      setMember({ ...member, [field]: formatDate(member[field]) });
+      setMember((prev) => ({
+        ...prev,
+        [field]: formatDate(member[field]),
+      }));
     }
-    setValues({ ...values, [field]: false });
   };
-
-  useEffect(() => {
-    handleFormato();
-  }, [member?.rut]);
-
-  const formatDate2 = (isoDate) => {
-    const date = new Date(isoDate);
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const year = date.getUTCFullYear();
-    return `${year}/${month}/${day}`;
-  };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (data || dataUpdate) {
-        setTimeout(() => {
-          router.push('/members');
-        }, 3000);
-      }
-    }
-  }, [data, dataUpdate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -113,21 +109,7 @@ export const RegisterMember = (props) => {
     mutation({
       variables: {
         member: {
-          rut: member?.rut,
-          names: member?.names,
-          lastNameDad: member?.lastNameDad,
-          lastNameMom: member?.lastNameMom,
-          dateOfBirth: member?.dateOfBirth,
-          address: member?.address,
-          telephone: member?.telephone,
-          mobile: member?.mobile,
-          email: member?.email,
-          maritalStatus: member?.maritalStatus,
-          probationStartDate: member?.probationStartDate,
-          fullMembershipDate: member?.fullMembershipDate,
-          churchId: member?.churchId,
-          statusId: member?.statusId,
-          sexo: member?.sexo,
+          ...member,
         },
       },
     });
@@ -141,144 +123,138 @@ export const RegisterMember = (props) => {
       <>
         <form autoComplete="off" noValidate onSubmit={handleSubmit}>
           <Card>
-            <CardHeader subheader="La informacion que puedes editar" title="Mis Datos" />
+            <CardHeader subheader="La información que puedes editar" title="Mis Datos" />
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ m: -1.5 }}>
                 <Grid container spacing={4}>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
                         label="Rut"
                         name="rut"
-                        value={member?.rut}
+                        value={member.rut}
                         onChange={handleChange}
-                        helperText={(!validateRut(member?.rut) && member?.rut?.length < 9) && 'Rut invalido'}
-                        error={!validateRut(member?.rut) && member?.rut?.length < 9}
+                        helperText={(!validateRut(member.rut) && member.rut.length < 9) && 'Rut inválido'}
+                        error={!validateRut(member.rut) && member.rut.length < 9}
                         required
-                        disabled={props?.dataEdit}
+                        disabled={!!props?.dataEdit}
                     />
                   </Grid>
-                  <Grid xs={12} md={4}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
                         label="Nombre"
-                        name="firstName"
+                        name="names"
                         required
-                        onChange={(e) => setMember({ ...member, names: handleUppercase(e.target.value) })}
-                        value={member?.names}
+                        onChange={(e) => setMember((prev) => ({ ...prev, names: handleUppercase(e.target.value) }))}
+                        value={member.names}
                     />
                   </Grid>
-                  <Grid xs={12} md={3}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
                         label="Apellido Paterno"
-                        name="lastName"
+                        name="lastNameDad"
                         required
-                        onChange={(e) => setMember({ ...member, lastNameDad: handleUppercase(e.target.value) })}
-                        value={member?.lastNameDad}
+                        onChange={(e) => setMember((prev) => ({ ...prev, lastNameDad: handleUppercase(e.target.value) }))}
+                        value={member.lastNameDad}
                     />
                   </Grid>
-                  <Grid xs={12} md={3}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
                         label="Apellido Materno"
-                        name="lastName"
+                        name="lastNameMom"
                         required
-                        onChange={(e) => setMember({ ...member, lastNameMom: handleUppercase(e.target.value) })}
-                        value={member?.lastNameMom}
+                        onChange={(e) => setMember((prev) => ({ ...prev, lastNameMom: handleUppercase(e.target.value) }))}
+                        value={member.lastNameMom}
                     />
                   </Grid>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        name="birthday"
+                        name="dateOfBirth"
                         label="Fecha de Nacimiento"
-                        onFocus={() => setValues({ ...values, dateOfBirth: true })}
-                        onBlur={() => handleBlur('dateOfBirth')}
                         type="date"
                         required
-                        onChange={(e) => setMember({ ...member, dateOfBirth: e.target.value })}
-                        value={formatDate2(member?.dateOfBirth)}
+                        onChange={handleChange}
+                        value={member.dateOfBirth}
                     />
                   </Grid>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        name="probando"
+                        name="probationStartDate"
                         label="Fecha Miembro Probando"
-                        onFocus={() => setValues({ ...values, probationStartDate: true })}
-                        onBlur={() => handleBlur('probationStartDate')}
                         type="date"
-                        onChange={(e) => setMember({ ...member, probationStartDate: e.target.value })}
-                        value={formatDate2(member?.probationStartDate)}
+                        onChange={handleChange}
+                        value={member.probationStartDate}
                     />
                   </Grid>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        name="plenaComunion"
+                        name="fullMembershipDate"
                         label="Fecha Plena comunión"
-                        onFocus={() => setValues({ ...values, fullMembershipDate: true })}
-                        onBlur={() => handleBlur('fullMembershipDate')}
                         type="date"
-                        onChange={(e) => setMember({ ...member, fullMembershipDate: e.target.value })}
-                        value={formatDate2(member?.fullMembershipDate)}
+                        onChange={handleChange}
+                        value={member.fullMembershipDate}
                     />
                   </Grid>
-                  <Grid xs={12} md={4}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
                         label="Email"
                         name="email"
                         required
-                        onChange={(e) => setMember({ ...member, email: e.target.value })}
-                        value={member?.email}
+                        onChange={handleChange}
+                        value={member.email}
                     />
                   </Grid>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Telefono Movil"
-                        name="telefono"
+                        label="Teléfono Móvil"
+                        name="mobile"
                         InputProps={{
                           startAdornment: <InputAdornment position="start">+56</InputAdornment>,
                         }}
-                        error={member?.mobile && member?.mobile.length !== 9}
-                        helperText={member?.mobile && member?.mobile.length !== 9 && 'El número debe tener 9 dígitos'}
-                        onChange={(e) => setMember({ ...member, mobile: e.target.value })}
-                        value={member?.mobile}
+                        error={!!(member.mobile && member.mobile.length !== 9)}
+                        helperText={member.mobile && member.mobile.length !== 9 && 'El número debe tener 9 dígitos'}
+                        onChange={handleChange}
+                        value={member.mobile}
                     />
                   </Grid>
-                  <Grid xs={12} md={2}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Telefono Fijo"
-                        name="telefono"
+                        label="Teléfono Fijo"
+                        name="telephone"
                         InputProps={{
                           startAdornment: <InputAdornment position="start">+56</InputAdornment>,
                         }}
-                        onChange={(e) => setMember({ ...member, telephone: e.target.value })}
-                        value={member?.telephone}
+                        onChange={handleChange}
+                        value={member.telephone}
                     />
                   </Grid>
-                  <Grid xs={12} md={4}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
-                        label="Direccion"
-                        name="direccion"
-                        onChange={(e) => setMember({ ...member, address: handleUppercase(e.target.value) })}
-                        value={member?.address}
+                        label="Dirección"
+                        name="address"
+                        onChange={(e) => setMember((prev) => ({ ...prev, address: handleUppercase(e.target.value) }))}
+                        value={member.address}
                     />
                   </Grid>
-                  <Grid xs={12} md={3}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
                         label="Iglesia"
-                        name="iglesia"
+                        name="churchId"
                         select
                         required
-                        onChange={(e) => setMember({ ...member, churchId: e.target.value })}
-                        value={member?.churchId}
+                        onChange={handleChange}
+                        value={member.churchId}
                     >
                       {Churchs.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
@@ -287,15 +263,15 @@ export const RegisterMember = (props) => {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid xs={12} md={3}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
                         label="Estado Civil"
-                        name="civil"
+                        name="maritalStatus"
                         select
                         required
-                        onChange={(e) => setMember({ ...member, maritalStatus: e.target.value })}
-                        value={member?.maritalStatus}
+                        onChange={handleChange}
+                        value={member.maritalStatus}
                     >
                       {stateCivil.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
@@ -304,15 +280,29 @@ export const RegisterMember = (props) => {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid xs={12} md={3}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                         fullWidth
-                        label="Estado Miembro"
-                        name="estado"
+                        label="Sexo"
+                        name="sexo"
                         select
                         required
-                        onChange={(e) => setMember({ ...member, statusId: e.target.value })}
-                        value={member?.statusId}
+                        onChange={handleChange}
+                        value={member.sexo}
+                    >
+                      <MenuItem key={"M"} value="Masculino">Masculino</MenuItem>
+                      <MenuItem key={"F"} value="Femenino">Femenino</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                        fullWidth
+                        label="Estado"
+                        name="statusId"
+                        select
+                        required
+                        onChange={handleChange}
+                        value={member.statusId}
                     >
                       {stateChurch.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
@@ -321,27 +311,13 @@ export const RegisterMember = (props) => {
                       ))}
                     </TextField>
                   </Grid>
-                  <Grid xs={12} md={3}>
-                    <TextField
-                        fullWidth
-                        label="Sexo"
-                        name="sexo"
-                        select
-                        required
-                        onChange={(e) => setMember({ ...member, sexo: e.target.value })}
-                        value={member?.sexo}
-                    >
-                      <MenuItem value="Masculino">Masculino</MenuItem>
-                      <MenuItem value="Femenino">Femenino</MenuItem>
-                    </TextField>
-                  </Grid>
                 </Grid>
               </Box>
             </CardContent>
             <Divider />
             <CardActions sx={{ justifyContent: 'flex-end' }}>
-              <Button type="submit" variant="contained" color="primary">
-                Guardar Cambios
+              <Button type="submit" variant="contained">
+                Guardar
               </Button>
             </CardActions>
           </Card>

@@ -44,7 +44,6 @@ export const CustomersTable = (props) => {
   const selectedAll = items.length > 0 && selected.length === items.length;
   const [deleteMember,{data, loading, error}] = useMutation(DELETE_MEMBER);
   const deleteRut = (rut) => {
-    console.log('loading', loading);
     setLoadingDelete(loading);
     return () => {
       deleteMember({variables: {rut}});

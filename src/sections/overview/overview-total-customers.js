@@ -52,6 +52,6 @@ export const OverviewTotalCustomers = (props) => {
 OverviewTotalCustomers.propTypes = {
   difference: PropTypes.number,
   positive: PropTypes.bool,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
   sx: PropTypes.object,
 };

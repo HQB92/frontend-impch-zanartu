@@ -50,7 +50,6 @@ const Page = () => {
     }
   }, [data]);
   useEffect(() => {
-    console.log('LoadingDelete', LoadingDelete)
     if (LoadingDelete){
       getMember()
     }

@@ -67,7 +67,6 @@ export const Layout = withAuthGuard((props) => {
         mobile: data?.Member?.getByRut?.mobile,
       };
       window.sessionStorage.setItem("profile", JSON.stringify(profile));
-      console.log("profile", profile);
     } else if (error) {
       console.error("Error fetching profile:", error);
       window.sessionStorage.setItem("profile", JSON.stringify({}));
