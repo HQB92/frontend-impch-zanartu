@@ -86,7 +86,12 @@ export const RegisterMember = (props) => {
     }
   };
 
-  const handleUppercase = (data) => data.toLowerCase().replace(/(^|\s)\w/g, (match) => match.toUpperCase());
+  const handleUppercase = (data) => {
+    return data
+        .toLowerCase()
+        .replace(/(?:^|\s)([a-zñ])/g, (match) => match.toUpperCase())
+        .replace(/ñ/g, 'Ñ');
+  };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return null;

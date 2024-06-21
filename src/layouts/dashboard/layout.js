@@ -4,10 +4,10 @@ import { styled } from "@mui/material/styles";
 import { withAuthGuard } from "src/hocs/with-auth-guard";
 import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
-import { useLazyQuery, gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
-import {GET_PROFILE} from "../../services/query";
-import {Alert} from "@mui/lab";
+import { GET_PROFILE } from "../../services/query";
+import { Alert } from "@mui/lab";
 
 const SIDE_NAV_WIDTH = 302;
 
@@ -27,15 +27,14 @@ const LayoutContainer = styled("div")({
   width: "100%",
 });
 
-
-
 export const Layout = withAuthGuard((props) => {
   const user = window.sessionStorage.getItem("user");
-  const { rut } = JSON.parse(user) || {};
+  const parsedUser = user ? JSON.parse(user) : {};
+  const { rut } = parsedUser;
   const [miProfile, { data, error, loading }] = useLazyQuery(GET_PROFILE, {
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "no-cache",
   });
-  const profileSave = JSON.parse(window.sessionStorage.getItem("profile"));
+  const profileSave = JSON.parse(window.sessionStorage.getItem("profile")) || {};
 
   const { children } = props;
   const pathname = usePathname();
@@ -52,7 +51,9 @@ export const Layout = withAuthGuard((props) => {
   }, [pathname]);
 
   useEffect(() => {
-    miProfile({ variables: { rut: rut } });
+    if (rut) {
+      miProfile({ variables: { rut: rut } });
+    }
   }, [miProfile, rut]);
 
   useEffect(() => {
@@ -73,7 +74,8 @@ export const Layout = withAuthGuard((props) => {
     }
   }, [data, error, rut]);
 
-  if(loading) <Loader/>
+  if (loading) return <Loader />;
+
   return (
       <>
         <TopNav onNavOpen={() => setOpenNav(true)} />
