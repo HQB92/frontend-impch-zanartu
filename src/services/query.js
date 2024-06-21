@@ -17,9 +17,9 @@ const GET_PROFILE = gql`
 `;
 
 const GET_ALL_MEMBERS = gql`
-    query GetAll {
+    query GetAll($churchId: Int , $typeMember: Int) {
         Member {
-            getAll {
+            getAll(churchId: $churchId , typeMember: $typeMember) {
                 rut
                 names
                 lastNameDad

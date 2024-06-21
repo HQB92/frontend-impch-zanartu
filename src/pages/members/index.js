@@ -16,7 +16,8 @@ import { CustomersTable } from 'src/sections/customer/customers-table';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
-import { GET_ALL_MEMBERS, GET_ALL_MEMBERS_PROBATION } from "../../services/query";
+import { GET_ALL_MEMBERS } from "../../services/query";
+import { Churchs } from "../../data/member";
 
 const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
@@ -34,42 +35,35 @@ const Page = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [filter, setFilter] = useState(0); // Estado para el filtro seleccionado
+  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [typeMember, setTypeMember] = useState(0);
+  const [churchId, setChurchId] = useState(0);
 
-  const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
-  const [getMemberProbation, { data: dataProbation, loading: loadingProbation, error: errorProbation }] = useLazyQuery(GET_ALL_MEMBERS_PROBATION, { fetchPolicy: 'no-cache' });
+  const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, {
+    fetchPolicy: 'no-cache',
+    variables: { churchId, typeMember }
+  });
 
   useEffect(() => {
-    if (filter === 0) {
-      getMember();
-    } else {
-      getMemberProbation();
-    }
-  }, [filter, getMember, getMemberProbation]);
+    getMember({
+      variables: { churchId, typeMember }
+    });
+  }, [typeMember, churchId, getMember]);
 
   useEffect(() => {
     if (data) {
-      setResponse(data.Member.getAll || []);
+      setResponse(data?.Member?.getAll || []);
     }
   }, [data]);
 
   useEffect(() => {
-    if (dataProbation) {
-      setResponse(dataProbation.Member.GetAllMemberProbation || []);
-    }
-  }, [dataProbation]);
-
-  useEffect(() => {
     if (loadingDelete) {
-      if (filter === 0) {
-        getMember();
-      } else {
-        getMemberProbation();
-      }
+      getMember({
+        variables: { churchId, typeMember }
+      });
       setLoadingDelete(false);
     }
-  }, [loadingDelete, filter, getMember, getMemberProbation]);
+  }, [loadingDelete, getMember, churchId, typeMember]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
@@ -80,15 +74,19 @@ const Page = () => {
   }, []);
 
   const handleRowsPerPageChange = useCallback((event) => {
-    setRowsPerPage(event.target.value);
+    setRowsPerPage(parseInt(event.target.value, 10));
   }, []);
 
-  const handleFilter = (event) => {
-    setFilter(event.target.value); // Actualiza el estado del filtro
+  const handleTypeMemberChange = (event) => {
+    setTypeMember(parseInt(event.target.value, 10)); // Actualiza el estado del filtro de tipo de miembro
   };
 
-  if (loading || loadingProbation) return <Loader />;
-  if (error || errorProbation) return <p>Error loading members</p>;
+  const handleChurchIdChange = (event) => {
+    setChurchId(parseInt(event.target.value, 10)); // Actualiza el estado del filtro de iglesia
+  };
+
+  if (loading) return <Loader />;
+  if (error) return <p>Error loading members</p>;
 
   return (
       <>
@@ -122,19 +120,42 @@ const Page = () => {
                   </Button>
                 </div>
               </Stack>
-              <Grid item xs={12} md={3}>
-                <TextField
-                    fullWidth
-                    label="Filtro"
-                    name="filtro"
-                    select
-                    onChange={handleFilter}
-                    value={filter} // Establece el valor del select
-                >
-                  <MenuItem key={0} value={0}>Todos</MenuItem>
-                  <MenuItem key={1} value={1}>Miembros Probando</MenuItem>
-                </TextField>
-              </Grid>
+              <Box sx={{ m: -1.5 }}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                        fullWidth
+                        label="Tipo de Miembro"
+                        name="typeMember"
+                        select
+                        onChange={handleTypeMemberChange}
+                        value={typeMember} // Establece el valor del select
+                    >
+                      <MenuItem value={0}>Todos</MenuItem>
+                      <MenuItem value={1}>Miembros Probando</MenuItem>
+                      <MenuItem value={2}>Miembros Plena</MenuItem>
+                      <MenuItem value={3}>Menores de 13 años</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                        fullWidth
+                        label="Iglesia"
+                        name="churchId"
+                        select
+                        onChange={handleChurchIdChange}
+                        value={churchId}
+                    >
+                      <MenuItem value={0}>Todos</MenuItem>
+                      {Churchs.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                </Grid>
+              </Box>
               <CustomersTable
                   count={response.length}
                   items={customers}
@@ -160,4 +181,3 @@ const Page = () => {
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default Page;
-
