@@ -27,8 +27,8 @@ export const RegisterMember = (props) => {
     lastNameMom: '',
     lastNameDad: '',
     dateOfBirth: '',
-    probationStartDate: '',
-    fullMembershipDate: '',
+    probationStartDate: null,
+    fullMembershipDate:  null,
     email: '',
     mobile: '',
     telephone: '',
@@ -89,18 +89,8 @@ export const RegisterMember = (props) => {
   const handleUppercase = (data) => data.toLowerCase().replace(/(^|\s)\w/g, (match) => match.toUpperCase());
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  };
-
-  const handleBlur = (field) => {
-    if (member[field]) {
-      setMember((prev) => ({
-        ...prev,
-        [field]: formatDate(member[field]),
-      }));
-    }
+    if (!dateStr) return null;
+    return dateStr.split('T')[0];
   };
 
   const handleSubmit = (e) => {
@@ -290,7 +280,7 @@ export const RegisterMember = (props) => {
                         onChange={handleChange}
                         value={member.sexo}
                     >
-                      <MenuItem key={"M"} value="Masculino">Masculino</MenuItem>
+                      <MenuItem key={"M"}  value="Masculino">Masculino</MenuItem>
                       <MenuItem key={"F"} value="Femenino">Femenino</MenuItem>
                     </TextField>
                   </Grid>
