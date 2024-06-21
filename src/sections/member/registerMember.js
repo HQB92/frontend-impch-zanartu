@@ -46,7 +46,6 @@ export const RegisterMember = (props) => {
 
   useEffect(() => {
     if (props?.dataEdit) {
-      delete props.dataEdit.__typename;
       setMember({
         ...props.dataEdit,
         dateOfBirth: formatDate(props.dataEdit.dateOfBirth),
