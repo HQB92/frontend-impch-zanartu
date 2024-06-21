@@ -42,4 +42,17 @@ mutation Update($member: MemberInput!) {
     }
 }`;
 
-export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER};
+const CHANGE_PASSWORD = gql`
+mutation ChangePassword($id: ID!, $password: String!) {
+  User {
+    changePassword(id: $id, password: $password) {
+      code
+      message
+    }
+  }
+}`;
+
+
+
+
+export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER, CHANGE_PASSWORD};

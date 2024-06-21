@@ -21,11 +21,11 @@ const states = [
 export const AccountProfileDetails = () => {
   const profile = JSON.parse(window.sessionStorage.getItem("profile"));
   const [values, setValues] = useState({
-    firstName: profile.names,
-    lastName: profile.lastNameDad,
-    email: profile.email,
-    phone: profile.mobile,
-    country: profile.address,
+    firstName: profile?.names,
+    lastName: profile?.lastNameDad,
+    email: profile?.email,
+    phone: profile?.mobile,
+    country: profile?.address,
     state: "Chillán",
   });
 

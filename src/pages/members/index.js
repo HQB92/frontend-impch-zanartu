@@ -5,21 +5,18 @@ import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {
   Box,
   Button,
-  Container,
+  Container, Grid, MenuItem,
   Stack,
-  SvgIcon,
+  SvgIcon, TextField,
   Typography,
 } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CustomersTable } from 'src/sections/customer/customers-table';
-import { CustomersSearch } from 'src/sections/customer/customers-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
-import {GET_ALL_MEMBERS} from "../../services/query";
-
-
+import { GET_ALL_MEMBERS, GET_ALL_MEMBERS_PROBATION } from "../../services/query";
 
 const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
@@ -34,27 +31,45 @@ const useCustomerIds = (customers) => {
 };
 
 const Page = () => {
-  const [LoadingDelete, setLoadingDelete] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filter, setFilter] = useState(0); // Estado para el filtro seleccionado
+
   const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
+  const [getMemberProbation, { data: dataProbation, loading: loadingProbation, error: errorProbation }] = useLazyQuery(GET_ALL_MEMBERS_PROBATION, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
-    getMember();
-  }, [getMember]);
+    if (filter === 0) {
+      getMember();
+    } else {
+      getMemberProbation();
+    }
+  }, [filter, getMember, getMemberProbation]);
 
   useEffect(() => {
     if (data) {
       setResponse(data.Member.getAll || []);
     }
   }, [data]);
-  useEffect(() => {
-    if (LoadingDelete){
-      getMember()
-    }
 
-  }, [LoadingDelete]);
+  useEffect(() => {
+    if (dataProbation) {
+      setResponse(dataProbation.Member.GetAllMemberProbation || []);
+    }
+  }, [dataProbation]);
+
+  useEffect(() => {
+    if (loadingDelete) {
+      if (filter === 0) {
+        getMember();
+      } else {
+        getMemberProbation();
+      }
+      setLoadingDelete(false);
+    }
+  }, [loadingDelete, filter, getMember, getMemberProbation]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
@@ -68,8 +83,12 @@ const Page = () => {
     setRowsPerPage(event.target.value);
   }, []);
 
-  if (loading) return <Loader />;
-  if (error) return <p>Error loading members</p>;
+  const handleFilter = (event) => {
+    setFilter(event.target.value); // Actualiza el estado del filtro
+  };
+
+  if (loading || loadingProbation) return <Loader />;
+  if (error || errorProbation) return <p>Error loading members</p>;
 
   return (
       <>
@@ -103,7 +122,19 @@ const Page = () => {
                   </Button>
                 </div>
               </Stack>
-              <CustomersSearch />
+              <Grid item xs={12} md={3}>
+                <TextField
+                    fullWidth
+                    label="Filtro"
+                    name="filtro"
+                    select
+                    onChange={handleFilter}
+                    value={filter} // Establece el valor del select
+                >
+                  <MenuItem key={0} value={0}>Todos</MenuItem>
+                  <MenuItem key={1} value={1}>Miembros Probando</MenuItem>
+                </TextField>
+              </Grid>
               <CustomersTable
                   count={response.length}
                   items={customers}
@@ -116,7 +147,7 @@ const Page = () => {
                   page={page}
                   rowsPerPage={rowsPerPage}
                   selected={customersSelection.selected}
-                  loading={LoadingDelete}
+                  loading={loadingDelete}
                   setLoading={setLoadingDelete}
               />
             </Stack>
@@ -129,3 +160,4 @@ const Page = () => {
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default Page;
+

@@ -35,6 +35,25 @@ const GET_ALL_MEMBERS = gql`
     }
 `;
 
+const GET_ALL_MEMBERS_PROBATION = gql`
+    query GetAllMemberProbation {
+        Member {
+            GetAllMemberProbation {
+                rut
+                names
+                lastNameDad
+                lastNameMom
+                address
+                mobile
+                dateOfBirth
+                probationStartDate
+                fullMembershipDate
+                sexo
+            }
+        }
+    }
+`;
+
 const COUNT_ALL_MEMBERS = gql`
     query Count {
         Member {
@@ -67,6 +86,6 @@ const GET_MEMBER_BY_RUT = gql`
         }
     }
 `;
-export { GET_PROFILE, GET_ALL_MEMBERS, COUNT_ALL_MEMBERS, GET_MEMBER_BY_RUT};
+export { GET_PROFILE, GET_ALL_MEMBERS, COUNT_ALL_MEMBERS, GET_MEMBER_BY_RUT, GET_ALL_MEMBERS_PROBATION };
 
 

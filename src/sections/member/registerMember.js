@@ -131,8 +131,8 @@ export const RegisterMember = (props) => {
                         name="rut"
                         value={member.rut}
                         onChange={handleChange}
-                        helperText={member.rut.length >= 8 && (!validateRut(member.rut) && "rut invalid")}
-                        error={member.rut.length >= 8 && (!validateRut(member.rut))}
+                        helperText={member.rut.length >= 7 && (!validateRut(member.rut) && "rut invalid")}
+                        error={member.rut.length >= 7 && (!validateRut(member.rut))}
                         required
                         disabled={!!props?.dataEdit}
                     />
