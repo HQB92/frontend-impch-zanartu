@@ -51,35 +51,35 @@ export const Churchs = [
     label: 'Zañartu',
   },
   {
-    value: 3,
+    value: 2,
     label: 'Oro Verde',
   },
   {
-    value: 4,
+    value: 3,
     label: 'El Parron',
   },
   {
-    value: 5,
+    value: 4,
     label: 'La Hermosa',
   },
   {
-    value: 6,
+    value: 5,
     label: 'Malloa Norte',
   },
   {
-    value: 7,
+    value: 6,
     label: 'Malloa Sur',
   },
   {
-    value: 8,
+    value: 7,
     label: 'Huape',
   },
   {
-    value: 9,
+    value: 8,
     label: 'Quinchamali',
   },
   {
-    value: 10,
+    value: 9,
     label: 'Confluencia',
   },
 ];
