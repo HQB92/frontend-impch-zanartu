@@ -51,9 +51,8 @@ jobs:
             tar -xzf build.tar.gz
             rm -rf build.tar.gz build
             echo NEXT_PUBLIC_URL=localhost:4000 > .env
-            NEXT_PUBLIC_PATHLOGIN=/auth/login >>.env
-            NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
-            npm install 
-            pm2 delete frontend-impch
-            pm2 list
-            pm2 start npm --name "frontend-impch" -- start
+            echo NEXT_PUBLIC_PATHLOGIN=/auth/login >>.env
+            echo NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
+            npm ci
+            pm2 stop frontend-impch
+            pm2 restart frontend-impch
