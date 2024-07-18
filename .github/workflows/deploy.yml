@@ -53,7 +53,7 @@ jobs:
             echo NEXT_PUBLIC_URL=localhost:4000 > .env
             NEXT_PUBLIC_PATHLOGIN=/auth/login >>.env
             NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
-            npm install --only=prod
+            npm install 
             pm2 delete frontend-impch
             pm2 list
             pm2 start npm --name "frontend-impch" -- start
