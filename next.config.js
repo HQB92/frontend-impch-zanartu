@@ -3,7 +3,7 @@ module.exports = {
   reactStrictMode: true,
   images: {
     domains: ['example.com'],
-    path: '', // Valor corregido para .images.path
+    path: '/_next/image', // Valor corregido para .images.path
   },
   webpack(config) {
     config.module.rules.push({
