@@ -19,9 +19,8 @@ jobs:
           port: 22
           script: |
             cd /home/bitnami/paginas/frontend-impch-zanartu
-            echo NEXT_PUBLIC_URL=localhost:4000 > .env
+            echo NEXT_PUBLIC_URL=https://app.impchzanartu.online > .env
             echo NEXT_PUBLIC_PATHLOGIN=/auth/login >>.env
-            echo NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
             echo NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
             npm install
             npm run build
