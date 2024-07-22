@@ -52,7 +52,29 @@ mutation ChangePassword($id: ID!, $password: String!) {
   }
 }`;
 
+const CREATE_BAPTISM = gql`
+mutation Mutation($baptismRecord: BaptismRecordInput!) {
+  BaptismRecord {
+    create(baptismRecord: $baptismRecord) {
+      code
+      message
+    }
+  }
+}
+`;
+
+const UPDATE_BAPTISM = gql`
+mutation Mutation($baptismRecord: BaptismRecordInput!) {
+    BaptismRecord {
+        update(baptismRecord: $baptismRecord) {
+            code
+            message
+        }
+    }
+}
+`;
 
 
 
-export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER, CHANGE_PASSWORD};
+
+export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER, CHANGE_PASSWORD, CREATE_BAPTISM, UPDATE_BAPTISM };
