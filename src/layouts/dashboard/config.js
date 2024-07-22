@@ -69,6 +69,35 @@ export const items = [
       }
     ],
   },
+    {
+        title: 'Bautizos',
+        path: '/baptism',
+        icon: (
+            <SvgIcon fontSize="small">
+                <PeopleIcon />
+            </SvgIcon>
+        ),
+        subItems: [
+            {
+                title: 'Listado',
+                path: '/baptism',
+                icon: (
+                    <SvgIcon fontSize="small">
+                        <ListAltIcon/>
+                    </SvgIcon>
+                ),
+            },
+            {
+                title: 'Nuevo',
+                path: '/baptism/register',
+                icon: (
+                    <SvgIcon fontSize="small">
+                        <AddBoxIcon/>
+                    </SvgIcon>
+                ),
+            }
+        ],
+    },
   {
     title: 'Mi Perfil',
     path: '/account',
