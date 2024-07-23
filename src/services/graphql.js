@@ -22,34 +22,9 @@ const authLink = setContext((_, { headers }) => {
     };
 });
 
-// Enlace para agregar un identificador único a cada solicitud
-const uniqueLink = new ApolloLink((operation, forward) => {
-
-    operation.setContext(({ headers = {} }) => ({
-        headers: {
-            ...headers,
-            'x-operation-name': `${operation.operationName}`
-        }
-    }));
-    return forward(operation);
-});
-
-// que ese operador seA el nombre de la consulta
-
-const operationNameLink = new ApolloLink((operation, forward) => {
-    operation.setContext(({ headers = {} }) => ({
-        headers: {
-            ...headers,
-            'x-operation-name': operation.operationName
-        }
-    }));
-    return forward(operation);
-})
-
-
 // Configurar Apollo Client
 const client = new ApolloClient({
-    link: ApolloLink.from([authLink, uniqueLink, httpLink, operationNameLink]),
+    link: ApolloLink.from([authLink, httpLink]),
     cache: new InMemoryCache({
         addTypename: false,
     }),
