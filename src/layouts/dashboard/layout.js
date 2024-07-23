@@ -72,7 +72,7 @@ export const Layout = withAuthGuard((props) => {
       console.error("Error fetching profile:", error);
       window.sessionStorage.setItem("profile", JSON.stringify({}));
     }
-  }, [data, error, rut]);
+  }, [data, error, rut, loading]);
 
   if (loading) return <Loader />;
 

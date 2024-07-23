@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 const CREATE_MEMBER = gql`
-    mutation Create($member: MemberInput!) {
+    mutation CreateMember($member: MemberInput!) {
   Member {
     create(member: $member) {
       code
@@ -13,7 +13,7 @@ const CREATE_MEMBER = gql`
 `;
 
 const UPDATE_PASSWORD = gql`
-    mutation Update($updateId: ID!, $rut: ID!, $username: String, $email: String, $password: String) {
+    mutation UpdatePassword($updateId: ID!, $rut: ID!, $username: String, $email: String, $password: String) {
   User {
     update(id: $updateId, rut: $rut, username: $username, email: $email, password: $password) {
       code
@@ -23,7 +23,7 @@ const UPDATE_PASSWORD = gql`
 }`;
 
 const DELETE_MEMBER = gql`
-mutation Delete($rut: String!) {
+mutation DeleteMember($rut: String!) {
   Member {
     delete(rut: $rut) {
       code
@@ -33,7 +33,7 @@ mutation Delete($rut: String!) {
 }`;
 
 const UPDATE_MEMBER = gql`
-mutation Update($member: MemberInput!) {
+mutation UpdateMember($member: MemberInput!) {
     Member {
         update(member: $member) {
         code
@@ -53,7 +53,7 @@ mutation ChangePassword($id: ID!, $password: String!) {
 }`;
 
 const CREATE_BAPTISM = gql`
-mutation Mutation($baptismRecord: BaptismRecordInput!) {
+mutation CreateBaptism($baptismRecord: BaptismRecordInput!) {
   BaptismRecord {
     create(baptismRecord: $baptismRecord) {
       code
@@ -64,7 +64,7 @@ mutation Mutation($baptismRecord: BaptismRecordInput!) {
 `;
 
 const UPDATE_BAPTISM = gql`
-mutation Mutation($baptismRecord: BaptismRecordInput!) {
+mutation UpdateBaptism($baptismRecord: BaptismRecordInput!) {
     BaptismRecord {
         update(baptismRecord: $baptismRecord) {
             code

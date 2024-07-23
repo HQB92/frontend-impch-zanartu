@@ -1,14 +1,11 @@
-import ChartBarIcon from '@heroicons/react/24/solid/ChartBarIcon';
-import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
 import UserIcon from '@heroicons/react/24/solid/UserIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import { SvgIcon } from '@mui/material';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import PeopleIcon from '@mui/icons-material/People';
-import ChurchIcon from '@mui/icons-material/Church';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import ChildFriendlyIcon from '@mui/icons-material/ChildFriendly';
+import WcIcon from '@mui/icons-material/Wc';
 
 export const items = [
   {
@@ -69,12 +66,12 @@ export const items = [
       }
     ],
   },
-    {
+  {
         title: 'Bautizos',
         path: '/baptism',
         icon: (
             <SvgIcon fontSize="small">
-                <PeopleIcon />
+                <ChildFriendlyIcon />
             </SvgIcon>
         ),
         subItems: [
@@ -97,6 +94,33 @@ export const items = [
                 ),
             }
         ],
+    },{
+        title: 'Matrimonios',
+        path: '/marriage',
+        icon: (
+            <SvgIcon fontSize="small">
+                <WcIcon />
+            </SvgIcon>
+        ),
+        subItems: [
+            {
+                title: 'Listado',
+                path: '/marriage',
+                icon: (
+                    <SvgIcon fontSize="small">
+                        <ListAltIcon/>
+                    </SvgIcon>
+                ),
+            },
+            {
+                title: 'Nuevo',
+                path: '/marriage/register',
+                icon: (
+                    <SvgIcon fontSize="small">
+                        <AddBoxIcon/>
+                    </SvgIcon>
+                ),
+            }]
     },
   {
     title: 'Mi Perfil',
