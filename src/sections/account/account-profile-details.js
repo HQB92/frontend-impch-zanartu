@@ -19,7 +19,7 @@ const states = [
 ];
 
 export const AccountProfileDetails = () => {
-  const profile = JSON.parse(window.sessionStorage.getItem("profile"));
+  const profile = JSON.parse(window.localStorage.getItem("profile"));
   const [values, setValues] = useState({
     firstName: profile?.names,
     lastName: profile?.lastNameDad,

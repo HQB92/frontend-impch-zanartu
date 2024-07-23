@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
 import login from "../services/login";
-import { useQuery, gql } from "@apollo/client";
 
 const HANDLERS = {
   INITIALIZE: 'INITIALIZE',
@@ -76,7 +75,7 @@ export const AuthProvider = (props) => {
     let isAuthenticated = false;
 
     try {
-      isAuthenticated = window.sessionStorage.getItem('authenticated') === 'true';
+      isAuthenticated = window.localStorage.getItem('authenticated') === 'true';
     } catch (err) {
       console.error(err);
     }
@@ -110,7 +109,7 @@ export const AuthProvider = (props) => {
 
   const skip = () => {
     try {
-      window.sessionStorage.setItem('authenticated', 'true');
+      window.localStorage.setItem('authenticated', 'true');
     } catch (err) {
       console.error(err);
     }
@@ -142,13 +141,9 @@ export const AuthProvider = (props) => {
           rut: decoded.rut
       };
       try {
-        window.sessionStorage.setItem('authenticated', 'true');
-        window.sessionStorage.setItem('token', token);
-        window.sessionStorage.setItem('user', JSON.stringify(user));
-        setTimeout(() => {
-            window.location.reload();
-        },1000);
-
+        window.localStorage.setItem('authenticated', 'true');
+        window.localStorage.setItem('token', token);
+        window.localStorage.setItem('user', JSON.stringify(user));
         dispatch({
           type: HANDLERS.SIGN_IN,
           payload: user
@@ -172,10 +167,13 @@ export const AuthProvider = (props) => {
   };
 
   const signOut = () => {
-    window.sessionStorage.removeItem('authenticated');
-    window.sessionStorage.removeItem('token');
-    window.sessionStorage.removeItem('user');
-    window.sessionStorage.removeItem('profile');
+    window.localStorage.removeItem('profile');
+    window.localStorage.removeItem('authenticated');
+    window.localStorage.removeItem('token');
+    window.localStorage.removeItem('user');
+    window.localStorage.removeItem('ally-supports-cache');
+
+
     dispatch({
       type: HANDLERS.SIGN_OUT
     });

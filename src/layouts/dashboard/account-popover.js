@@ -8,7 +8,7 @@ export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
   const router = useRouter();
   const auth = useAuth();
-  const profile = JSON.parse(window.sessionStorage.getItem("profile"));
+  const profile = JSON.parse(window.localStorage.getItem("profile"));
 
   const handleSignOut = useCallback(() => {
     onClose?.();

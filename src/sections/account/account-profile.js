@@ -17,7 +17,7 @@ const user = {
 };
 
 export const AccountProfile = () => {
-    const profile = JSON.parse(window.sessionStorage.getItem("profile"));
+    const profile = JSON.parse(window.localStorage.getItem("profile"));
 
     return (
       <Card>
