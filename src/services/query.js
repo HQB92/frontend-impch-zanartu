@@ -1,7 +1,7 @@
 import  {  gql  }  from  '@apollo/client' ;
 
 const GET_PROFILE = gql`
-    query miProfile($rut: ID!) {
+    query GetProfile($rut: ID!) {
         Member {
             getByRut(rut: $rut) {
                 names
@@ -17,7 +17,7 @@ const GET_PROFILE = gql`
 `;
 
 const GET_ALL_MEMBERS = gql`
-    query GetAll($churchId: Int , $typeMember: Int) {
+    query GetAllMember($churchId: Int , $typeMember: Int) {
         Member {
             getAll(churchId: $churchId , typeMember: $typeMember) {
                 rut
@@ -36,7 +36,7 @@ const GET_ALL_MEMBERS = gql`
 `;
 
 const COUNT_ALL_MEMBERS = gql`
-    query Count {
+    query CountAllMembers {
         Member {
             count
         }
@@ -69,7 +69,7 @@ const GET_MEMBER_BY_RUT = gql`
 `;
 
 const GET_ALL_BAPTISM = gql`
-    query BaptismRecord {
+    query GetAllBaptism {
         BaptismRecord {
             getAll {
                 childRUT
@@ -89,7 +89,7 @@ const GET_ALL_BAPTISM = gql`
 `;
 
 const GET_BAPTISM_BY_CHILD_RUT = gql`
-query BaptismRecord($childRUT: ID!) {
+query GetBaptismByChildRut($childRUT: ID!) {
     BaptismRecord {
         getByChildRut(childRUT: $childRUT) {
             childRUT
