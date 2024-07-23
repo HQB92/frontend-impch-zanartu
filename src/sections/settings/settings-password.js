@@ -20,7 +20,7 @@ export const SettingsPassword = () => {
     confirm: "",
   });
   const [changePassword] = useMutation(CHANGE_PASSWORD);
-  const { id } = JSON.parse(window.sessionStorage.getItem("user"));
+  const { id } = JSON.parse(window.localStorage.getItem("user"));
 
   const auth = useAuth();
   const router = useRouter();

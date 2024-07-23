@@ -28,17 +28,18 @@ const LayoutContainer = styled("div")({
 });
 
 export const Layout = withAuthGuard((props) => {
-  const user = window.sessionStorage.getItem("user");
+  const user = window.localStorage.getItem("user");
   const parsedUser = user ? JSON.parse(user) : {};
   const { rut } = parsedUser;
   const [miProfile, { data, error, loading }] = useLazyQuery(GET_PROFILE, {
     fetchPolicy: "no-cache",
   });
-  const profileSave = JSON.parse(window.sessionStorage.getItem("profile")) || {};
-
+  const profileSave = JSON.parse(window.localStorage.getItem("profile")) || {};
+  const [isProfileLoaded, setIsProfileLoaded] = useState(!!profileSave.rut);
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
+
 
   const handlePathnameChange = useCallback(() => {
     if (openNav) {
@@ -51,10 +52,10 @@ export const Layout = withAuthGuard((props) => {
   }, [pathname]);
 
   useEffect(() => {
-    if (rut) {
+    if (rut && !isProfileLoaded) {
       miProfile({ variables: { rut: rut } });
     }
-  }, [miProfile, rut]);
+  }, [miProfile, rut, isProfileLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -67,14 +68,15 @@ export const Layout = withAuthGuard((props) => {
         email: data?.Member?.getByRut?.email,
         mobile: data?.Member?.getByRut?.mobile,
       };
-      window.sessionStorage.setItem("profile", JSON.stringify(profile));
+      window.localStorage.setItem('profile', JSON.stringify(profile));
+      setIsProfileLoaded(true);  // Update the state to indicate profile is loaded
     } else if (error) {
       console.error("Error fetching profile:", error);
-      window.sessionStorage.setItem("profile", JSON.stringify({}));
+      window.localStorage.setItem('profile', JSON.stringify({}));
     }
-  }, [data, error, rut, loading]);
+  }, [data, error, rut]);
 
-  if (loading) return <Loader />;
+  if (loading && !isProfileLoaded) return <Loader />;
 
   return (
       <>
