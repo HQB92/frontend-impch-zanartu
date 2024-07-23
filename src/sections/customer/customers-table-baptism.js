@@ -108,8 +108,9 @@ export const CustomersTable = (props) => {
                 <TableCell>Fecha Nacimiento</TableCell>
                 <TableCell>Lugar de Inscripción</TableCell>
                 <TableCell>Numero de Inscripción</TableCell>
-                <TableCell>Fecha Bautizo</TableCell>
                 <TableCell>Fecha Inscripción</TableCell>
+                <TableCell>Fecha Bautizo</TableCell>
+
                 <TableCell>Certificado</TableCell>
               </TableRow>
             </TableHead>
@@ -136,8 +137,8 @@ export const CustomersTable = (props) => {
                     <TableCell >{formatDate(customer?.childDateOfBirth)}</TableCell>
                     <TableCell>{customer.placeOfRegistration}</TableCell>
                     <TableCell>{customer.registrationNumber}</TableCell>
-                    <TableCell >{formatDate(customer?.baptismDate)}</TableCell>
                     <TableCell >{formatDate(customer?.registrationDate)}</TableCell>
+                    <TableCell >{formatDate(customer?.baptismDate)}</TableCell>
                     <TableCell>
                       {/* crear button que genera el certificado en pdf*/}
                         <Button

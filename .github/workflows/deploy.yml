@@ -22,7 +22,9 @@ jobs:
             echo NEXT_PUBLIC_URL=https://app.impchzanartu.online > .env
             echo NEXT_PUBLIC_PATHLOGIN=/auth/login >>.env
             echo NEXT_PUBLIC_PATCHGRAPHQL=/graphql >>.env
-            npm install
+            git clean -f
+            git pull origin main
+            npm ci
             npm run build
             pm2 restart frontend-impch-zanartu
 
