@@ -145,6 +145,9 @@ export const AuthProvider = (props) => {
         window.sessionStorage.setItem('authenticated', 'true');
         window.sessionStorage.setItem('token', token);
         window.sessionStorage.setItem('user', JSON.stringify(user));
+        setTimeout(() => {
+            window.location.reload();
+        },1000);
 
         dispatch({
           type: HANDLERS.SIGN_IN,
