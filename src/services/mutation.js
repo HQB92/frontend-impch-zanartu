@@ -29,5 +29,5 @@ export { CREATE_MEMBER,
          DELETE_MEMBER,
          UPDATE_MEMBER,
          CHANGE_PASSWORD,
-         CREATE_BAPTISM 
+         CREATE_BAPTISM
        };
