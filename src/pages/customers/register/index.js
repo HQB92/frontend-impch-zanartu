@@ -19,7 +19,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Bautizos</title>
+        <title>Usuarios</title>
       </Head>
       <Box
         component="main"
@@ -32,7 +32,7 @@ const Page = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Registrar Bautizo</Typography>
+                <Typography variant="h4">Registrar Usuarios</Typography>
               </Stack>
             </Stack>
             <RegisterBaptism  />

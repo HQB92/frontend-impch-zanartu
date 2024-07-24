@@ -1,0 +1,8 @@
+mutation CreateMember($member: MemberInput!) {
+    Member {
+        create(member: $member) {
+            code
+            message
+        }
+    }
+}

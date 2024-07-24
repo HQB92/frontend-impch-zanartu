@@ -1,117 +1,39 @@
 import  {  gql  }  from  '@apollo/client' ;
+import GetAllUser from './graphql/query/GetAllUser.graphql';
+import GetAllMember from './graphql/query/GetAllMember.graphql';
+import GetMemberByRut from './graphql/query/GetMemberByRut.graphql';
+import GetAllBaptism from './graphql/query/GetAllBaptism.graphql';
+import GetBaptismByChildRut from './graphql/query/GetBaptismByChildRut.graphql';
+import GetProfile from './graphql/query/GetProfile.graphql';
+import GetCountAllMembers from './graphql/query/GetCountAllMember.graphql';
 
 const GET_PROFILE = gql`
-    query GetProfile($rut: ID!) {
-        Member {
-            getByRut(rut: $rut) {
-                names
-                lastNameDad
-                lastNameMom
-                address
-                email
-                mobile
-                sexo
-            }
-        }
-    }
+    ${GetProfile}
 `;
-
 const GET_ALL_MEMBERS = gql`
-    query GetAllMember($churchId: Int , $typeMember: Int) {
-        Member {
-            getAll(churchId: $churchId , typeMember: $typeMember) {
-                rut
-                names
-                lastNameDad
-                lastNameMom
-                address
-                mobile
-                dateOfBirth
-                probationStartDate
-                fullMembershipDate
-                sexo
-            }
-        }
-    }
+    ${GetAllMember}
 `;
-
 const COUNT_ALL_MEMBERS = gql`
-    query CountAllMembers {
-        Member {
-            count
-        }
-    }
+    ${GetCountAllMembers}
 `;
-
 const GET_MEMBER_BY_RUT = gql`
-    query GetMemberByRut($rut: ID!) {
-        Member {
-            getByRut(rut: $rut) {
-                rut,
-                names,
-                lastNameDad,
-                lastNameMom,
-                dateOfBirth,
-                address,
-                telephone,
-                mobile,
-                email,
-                maritalStatus,
-                probationStartDate,
-                fullMembershipDate,
-                churchId,
-                statusId,
-                userId,
-                sexo,
-            }
-        }
-    }
+    ${GetMemberByRut}
 `;
-
 const GET_ALL_BAPTISM = gql`
-    query GetAllBaptism {
-        BaptismRecord {
-            getAll {
-                childRUT
-                childFullName
-                childDateOfBirth
-                fatherRUT
-                fatherFullName
-                motherRUT
-                motherFullName
-                placeOfRegistration
-                baptismDate
-                registrationNumber
-                registrationDate
-            }
-        }
-    }
+    ${GetAllBaptism}
 `;
-
 const GET_BAPTISM_BY_CHILD_RUT = gql`
-query GetBaptismByChildRut($childRUT: ID!) {
-    BaptismRecord {
-        getByChildRut(childRUT: $childRUT) {
-            childRUT
-            childFullName
-            childDateOfBirth
-            fatherRUT
-            fatherFullName
-            motherRUT
-            motherFullName
-            placeOfRegistration
-            baptismDate
-            registrationNumber
-            registrationDate
-        }
-    }
-}
+    ${GetBaptismByChildRut}
+`;
+const GET_ALL_USER = gql`
+    ${GetAllUser}
 `;
 export { GET_PROFILE,
          GET_ALL_MEMBERS,
          COUNT_ALL_MEMBERS,
          GET_MEMBER_BY_RUT,
          GET_ALL_BAPTISM,
-         GET_BAPTISM_BY_CHILD_RUT};
+         GET_BAPTISM_BY_CHILD_RUT,
+         GET_ALL_USER};
 
 

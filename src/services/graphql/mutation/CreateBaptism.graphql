@@ -1,0 +1,8 @@
+mutation CreateBaptism($baptismRecord: BaptismRecordInput!) {
+    BaptismRecord {
+        create(baptismRecord: $baptismRecord) {
+            code
+            message
+        }
+    }
+}

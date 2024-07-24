@@ -1,0 +1,15 @@
+# queries.graphql
+
+query GetAllUser {
+    User {
+        getAll {
+            id
+            rut
+            username
+            email
+        }
+    }
+}
+
+
+

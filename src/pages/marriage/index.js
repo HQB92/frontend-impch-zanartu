@@ -86,7 +86,7 @@ const Page = () => {
   return (
       <>
         <Head>
-          <title>Bautizos</title>
+          <title>Matrimonios</title>
         </Head>
         <Box
             component="main"
@@ -99,7 +99,7 @@ const Page = () => {
             <Stack spacing={3}>
               <Stack direction="row" justifyContent="space-between" spacing={4}>
                 <Stack spacing={1}>
-                  <Typography variant="h4">Bautizos</Typography>
+                  <Typography variant="h4">Matrimonios</Typography>
                 </Stack>
                 <div>
                   <Button
@@ -111,7 +111,7 @@ const Page = () => {
                     <SvgIcon fontSize="small">
                       <PlusIcon />
                     </SvgIcon>
-                    Nuevo Bautizo
+                    Nuevo Matrimonio
                   </Button>
                 </div>
               </Stack>

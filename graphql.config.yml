@@ -1,0 +1,5 @@
+schema:
+  - https://app.impchzanartu.online/graphql:
+      headers:
+        Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiaHVnbyIsImVtYWlsIjoiaHF1aW50ZXJvc0BpbmcudWNzLmNsIiwicnV0IjoiMTguMTU2LjI3MS00IiwiaWF0IjoxNzIxODM5MDg3LCJleHAiOjE3MjE4NDk4ODd9.daofT15YaSTdqrYoPziHOtaKQIK5RKxNnMtE8ESiGi4
+documents: '**/*.graphql'
