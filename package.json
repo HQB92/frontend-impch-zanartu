@@ -30,6 +30,8 @@
     "date-fns": "2.29.3",
     "dotenv": "^16.4.5",
     "formik": "2.2.9",
+    "gettext": "^0.0.1",
+    "graphql-tag": "^2.12.6",
     "jspdf": "^2.5.1",
     "next": "^14.1.1",
     "next-plugin-graphql": "^0.0.2",

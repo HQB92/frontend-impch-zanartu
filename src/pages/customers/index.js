@@ -12,53 +12,42 @@ import {
 } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table-baptism';
+import { CustomersTable } from 'src/sections/customer/customers-table-users';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
-import { GET_ALL_BAPTISM } from "../../services/query";
+import { GET_ALL_USER } from "../../services/query";
 import { Churchs } from "../../data/member";
+import { useCustomers, useCustomerIds } from "../../hooks/useCustomer";
 
-const useCustomers = (page, rowsPerPage, response) => {
-  return useMemo(() => {
-    return applyPagination(response, page, rowsPerPage);
-  }, [page, rowsPerPage, response]);
-};
 
-const useCustomerIds = (customers) => {
-  return useMemo(() => {
-    return customers.map((customer) => customer.rut);
-  }, [customers]);
-};
+
 
 const Page = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [typeMember, setTypeMember] = useState(0);
-  const [churchId, setChurchId] = useState(0);
 
-  const [getBaptism, { data, loading, error }] = useLazyQuery(GET_ALL_BAPTISM, {
+  const [getUsers, { data, loading, error }] = useLazyQuery(GET_ALL_USER, {
     fetchPolicy: 'no-cache'
   });
 
   useEffect(() => {
-    getBaptism();
-  }, [getBaptism]);
+    getUsers();
+  }, [getUsers]);
 
   useEffect(() => {
     if (data) {
-      setResponse(data?.BaptismRecord?.getAll || []);
+      setResponse(data?.User?.getAll || []);
     }
   }, [data]);
 
   useEffect(() => {
     if (loadingDelete) {
-      getBaptism();
-      setLoadingDelete(false);
+      getUsers();
     }
-  }, [loadingDelete, getBaptism]);
+  }, [loadingDelete, getUsers]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
@@ -86,7 +75,7 @@ const Page = () => {
   return (
       <>
         <Head>
-          <title>Bautizos</title>
+          <title>Usuarios</title>
         </Head>
         <Box
             component="main"
@@ -99,7 +88,7 @@ const Page = () => {
             <Stack spacing={3}>
               <Stack direction="row" justifyContent="space-between" spacing={4}>
                 <Stack spacing={1}>
-                  <Typography variant="h4">Bautizos</Typography>
+                  <Typography variant="h4">Usuarios</Typography>
                 </Stack>
                 <div>
                   <Button
@@ -111,7 +100,7 @@ const Page = () => {
                     <SvgIcon fontSize="small">
                       <PlusIcon />
                     </SvgIcon>
-                    Nuevo Bautizo
+                    Nuevo usuario
                   </Button>
                 </div>
               </Stack>
@@ -129,7 +118,6 @@ const Page = () => {
                   rowsPerPage={rowsPerPage}
                   selected={customersSelection.selected}
                   loading={loadingDelete}
-                  setLoading={setLoadingDelete}
               />
             </Stack>
           </Container>

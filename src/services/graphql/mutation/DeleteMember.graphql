@@ -1,0 +1,8 @@
+mutation DeleteMember($rut: String!) {
+    Member {
+        delete(rut: $rut) {
+            code
+            message
+        }
+    }
+}

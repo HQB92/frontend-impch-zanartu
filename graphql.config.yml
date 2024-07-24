@@ -1,0 +1,5 @@
+schema:
+  - https://app.impchzanartu.online/graphql:
+      headers:
+        Authorization: Bearer ${NEXT_PUBLIC_TOKEN}
+documents: '**/*.graphql'

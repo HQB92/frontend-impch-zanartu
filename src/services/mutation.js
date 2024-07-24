@@ -1,80 +1,33 @@
 import { gql } from "@apollo/client";
+import CreateBaptism from "./graphql/mutation/CreateBaptism.graphql";
+import CreateMember from "./graphql/mutation/CreateMember.graphql";
+import DeleteMember from "./graphql/mutation/DeleteMember.graphql";
+import UpdateMember from "./graphql/mutation/UpdateMember.graphql";
+import ChangePassword from "./graphql/mutation/ChangePassword.graphql";
+
 
 const CREATE_MEMBER = gql`
-    mutation CreateMember($member: MemberInput!) {
-  Member {
-    create(member: $member) {
-      code
-      message
-    }
-  }
-}
-
+    ${CreateMember}
 `;
-
-const UPDATE_PASSWORD = gql`
-    mutation UpdatePassword($updateId: ID!, $rut: ID!, $username: String, $email: String, $password: String) {
-  User {
-    update(id: $updateId, rut: $rut, username: $username, email: $email, password: $password) {
-      code
-      message
-    }
-  }
-}`;
 
 const DELETE_MEMBER = gql`
-mutation DeleteMember($rut: String!) {
-  Member {
-    delete(rut: $rut) {
-      code
-      message
-    }
-  }
-}`;
+    ${DeleteMember}
+`;
 
 const UPDATE_MEMBER = gql`
-mutation UpdateMember($member: MemberInput!) {
-    Member {
-        update(member: $member) {
-        code
-        message
-        }
-    }
-}`;
+    ${UpdateMember}
+`;
 
 const CHANGE_PASSWORD = gql`
-mutation ChangePassword($id: ID!, $password: String!) {
-  User {
-    changePassword(id: $id, password: $password) {
-      code
-      message
-    }
-  }
-}`;
+    ${ChangePassword}
+`;
 
 const CREATE_BAPTISM = gql`
-mutation CreateBaptism($baptismRecord: BaptismRecordInput!) {
-  BaptismRecord {
-    create(baptismRecord: $baptismRecord) {
-      code
-      message
-    }
-  }
-}
+    ${CreateBaptism}
 `;
-
-const UPDATE_BAPTISM = gql`
-mutation UpdateBaptism($baptismRecord: BaptismRecordInput!) {
-    BaptismRecord {
-        update(baptismRecord: $baptismRecord) {
-            code
-            message
-        }
-    }
-}
-`;
-
-
-
-
-export { CREATE_MEMBER, UPDATE_PASSWORD, DELETE_MEMBER, UPDATE_MEMBER, CHANGE_PASSWORD, CREATE_BAPTISM, UPDATE_BAPTISM };
+export { CREATE_MEMBER,
+         DELETE_MEMBER,
+         UPDATE_MEMBER,
+         CHANGE_PASSWORD,
+         CREATE_BAPTISM
+       };

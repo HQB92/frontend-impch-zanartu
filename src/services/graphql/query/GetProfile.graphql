@@ -1,0 +1,14 @@
+query GetProfile($rut: ID!) {
+    Member {
+        getByRut(rut: $rut) {
+            names
+            lastNameDad
+            lastNameMom
+            address
+            email
+            mobile
+            sexo
+        }
+    }
+}
+
