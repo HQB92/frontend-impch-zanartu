@@ -138,7 +138,8 @@ export const AuthProvider = (props) => {
           avatar: '/assets/avatars/avatar-anika-visser.png',
           name: decoded.username,
           email: decoded.email,
-          rut: decoded.rut
+          rut: decoded.rut,
+          roles: decoded.roles
       };
       try {
         window.localStorage.setItem('authenticated', 'true');

@@ -19,9 +19,7 @@ import Loader from "../../components/loader";
 import { GET_ALL_USER } from "../../services/query";
 import { Churchs } from "../../data/member";
 import { useCustomers, useCustomerIds } from "../../hooks/useCustomer";
-
-
-
+import {useRoles} from "../../hooks/useRoles";
 
 const Page = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -32,7 +30,7 @@ const Page = () => {
   const [getUsers, { data, loading, error }] = useLazyQuery(GET_ALL_USER, {
     fetchPolicy: 'no-cache'
   });
-
+  const roles = useRoles();
   useEffect(() => {
     getUsers();
   }, [getUsers]);
@@ -48,6 +46,9 @@ const Page = () => {
       getUsers();
     }
   }, [loadingDelete, getUsers]);
+  const refreshData = useCallback(() => {
+    getUsers();
+  }, [getUsers]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
@@ -94,13 +95,14 @@ const Page = () => {
                   <Button
                       color="primary"
                       component={NextLink}
-                      href="/baptism/register"
+                      href="/customers/register"
                       variant="contained"
+                      disabled={!roles.includes('Administrador' || 'Pastor' || 'Secretario')}
                   >
                     <SvgIcon fontSize="small">
                       <PlusIcon />
                     </SvgIcon>
-                    Nuevo usuario
+                    Nuevo Usuario
                   </Button>
                 </div>
               </Stack>
@@ -117,7 +119,7 @@ const Page = () => {
                   page={page}
                   rowsPerPage={rowsPerPage}
                   selected={customersSelection.selected}
-                  loading={loadingDelete}
+                  refreshData={refreshData}
               />
             </Stack>
           </Container>

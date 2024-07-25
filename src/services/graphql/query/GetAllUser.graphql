@@ -7,6 +7,7 @@ query GetAllUser {
             rut
             username
             email
+            roles
         }
     }
 }
