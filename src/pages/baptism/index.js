@@ -12,12 +12,12 @@ import {
 } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table-baptism';
+import { CustomersTable } from 'src/sections/baptism/customers-table-baptism';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
 import { GET_ALL_BAPTISM } from "../../services/query";
-import { Churchs } from "../../data/member";
+import { useRoles } from "../../hooks/useRoles";
 
 const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
@@ -42,6 +42,7 @@ const Page = () => {
   const [getBaptism, { data, loading, error }] = useLazyQuery(GET_ALL_BAPTISM, {
     fetchPolicy: 'no-cache'
   });
+  const roles =  useRoles();
 
   useEffect(() => {
     getBaptism();
@@ -107,6 +108,7 @@ const Page = () => {
                       component={NextLink}
                       href="/baptism/register"
                       variant="contained"
+                      disabled={!roles.includes('Administrador' || 'Pastor' || 'Secretario')}
                   >
                     <SvgIcon fontSize="small">
                       <PlusIcon />

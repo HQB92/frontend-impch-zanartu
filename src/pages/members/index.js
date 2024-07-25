@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/customer/customers-table';
+import { CustomersTable } from 'src/sections/member/customers-table';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
@@ -35,7 +35,7 @@ const Page = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [response, setResponse] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [typeMember, setTypeMember] = useState(0);
   const [churchId, setChurchId] = useState(0);
 
@@ -55,6 +55,11 @@ const Page = () => {
       setResponse(data?.Member?.getAll || []);
     }
   }, [data]);
+  const refreshData = useCallback(() => {
+    getMember({
+      variables: { churchId, typeMember }
+    });
+  }, [getMember]);
 
   useEffect(() => {
     if (loadingDelete) {
@@ -170,6 +175,7 @@ const Page = () => {
                   selected={customersSelection.selected}
                   loading={loadingDelete}
                   setLoading={setLoadingDelete}
+                  refreshData={refreshData}
               />
             </Stack>
           </Container>
