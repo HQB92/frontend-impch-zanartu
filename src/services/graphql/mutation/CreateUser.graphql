@@ -1,0 +1,8 @@
+mutation CreteUser($user: UserInput!) {
+    User {
+        create(user: $user) {
+            code
+            message
+        }
+    }
+}

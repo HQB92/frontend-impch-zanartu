@@ -71,7 +71,6 @@ export const RegisterMember = (props) => {
   }, [data, dataUpdate]);
 
   const handleChange = (event) => {
-    console.log(event)
     const { name, value } = event.target;
     setMember((prev) => ({
       ...prev,

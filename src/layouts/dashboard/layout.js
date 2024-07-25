@@ -66,7 +66,7 @@ export const Layout = withAuthGuard((props) => {
         lastNameMom: data?.Member?.getByRut?.lastNameMom,
         address: data?.Member?.getByRut?.address,
         email: data?.Member?.getByRut?.email,
-        mobile: data?.Member?.getByRut?.mobile,
+        mobile: data?.Member?.getByRut?.mobile
       };
       window.localStorage.setItem('profile', JSON.stringify(profile));
       setIsProfileLoaded(true);  // Update the state to indicate profile is loaded
