@@ -13,11 +13,13 @@ import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 import { items } from './config';
 import { SideNavItem } from './side-nav-item';
+import { useRoles } from "../../hooks/useRoles";
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
   const pathname = usePathname();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
+  const roles = useRoles();
 
   const content = (
     <Scrollbar
@@ -78,22 +80,23 @@ export const SideNav = (props) => {
               m: 0,
             }}
           >
-            {items.map((item) => {
-              const active = item.path ? pathname === item.path : false;
-
-              return (
-                <SideNavItem
-                  active={active}
-                  disabled={item.disabled}
-                  external={item.external}
-                  icon={item.icon}
-                  key={item.title}
-                  path={item.path}
-                  title={item.title}
-                  subItems={item.subItems}
-                />
-              );
-            })}
+            {items
+              .filter(item => !item.roles || item?.roles?.some(role => roles.includes(role)))
+              .map((item) => {
+                const active = item.path ? pathname === item.path : false;
+                return (
+                  <SideNavItem
+                    active={active}
+                    disabled={item.disabled}
+                    external={item.external}
+                    icon={item.icon}
+                    key={item.title}
+                    path={item.path}
+                    title={item.title}
+                    subItems={item.subItems}
+                  />
+                );
+              })}
           </Stack>
         </Box>
       </Box>

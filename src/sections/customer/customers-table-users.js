@@ -46,7 +46,7 @@ export const CustomersTable = (props) => {
         }
     }, [data, refreshData]);
     const roles = useRoles();
-
+    console.log(roles);
     const deleteRut = (id) => {
         return () => {
             deleteUser({ variables: { id } }).then(() => {
@@ -124,7 +124,9 @@ export const CustomersTable = (props) => {
                                                 }
                                                 variant="contained"
                                                 onClick={deleteRut(customer.id)}
-                                                disabled={!roles.includes('Pastor'||'Administrador')}
+                                                disabled={
+                                                    !roles.includes('Administrador') || !roles.includes('Pastor') || !roles.includes('Secretario')
+                                                }
                                             />
                                         </TableCell>
                                     </TableRow>

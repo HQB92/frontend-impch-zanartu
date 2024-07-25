@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
 import { Box, ButtonBase, Collapse } from '@mui/material';
+import { useRoles } from 'src/hooks/useRoles';
 
 export const SideNavItem = (props) => {
   const {
@@ -31,6 +32,7 @@ export const SideNavItem = (props) => {
   const handleSubMenu = () => {
     setIsOpen(!isOpen);
   };
+  const roles = useRoles();
 
   return (
     <>
@@ -95,9 +97,11 @@ export const SideNavItem = (props) => {
       </ButtonBase>
       {subItems && (
         <Collapse in={isOpen} sx={{ pl: '30px' }}>
-          {subItems.map((subItem) => (
-            <SideNavItem key={subItem.path} {...subItem} />
-          ))}
+          {subItems
+            .filter(subItem => !subItem?.roles || subItem?.roles?.some(role => roles.includes(role)))
+            .map((subItem) => (
+              <SideNavItem key={subItem.path} {...subItem} />
+            ))}
         </Collapse>
       )}
     </>

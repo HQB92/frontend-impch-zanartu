@@ -18,10 +18,10 @@ import {
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
 import EditIcon from '@mui/icons-material/Edit';
-import { useRouter } from 'next/router';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useMutation } from "@apollo/client";
 import { DELETE_MEMBER } from "../../services/mutation";
+import { useRoles} from "../../hooks/useRoles";
 
 
 export const CustomersTable = (props) => {
@@ -37,18 +37,19 @@ export const CustomersTable = (props) => {
     page = 0,
     rowsPerPage = 0,
     selected = [],
-    setLoadingDelete = () => {}
+    refreshData = () => {}
   } = props;
 
   const selectedSome = selected.length > 0 && selected.length < items.length;
   const selectedAll = items.length > 0 && selected.length === items.length;
   const [deleteMember,{data, loading, error}] = useMutation(DELETE_MEMBER);
   const deleteRut = (rut) => {
-    setLoadingDelete(loading);
     return () => {
       deleteMember({variables: {rut}});
     };
   };
+  const roles = useRoles();
+  console.log("roles", roles)
   function formatDate(isoDate) {
     const date = new Date(isoDate);
     const day = String(date.getUTCDate()).padStart(2, '0');
@@ -113,6 +114,8 @@ export const CustomersTable = (props) => {
                         component={NextLink}
                         href="/members"
                         onClick={deleteRut(customer.rut)}
+                        disabled={roles.includes('Administrador' ||'Pastor' )}
+
                       />
                     </TableCell>
                   </TableRow>
@@ -129,7 +132,7 @@ export const CustomersTable = (props) => {
         onRowsPerPageChange={onRowsPerPageChange}
         page={page}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[8, 15, 25]}
+        rowsPerPageOptions={[10, 25, 50]}
       />
     </Card>
   );
@@ -147,5 +150,5 @@ CustomersTable.propTypes = {
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
   selected: PropTypes.array,
-  setLoadingDelete: PropTypes.func
+  refreshData: PropTypes.func
 };
