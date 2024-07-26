@@ -62,7 +62,11 @@ export const CustomersTable = (props) => {
     const [day, month, year] = dateString.split('-');
     const monthName = months[parseInt(month, 10) - 1];
 
-    return `${day} de ${monthName} de ${year}`;
+    return [
+      day,
+      monthName,
+      year
+    ]
   };
 
 
@@ -73,24 +77,28 @@ export const CustomersTable = (props) => {
         unit: "mm",
         format: "letter",
     });
-      doc.setFont("courier", "bolditalic");
-      //doc.setTextColor(18,61,80)
-      //tamño de la fuente
-      const mootherName = data.motherFullName.split(' ');
+      doc.setFont("courier", "bold");
+      const fechaBautizo = formatDateComplete(formatDate(new Date(data.baptismDate)));
+      const fechaNacimiento = formatDateComplete(formatDate(new Date(data.childDateOfBirth)));
+      const fechaRegistro = formatDateComplete(formatDate(new Date(data.registrationDate)));
       doc.setFontSize(14);
       doc.addImage(Bautizo.data, 'PNG', 5, 5, 205, 205);
-      doc.text(`${data.childFullName}`, 56, 97 );
-      doc.text(`${data.fatherFullName}`, 25, 104);
-      doc.text(`${mootherName[0]}`, 157, 104);
-      doc.text(`${mootherName[1]} ${mootherName[2]} ${mootherName[3]}`, 25, 111);
-      doc.text(`${formatDate(new Date(data.childDateOfBirth))}`, 39, 118);
-      doc.text(`${data.placeOfRegistration}`, 146, 111);
-      doc.text(`${data.childRUT}`, 37, 134);
-      doc.text(`${data.registrationNumber}`, 128, 134);
-      doc.text(`${formatDate(new Date(data.registrationDate))}`, 57, 141);
+      doc.text(`${data.childFullName}`, 36, 84 );
+      doc.text(`${data.fatherFullName}`, 43, 91);
+      doc.text(`${data.motherFullName}`, 37, 98);
+      doc.text(`${data.placeOfRegistration}`, 57, 105);
+      doc.text(`${fechaNacimiento[0]}`, 118, 105);
+      doc.text(`${fechaNacimiento[1]}`, 135, 105);
+      doc.text(`${fechaNacimiento[2]}`, 171, 105);
+
+      doc.text(`${data.childRUT}`, 39, 153);
+      doc.text(`${data.registrationNumber}`, 134, 153);
+      doc.text(`${fechaRegistro[0]}`, 40, 160);
+      doc.text(`${fechaRegistro[1]}`, 57, 160);
+      doc.text(`${fechaRegistro[2]}`, 93, 160);
       doc.setFont("courier", "bold");
-      doc.setFontSize(15)
-      doc.text(`${formatDateComplete(formatDate(new Date(data.baptismDate)))}`, 76, 190);
+      doc.setFontSize(16)
+      doc.text(`${fechaBautizo[0]} de ${fechaBautizo[1]} de ${fechaBautizo[2]}`, 76, 203);
       doc.setFontSize(10);
       doc.text("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _", 0, 216);
       doc.save(`CertificadoBautizo.pdf`);
