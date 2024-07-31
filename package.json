@@ -10,9 +10,9 @@
     "export": "next export",
     "lint": "next lint",
     "lint-fix": "next lint --fix",
-    "bump-patch": "npm version patch -m \"Bump version to %s\" && git push && git push --tags",
-    "bump-minor": "npm version minor -m \"Bump version to %s\" && git push && git push --tags",
-    "bump-major": "npm version major -m \"Bump version to %s\" && git push && git push --tags"
+    "v-p": "npm version patch -m \"Bump version to %s\" && git push && git push --tags",
+    "v-mi": "npm version minor -m \"Bump version to %s\" && git push && git push --tags",
+    "v-ma": "npm version major -m \"Bump version to %s\" && git push && git push --tags"
   },
   "dependencies": {
     "@apollo/client": "^3.10.5",
