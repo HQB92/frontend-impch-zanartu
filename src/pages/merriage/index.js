@@ -12,12 +12,12 @@ import {
 } from '@mui/material';
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { CustomersTable } from 'src/sections/baptism/customers-table-baptism';
+import { CustomersTable } from 'src/sections/merriage/merriage-table';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
 import { GET_ALL_MERRIAGE} from "../../services/query";
-import { Churchs } from "../../data/member";
+
 
 const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
@@ -105,7 +105,7 @@ const Page = () => {
                   <Button
                       color="primary"
                       component={NextLink}
-                      href="/baptism/register"
+                      href="/merriage/register"
                       variant="contained"
                   >
                     <SvgIcon fontSize="small">

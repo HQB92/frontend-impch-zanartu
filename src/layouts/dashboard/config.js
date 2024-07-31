@@ -138,7 +138,7 @@ export const items = [
     ],
   }, {
     title: 'Matrimonios',
-    path: '/marriage',
+    path: '/merriage',
     icon: (
       <SvgIcon fontSize="small">
         <WcIcon/>
@@ -148,7 +148,7 @@ export const items = [
     subItems: [
       {
         title: 'Listado',
-        path: '/marriage',
+        path: '/merriage',
         icon: (
           <SvgIcon fontSize="small">
             <ListAltIcon/>
@@ -158,7 +158,7 @@ export const items = [
       },
       {
         title: 'Nuevo',
-        path: '/marriage/register',
+        path: '/merriage/register',
         icon: (
           <SvgIcon fontSize="small">
             <AddBoxIcon/>

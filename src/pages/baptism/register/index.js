@@ -11,9 +11,6 @@ import {
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { RegisterBaptism } from 'src/sections/baptism/registerBaptism';
 
-
-
-
 const Page = () => {
 
   return (
