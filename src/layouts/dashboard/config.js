@@ -6,6 +6,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ChildFriendlyIcon from '@mui/icons-material/ChildFriendly';
 import WcIcon from '@mui/icons-material/Wc';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 export const items = [
   {
@@ -69,6 +70,38 @@ export const items = [
           </SvgIcon>
         ),
         roles: ['Administrador', 'Pastor', 'Encargado']
+      }
+    ],
+  },
+  {
+    title: 'Ofrendas',
+    path: '/offering',
+    icon: (
+        <SvgIcon fontSize="small">
+          <LocalAtmIcon/>
+        </SvgIcon>
+    ),
+    roles: ['Administrador', 'Pastor', 'Tesorero'],
+    subItems: [
+      {
+        title: 'Listado',
+        path: '/offering',
+        icon: (
+            <SvgIcon fontSize="small">
+              <ListAltIcon/>
+            </SvgIcon>
+        ),
+        roles: ['Administrador', 'Pastor']
+      },
+      {
+        title: 'Nuevo',
+        path: '/offering/register',
+        icon: (
+            <SvgIcon fontSize="small">
+              <AddBoxIcon/>
+            </SvgIcon>
+        ),
+        roles: ['Administrador', 'Pastor', 'Tesorero']
       }
     ],
   },

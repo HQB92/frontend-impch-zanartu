@@ -16,7 +16,7 @@ import { CustomersTable } from 'src/sections/baptism/customers-table-baptism';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
-import { GET_ALL_BAPTISM } from "../../services/query";
+import { GET_ALL_MERRIAGE} from "../../services/query";
 import { Churchs } from "../../data/member";
 
 const useCustomers = (page, rowsPerPage, response) => {
@@ -39,26 +39,26 @@ const Page = () => {
   const [typeMember, setTypeMember] = useState(0);
   const [churchId, setChurchId] = useState(0);
 
-  const [getBaptism, { data, loading, error }] = useLazyQuery(GET_ALL_BAPTISM, {
+  const [getMerriage, { data, loading, error }] = useLazyQuery(GET_ALL_MERRIAGE, {
     fetchPolicy: 'no-cache'
   });
 
   useEffect(() => {
-    getBaptism();
-  }, [getBaptism]);
+    getMerriage();
+  }, [getMerriage]);
 
   useEffect(() => {
     if (data) {
-      setResponse(data?.BaptismRecord?.getAll || []);
+      setResponse(data?.MerriageRecord?.getAll || []);
     }
   }, [data]);
 
   useEffect(() => {
     if (loadingDelete) {
-      getBaptism();
+      getMerriage();
       setLoadingDelete(false);
     }
-  }, [loadingDelete, getBaptism]);
+  }, [loadingDelete, getMerriage]);
 
   const customers = useCustomers(page, rowsPerPage, response);
   const customersIds = useCustomerIds(customers);
