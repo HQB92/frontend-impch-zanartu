@@ -9,10 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { RegisterBaptism } from 'src/sections/baptism/registerBaptism';
-
-
-
+import { RegisterMerriage } from 'src/sections/marriage/registerMerriage';
 
 const Page = () => {
 
@@ -35,7 +32,7 @@ const Page = () => {
                 <Typography variant="h4">Registrar Matrimonio</Typography>
               </Stack>
             </Stack>
-            <RegisterBaptism  />
+            <RegisterMerriage  />
           </Stack>
         </Container>
       </Box>
