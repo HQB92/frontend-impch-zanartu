@@ -1,68 +1,64 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Button, Card, CardActions, CardContent, CardHeader, Divider, TextField, Grid
+  Box, Button, Card, CardActions, CardContent, Divider, TextField, Grid
 } from '@mui/material';
 import { validateRut, formatRut, RutFormat } from '@fdograph/rut-utilities';
-import { CREATE_BAPTISM } from "../../services/mutation";
+import { CREATE_MERRIAGE } from "../../services/mutation";
 import { useMutation } from "@apollo/client";
 import { Loader } from "react-feather";
 import { Alert } from "@mui/lab";
 import { useRouter } from "next/router";
 
-export const RegisterBaptism = () => {
+const RegisterMerriage = () => {
   const initialState = {
-    childRUT: '',
-    childFullName: '',
-    childDateOfBirth: '',
-    fatherRUT: '',
-    fatherFullName: '',
-    motherRUT: '',
-    motherFullName: '',
-    placeOfRegistration: '',
-    baptismDate: '',
-    registrationNumber: '',
-    registrationDate: '',
+    husbandId: '',
+    fullNameHusband: '',
+    wifeId: '',
+    fullNameWife: '',
+    civilCode: '',
+    civilDate: '',
+    civilPlace: '',
+    religiousDate: ''
   };
 
-  const [baptism, setBaptism] = useState(initialState);
-  const [createBaptism, { data, loading, error }] = useMutation(CREATE_BAPTISM);
+  const [merriage, setMerriage] = useState(initialState);
+  const [createMerriage, { data, loading, error }] = useMutation(CREATE_MERRIAGE);
   const router = useRouter();
 
   useEffect(() => {
-    formatRUTField('childRUT');
-    formatRUTField('fatherRUT');
-    formatRUTField('motherRUT');
-  }, [baptism.childRUT, baptism.fatherRUT, baptism.motherRUT]);
+    formatRUTField('husbandId');
+    formatRUTField('wifeId');
+  }, [merriage.husbandId, merriage.wifeId]);
 
   useEffect(() => {
     if (data) {
-      setTimeout(() => router.push('/baptism'), 3000);
+      setTimeout(() => router.push('/merriage'), 3000);
     }
   }, [data, router]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const fieldsToUppercase = ['childFullName', 'fatherFullName', 'motherFullName', 'placeOfRegistration']; // Campos para aplicar mayúsculas
-    const isNumberField = name === 'registrationNumber'; // Verificar si el campo es el número de registro
+    const fieldsToUppercase = ['fullNameHusband', 'fullNameWife', 'civilPlace', '']; // Campos para aplicar mayúsculas
+    const isNumberField = name === 'civilCode';
 
     let newValue = value;
     if (fieldsToUppercase.includes(name)) {
       newValue = handleUppercase(value);
     } else if (isNumberField && value !== '') {
-      newValue = value.replace(/[^0-9]/g, ''); // Aceptar solo números
+      newValue = parseInt(value);
     }
 
-    setBaptism(prev => ({
+    setMerriage(prev => ({
       ...prev,
       [name]: newValue
     }));
   };
 
   const formatRUTField = (field) => {
-    if (validateRut(baptism[field])) {
-      setBaptism(prev => ({
+    if (validateRut(merriage[field])) {
+      setMerriage(prev => ({
         ...prev,
-        [field]: formatRut(baptism[field], RutFormat.DOTS_DASH)
+        [field]: formatRut(merriage[field], RutFormat.DOTS_DASH)
       }));
     }
   };
@@ -73,13 +69,12 @@ export const RegisterBaptism = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Asegúrate de que las fechas no estén vacías
-    if (!baptism.childDateOfBirth || !baptism.baptismDate || !baptism.registrationDate) {
+    if (!merriage.civilDate || !merriage.religiousDate) {
       alert('Por favor, completa todas las fechas requeridas.');
       return;
     }
-    createBaptism({
-      variables: { baptismRecord: { ...baptism } }
+    createMerriage({
+      variables: { merriageRecord: { ...merriage } }
     });
   };
 
@@ -94,78 +89,58 @@ export const RegisterBaptism = () => {
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ m: -1.5 }}>
                 <Grid container spacing={4}>
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Rut Niño"
-                        name="childRUT"
-                        value={baptism.childRUT}
+                        label="RUT Esposo"
+                        name="husbandId"
+                        value={merriage.husbandId}
                         onChange={handleChange}
-                        helperText={baptism.childRUT.length >= 7 && (!validateRut(baptism.childRUT) && "Rut inválido")}
-                        error={baptism.childRUT.length >= 7 && (!validateRut(baptism.childRUT))}
+                        helperText={merriage.husbandId.length >= 7 && (!validateRut(merriage.husbandId) && "Rut inválido")}
+                        error={merriage.husbandId.length >= 7 && (!validateRut(merriage.husbandId))}
                         required
                     />
                   </Grid>
-                  <Grid item xs={12} md={5}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
-                        label="Nombre Completo del Niño"
-                        name="childFullName"
+                        label="Nombre Completo del Esposo"
+                        name="fullNameHusband"
                         onChange={handleChange}
-                        value={baptism.childFullName}
+                        value={merriage.fullNameHusband}
                         required
                     />
                   </Grid>
-                  <Grid item xs={12} md={3}>
+                  <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Fecha de Nacimiento del Niño"
-                        name="childDateOfBirth"
-                        type="date"
+                        label="Rut de la Esposa"
+                        name="wifeId"
                         onChange={handleChange}
-                        InputLabelProps={{ shrink: true }}
+                        value={merriage.wifeId}
+                        helperText={merriage.wifeId.length >= 7 && (!validateRut(merriage.wifeId) && "Rut inválido")}
+                        error={merriage.wifeId.length >= 7 && (!validateRut(merriage.wifeId))}
                         required
                     />
                   </Grid>
-                  <Grid item xs={12} md={3}>
-                    <TextField
-                        fullWidth
-                        label="Rut del Padre"
-                        name="fatherRUT"
-                        onChange={handleChange}
-                        value={baptism.fatherRUT}
-                        helperText={baptism.fatherRUT.length >= 7 && (!validateRut(baptism.fatherRUT) && "Rut inválido")}
-                        error={baptism.fatherRUT.length >= 7 && (!validateRut(baptism.fatherRUT))}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={8}>
-                    <TextField
-                        fullWidth
-                        label="Nombre Completo del Padre"
-                        name="fatherFullName"
-                        onChange={handleChange}
-                        value={baptism.fatherFullName}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <TextField
-                        fullWidth
-                        label="Rut de la Madre"
-                        name="motherRUT"
-                        onChange={handleChange}
-                        value={baptism.motherRUT}
-                        helperText={baptism.motherRUT.length >= 7 && (!validateRut(baptism.motherRUT) && "Rut inválido")}
-                        error={baptism.motherRUT.length >= 7 && (!validateRut(baptism.motherRUT))}
-                        required
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={8}>
+                  <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
                         label="Nombre Completo de la Madre"
-                        name="motherFullName"
+                        name="fullNameWife"
                         onChange={handleChange}
-                        value={baptism.motherFullName}
+                        value={merriage.fullNameWife}
+                        required
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    <TextField
+                        fullWidth
+                        label="Número de Registro"
+                        name="civilCode"
+                        type={"number"}
+                        onChange={handleChange}
+                        value={merriage.civilCode}
                         required
                     />
                   </Grid>
@@ -173,43 +148,32 @@ export const RegisterBaptism = () => {
                     <TextField
                         fullWidth
                         label="Lugar de Registro"
-                        name="placeOfRegistration"
+                        name="civilPlace"
                         onChange={handleChange}
-                        value={baptism.placeOfRegistration}
+                        value={merriage.civilPlace}
                         required
                     />
                   </Grid>
                   <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Fecha de Registro"
-                        name="registrationDate"
+                        label="Fecha de Matrimonio Civil"
+                        name="civilDate"
                         type="date"
                         onChange={handleChange}
-                        value={baptism.registrationDate || ''}
+                        value={merriage.civilDate || ''}
                         InputLabelProps={{ shrink: true }}
                         required
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                        fullWidth
-                        label="Número de Registro"
-                        name="registrationNumber"
-                        type={"number"}
-                        onChange={handleChange}
-                        value={baptism.registrationNumber}
-                        required
-                    />
-                  </Grid>
                   <Grid item xs={12} md={2}>
                     <TextField
                         fullWidth
-                        label="Fecha de Bautizo"
-                        name="baptismDate"
+                        label="Fecha de Matrimonio Religioso"
+                        name="religiousDate"
                         type="date"
                         onChange={handleChange}
-                        value={baptism.baptismDate || ''}
+                        value={merriage.religiousDate || ''}
                         InputLabelProps={{ shrink: true }}
                         required
                     />
@@ -228,3 +192,5 @@ export const RegisterBaptism = () => {
       </>
   );
 };
+
+export default RegisterMerriage;
