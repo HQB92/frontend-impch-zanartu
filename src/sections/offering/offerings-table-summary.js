@@ -39,13 +39,12 @@ export const OfferingsTableSummary = (props) => {
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{minWidth: 1200}} mb={{minWidth: 2200}} lg={{minWidth: 2200}}>
+        <Box sx={{minWidth: "100%"}} mb={{minWidth: 2200}} lg={{minWidth: 2200}}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Iglesia</TableCell>
-                <TableCell>Total</TableCell>
-                <TableCell>Cantidad</TableCell>
+                <TableCell sx={{ width: '30%' }}>Iglesia</TableCell>
+                <TableCell sx={{ width: '30%' }}>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -64,13 +63,6 @@ export const OfferingsTableSummary = (props) => {
                       <Stack alignItems="center" direction="row" spacing={2}>
                         <Typography variant="subtitle1">
                           {convertirAPesosChilenos(customer?.total)}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Stack alignItems="center" direction="row" spacing={2}>
-                        <Typography variant="subtitle1">
-                          {customer?.count}
                         </Typography>
                       </Stack>
                     </TableCell>

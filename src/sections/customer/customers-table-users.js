@@ -65,7 +65,7 @@ export const CustomersTable = (props) => {
     return (
         <Card>
             <Scrollbar>
-                <Box sx={{ minWidth: 1200 }} mb={{ minWidth: 2200 }} lg={{ minWidth: 2200 }}>
+                <Box sx={{ minWidth: 400 }} mb={{ minWidth: 2200 }} lg={{ minWidth: 2200 }}>
                     <Table>
                         <TableHead>
                             <TableRow>
