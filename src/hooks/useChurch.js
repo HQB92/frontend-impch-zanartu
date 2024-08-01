@@ -7,7 +7,5 @@ export const useChurch = () => {
         const storedChurch = JSON.parse(window.localStorage.getItem('profile')) || null;
         setChurch(storedChurch.churchId);
     }, []);
-    console.log(church);
-
     return church;
 };

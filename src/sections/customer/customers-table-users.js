@@ -39,14 +39,13 @@ export const CustomersTable = (props) => {
     const selectedAll = items.length > 0 && selected.length === items.length;
     const [deleteUser, { data, loading, error }] = useMutation(DELETE_USER);
     const [resetPassword, { data: dataReset, loading: loadingReset, error: errorReset }] = useMutation(RESET_PASSWORD);
-
+    const roles = useRoles();
     useEffect(() => {
         if (data) {
             refreshData();
         }
     }, [data, refreshData]);
-    const roles = useRoles();
-    console.log(roles);
+
     const deleteRut = (id) => {
         return () => {
             deleteUser({ variables: { id } }).then(() => {
