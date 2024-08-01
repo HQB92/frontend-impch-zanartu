@@ -59,7 +59,7 @@ export const OfferingsTable = (props) => {
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{ minWidth: 1200 }}  mb={{minWidth: 2200}} lg={ {minWidth: 2200}}>
+        <Box sx={{ minWidth: "100%" }}  mb={{minWidth: 2200}} lg={ {minWidth: 2200}}>
           <Table>
             <TableHead>
               <TableRow>
@@ -67,7 +67,6 @@ export const OfferingsTable = (props) => {
                 <TableCell>Monto</TableCell>
                 <TableCell>Fecha</TableCell>
                 <TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -87,7 +86,6 @@ export const OfferingsTable = (props) => {
                     </TableCell>
                     <TableCell> {formatDate(customer.date)}</TableCell>
                     <TableCell>{customer.type}</TableCell>
-                    <TableCell >{customer.state ? "Incluida" : "No Incluida"}</TableCell>
                   </TableRow>
                 );
               })}
