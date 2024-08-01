@@ -1,4 +1,4 @@
-import  {  gql  }  from  '@apollo/client' ;
+import {gql} from '@apollo/client' ;
 import GetAllUser from './graphql/query/GetAllUser.graphql';
 import GetAllMember from './graphql/query/GetAllMember.graphql';
 import GetMemberByRut from './graphql/query/GetMemberByRut.graphql';
@@ -7,6 +7,8 @@ import GetBaptismByChildRut from './graphql/query/GetBaptismByChildRut.graphql';
 import GetProfile from './graphql/query/GetProfile.graphql';
 import GetCountAllMembers from './graphql/query/GetCountAllMember.graphql';
 import GetAllMerriage from './graphql/query/GetAllMerriage.graphql';
+import GetSummaryOfferings from './graphql/query/GetSummaryOfferings.graphql';
+import GetAllOfferings from './graphql/query/GetAllOfferings.graphql';
 
 const GET_PROFILE = gql`
     ${GetProfile}
@@ -34,14 +36,24 @@ const GET_ALL_MERRIAGE = gql`
     ${GetAllMerriage}
 `;
 
-export { GET_PROFILE,
-         GET_ALL_MEMBERS,
-         COUNT_ALL_MEMBERS,
-         GET_MEMBER_BY_RUT,
-         GET_ALL_BAPTISM,
-         GET_BAPTISM_BY_CHILD_RUT,
-         GET_ALL_USER,
-         GET_ALL_MERRIAGE
-    };
+const GET_SUMMARY_OFFERINGS = gql`
+    ${GetSummaryOfferings}
+`;
+
+const GET_ALL_OFFERINGS = gql`
+    ${GetAllOfferings}
+`;
+export {
+  GET_PROFILE,
+  GET_ALL_MEMBERS,
+  COUNT_ALL_MEMBERS,
+  GET_MEMBER_BY_RUT,
+  GET_ALL_BAPTISM,
+  GET_BAPTISM_BY_CHILD_RUT,
+  GET_ALL_USER,
+  GET_ALL_MERRIAGE,
+  GET_SUMMARY_OFFERINGS,
+  GET_ALL_OFFERINGS
+};
 
 

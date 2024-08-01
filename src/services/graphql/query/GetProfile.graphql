@@ -8,6 +8,7 @@ query GetProfile($rut: ID!) {
             email
             mobile
             sexo
+            churchId
         }
     }
 }
