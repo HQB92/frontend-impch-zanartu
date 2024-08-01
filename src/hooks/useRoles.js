@@ -7,7 +7,5 @@ export const useRoles = () => {
         const storedRoles = JSON.parse(window.localStorage.getItem('user')) || [];
         setRoles(storedRoles.roles);
     }, []);
-    console.log(roles);
-
     return roles;
 };

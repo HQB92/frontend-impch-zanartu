@@ -47,7 +47,6 @@ export const OfferingsTable = (props) => {
     };
   };
   const roles = useRoles();
-  console.log("roles", roles)
   function formatDate(isoDate) {
     const date = new Date(isoDate);
     const day = String(date.getUTCDate()).padStart(2, '0');
