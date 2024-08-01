@@ -36,7 +36,6 @@ export const OfferingsTable = (props) => {
     page = 0,
     rowsPerPage = 0,
     selected = [],
-    refreshData = () => {}
   } = props;
 
   const selectedSome = selected.length > 0 && selected.length < items.length;
@@ -56,6 +55,8 @@ export const OfferingsTable = (props) => {
     const year = date.getUTCFullYear();
     return `${day}-${month}-${year}`;
   }
+
+  const convertirAPesosChilenos = (valor) => valor?.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
   return (
     <Card>
       <Scrollbar>
@@ -63,60 +64,31 @@ export const OfferingsTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Dirección</TableCell>
-                <TableCell>Teléfono</TableCell>
-                <TableCell>Fecha Nacimiento</TableCell>
-                <TableCell>Fecha Probando</TableCell>
-                <TableCell>Fecha Plena</TableCell>
-                <TableCell>Editar / Borrar</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Monto</TableCell>
+                <TableCell>Fecha</TableCell>
+                <TableCell>Tipo</TableCell>
+                <TableCell>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((customer) => {
                 const isSelected = selected.includes(customer.rut);
                 return (
-                  <TableRow hover key={customer.rut} selected={isSelected}>
+                  <TableRow hover key={customer.id} selected={isSelected}>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        <Avatar src={customer.sexo === 'Masculino' ? '/assets/avatars/hombre.png' : '/assets/avatars/mujer.png'}>
-                          {getInitials(customer.name)}
-                        </Avatar>
                         <Typography variant="subtitle2">
-                          {customer?.names} { customer.lastNameDad} {customer.lastNameMom}
+                          {customer?.id}
                         </Typography>
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      {customer?.address}
+                      {convertirAPesosChilenos(customer?.amount)}
                     </TableCell>
-                    <TableCell>+56 {customer.mobile}</TableCell>
-                    <TableCell >{formatDate(customer?.dateOfBirth)}</TableCell>
-                    <TableCell>{customer?.probationStartDate ? formatDate(customer?.probationStartDate): ""}</TableCell>
-                    <TableCell>{customer?.fullMembershipDate ? formatDate(customer?.fullMembershipDate) : ""}</TableCell>
-                    <TableCell>
-                      <Button
-                        size="large"
-                        startIcon={<EditIcon style={{ marginRight: '-9px' }} />}
-                        variant="contained"
-                        component={NextLink}
-                        href={`/members/edit?rut=${customer.rut}`}
-                      />{' '}
-                      <Button
-                        size="large"
-                        position="center"
-                        color="error"
-                        startIcon={
-                          <DeleteForeverIcon style={{ marginRight: '-9px' }} />
-                        }
-                        variant="contained"
-                        component={NextLink}
-                        href="/members"
-                        onClick={deleteRut(customer.rut)}
-                        disabled={roles.includes('Administrador' ||'Pastor' )}
-
-                      />
-                    </TableCell>
+                    <TableCell> {formatDate(customer.date)}</TableCell>
+                    <TableCell>{customer.type}</TableCell>
+                    <TableCell >{customer.state ? "Incluida" : "No Incluida"}</TableCell>
                   </TableRow>
                 );
               })}
@@ -149,5 +121,4 @@ OfferingsTable.propTypes = {
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
   selected: PropTypes.array,
-  refreshData: PropTypes.func
 };

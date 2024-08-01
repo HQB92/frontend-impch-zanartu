@@ -1,0 +1,11 @@
+query GetSummaryOfferings($mes: Int, $anio: Int,$churchId: Int) {
+    Offering {
+        getSummaryAll(mes: $mes, anio: $anio, churchId: $churchId) {
+            churchId
+            name
+            total
+            count
+        }
+    }
+}
+

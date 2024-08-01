@@ -5,9 +5,9 @@ export const useRoles = () => {
 
     useEffect(() => {
         const storedRoles = JSON.parse(window.localStorage.getItem('user')) || [];
-        console.log(storedRoles);
         setRoles(storedRoles.roles);
     }, []);
+    console.log(roles);
 
     return roles;
 };
