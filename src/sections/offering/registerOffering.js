@@ -76,6 +76,19 @@ export const RegisterOffering = (props) => {
     setTriggerSubmit(true);
   };
 
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const firstDayOfWeek = new Date(today.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)));
+  const lastDayOfWeek = new Date(firstDayOfWeek);
+  lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const minDate = formatDate(firstDayOfWeek);
+  const maxDate = formatDate(lastDayOfWeek);
+
   if (loading) return <Loader />;
   if (data) return <Alert severity="success">Ofrenda Registrada Exitosamente</Alert>;
   if (error) return <Alert severity="error">Error al registrar Ofrenda</Alert>;
@@ -107,6 +120,10 @@ export const RegisterOffering = (props) => {
                     type="date"
                     onChange={handleChange}
                     required
+                    inputProps={{
+                      min: minDate,
+                      max: maxDate,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} md={2}>
