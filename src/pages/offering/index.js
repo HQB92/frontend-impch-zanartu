@@ -93,6 +93,9 @@ const Page = () => {
         }
       });
     }
+  }, [search.mes, search.anio]);
+
+  useEffect(() => {
     getAllOfferings(
       {
         variables: {
@@ -178,7 +181,7 @@ const Page = () => {
                 <Button
                   color="primary"
                   component={NextLink}
-                  href="/members/register"
+                  href="/offering/register"
                   variant="contained"
                 >
                   <SvgIcon fontSize="small">
@@ -189,7 +192,7 @@ const Page = () => {
               </div>
             </Stack>
             <Box sx={{m: -1.5}}>
-              <Grid container spacing={4}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} md={3}>
                   <TextField
                     fullWidth
@@ -234,10 +237,10 @@ const Page = () => {
             {
               roles.includes('Administrador') || roles.includes('Pastor') ?
                 <Box>
-
                   <Typography variant="subtitle1">
                     Resumen general
                   </Typography>
+
                   {
                     data?.Offering?.getSummaryAll?.length > 0 ?
                       <OfferingsTableSummary
@@ -257,7 +260,6 @@ const Page = () => {
                       />
                       : <Typography variant="body1">No hay datos</Typography>
                   }
-
                 </Box> : null
             }
             <Box>
@@ -291,21 +293,20 @@ const Page = () => {
               {
                 dataOffering?.Offering?.getAll?.length > 0 &&
 
-              <OfferingsTable
-                count={responseOffering.length}
-                items={customersOffering}
-                onDeselectAll={customersSelectionOffering.handleDeselectAll}
-                onDeselectOne={customersSelectionOffering.handleDeselectOne}
-                onPageChange={handlePageChangeOffering}
-                onRowsPerPageChange={handleRowsPerPageChangeOffering}
-                onSelectAll={customersSelectionOffering.handleSelectAll}
-                onSelectOne={customersSelectionOffering.handleSelectOne}
-                page={pageOffering}
-                rowsPerPage={rowsPerPageOffering}
-                selected={customersSelectionOffering.selected}
-              />
+                <OfferingsTable
+                  count={responseOffering.length}
+                  items={customersOffering}
+                  onDeselectAll={customersSelectionOffering.handleDeselectAll}
+                  onDeselectOne={customersSelectionOffering.handleDeselectOne}
+                  onPageChange={handlePageChangeOffering}
+                  onRowsPerPageChange={handleRowsPerPageChangeOffering}
+                  onSelectAll={customersSelectionOffering.handleSelectAll}
+                  onSelectOne={customersSelectionOffering.handleSelectOne}
+                  page={pageOffering}
+                  rowsPerPage={rowsPerPageOffering}
+                  selected={customersSelectionOffering.selected}
+                />
               }
-
             </Box>
           </Stack>
         </Container>

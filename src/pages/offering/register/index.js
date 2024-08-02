@@ -1,7 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
 import Head from 'next/head';
-import { subDays, subHours } from 'date-fns';
-
 import {
   Box,
   Container,
@@ -9,17 +6,14 @@ import {
   Typography,
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { RegisterMember } from 'src/sections/member/registerMember';
-
-
+import { RegisterOffering } from 'src/sections/offering/registerOffering';
 
 
 const Page = () => {
-
   return (
     <>
       <Head>
-        <title>Miembros</title>
+        <title>Ofrendas</title>
       </Head>
       <Box
         component="main"
@@ -32,10 +26,10 @@ const Page = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Registrar Miembro</Typography>
+                <Typography variant="h4">Registrar Ofrenda</Typography>
               </Stack>
             </Stack>
-            <RegisterMember  />
+            <RegisterOffering  />
           </Stack>
         </Container>
       </Box>

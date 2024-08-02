@@ -1,6 +1,6 @@
 {
   "name": "frontend-impch-zanartu",
-  "version": "1.5.3",
+  "version": "1.7.0",
   "licence": "MIT",
   "scripts": {
     "dev": "next",
