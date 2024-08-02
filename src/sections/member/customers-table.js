@@ -15,14 +15,13 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Scrollbar } from 'src/components/scrollbar';
-import { getInitials } from 'src/utils/get-initials';
+import {Scrollbar} from 'src/components/scrollbar';
+import {getInitials} from 'src/utils/get-initials';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useMutation } from "@apollo/client";
-import { DELETE_MEMBER } from "../../services/mutation";
-import { useRoles} from "../../hooks/useRoles";
-
+import {useMutation} from "@apollo/client";
+import {DELETE_MEMBER} from "../../services/mutation";
+import {useRoles} from "../../hooks/useRoles";
 
 export const CustomersTable = (props) => {
   const {
@@ -30,26 +29,28 @@ export const CustomersTable = (props) => {
     items = [],
     onDeselectAll,
     onDeselectOne,
-    onPageChange = () => {},
+    onPageChange = () => {
+    },
     onRowsPerPageChange,
     onSelectAll,
     onSelectOne,
     page = 0,
     rowsPerPage = 0,
     selected = [],
-    refreshData = () => {}
+    refreshData = () => {
+    }
   } = props;
 
   const selectedSome = selected.length > 0 && selected.length < items.length;
   const selectedAll = items.length > 0 && selected.length === items.length;
-  const [deleteMember,{data, loading, error}] = useMutation(DELETE_MEMBER);
+  const [deleteMember, {data, loading, error}] = useMutation(DELETE_MEMBER);
   const deleteRut = (rut) => {
     return () => {
       deleteMember({variables: {rut}});
     };
   };
+
   const roles = useRoles();
-  console.log("roles", roles)
   function formatDate(isoDate) {
     const date = new Date(isoDate);
     const day = String(date.getUTCDate()).padStart(2, '0');
@@ -57,10 +58,11 @@ export const CustomersTable = (props) => {
     const year = date.getUTCFullYear();
     return `${day}-${month}-${year}`;
   }
+
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{ minWidth: 1200 }}  mb={{minWidth: 2200}} lg={ {minWidth: 2200}}>
+        <Box sx={{minWidth: 1200}} mb={{minWidth: 2200}} lg={{minWidth: 2200}}>
           <Table>
             <TableHead>
               <TableRow>
@@ -70,7 +72,8 @@ export const CustomersTable = (props) => {
                 <TableCell>Fecha Nacimiento</TableCell>
                 <TableCell>Fecha Probando</TableCell>
                 <TableCell>Fecha Plena</TableCell>
-                <TableCell>Editar / Borrar</TableCell>
+                <TableCell>Editar</TableCell>
+                <TableCell>Eliminar</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -80,11 +83,12 @@ export const CustomersTable = (props) => {
                   <TableRow hover key={customer.rut} selected={isSelected}>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        <Avatar src={customer.sexo === 'Masculino' ? '/assets/avatars/hombre.png' : '/assets/avatars/mujer.png'}>
+                        <Avatar
+                          src={customer.sexo === 'Masculino' ? '/assets/avatars/hombre.png' : '/assets/avatars/mujer.png'}>
                           {getInitials(customer.name)}
                         </Avatar>
                         <Typography variant="subtitle2">
-                          {customer?.names} { customer.lastNameDad} {customer.lastNameMom}
+                          {customer?.names} {customer.lastNameDad} {customer.lastNameMom}
                         </Typography>
                       </Stack>
                     </TableCell>
@@ -92,29 +96,32 @@ export const CustomersTable = (props) => {
                       {customer?.address}
                     </TableCell>
                     <TableCell>+56 {customer.mobile}</TableCell>
-                    <TableCell >{formatDate(customer?.dateOfBirth)}</TableCell>
-                    <TableCell>{customer?.probationStartDate ? formatDate(customer?.probationStartDate): ""}</TableCell>
+                    <TableCell>{formatDate(customer?.dateOfBirth)}</TableCell>
+                    <TableCell>{customer?.probationStartDate ? formatDate(customer?.probationStartDate) : ""}</TableCell>
                     <TableCell>{customer?.fullMembershipDate ? formatDate(customer?.fullMembershipDate) : ""}</TableCell>
                     <TableCell>
                       <Button
                         size="large"
-                        startIcon={<EditIcon style={{ marginRight: '-9px' }} />}
+                        startIcon={<EditIcon style={{marginRight: '-9px'}}/>}
                         variant="contained"
                         component={NextLink}
                         href={`/members/edit?rut=${customer.rut}`}
-                      />{' '}
+                        disabled={!roles.includes('Administrador') || !roles.includes('Pastor') || !roles.includes('Encargado')}
+                      />
+                    </TableCell>
+                    <TableCell>
                       <Button
                         size="large"
                         position="center"
                         color="error"
                         startIcon={
-                          <DeleteForeverIcon style={{ marginRight: '-9px' }} />
+                          <DeleteForeverIcon style={{marginRight: '-9px'}}/>
                         }
                         variant="contained"
                         component={NextLink}
                         href="/members"
                         onClick={deleteRut(customer.rut)}
-                        disabled={roles.includes('Administrador' ||'Pastor' )}
+                        disabled={!roles.includes('Administrador') || !roles.includes('Pastor')}
 
                       />
                     </TableCell>

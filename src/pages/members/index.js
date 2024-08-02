@@ -18,6 +18,7 @@ import { useLazyQuery } from "@apollo/client";
 import Loader from "../../components/loader";
 import { GET_ALL_MEMBERS } from "../../services/query";
 import { Churchs } from "../../data/member";
+import {useRoles} from "../../hooks/useRoles";
 
 const useCustomers = (page, rowsPerPage, response) => {
   return useMemo(() => {
@@ -38,6 +39,7 @@ const Page = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [typeMember, setTypeMember] = useState(0);
   const [churchId, setChurchId] = useState(0);
+  const roles = useRoles();
 
   const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, {
     fetchPolicy: 'no-cache',
@@ -117,6 +119,7 @@ const Page = () => {
                       component={NextLink}
                       href="/members/register"
                       variant="contained"
+                      disabled={!roles.includes('Administrador') || !roles.includes('Pastor') || !roles.includes('Encargado')}
                   >
                     <SvgIcon fontSize="small">
                       <PlusIcon />
