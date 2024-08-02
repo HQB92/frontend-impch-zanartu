@@ -145,10 +145,12 @@ export const AuthProvider = (props) => {
         window.localStorage.setItem('authenticated', 'true');
         window.localStorage.setItem('token', token);
         window.localStorage.setItem('user', JSON.stringify(user));
-        dispatch({
-          type: HANDLERS.SIGN_IN,
-          payload: user
-        });
+        setTimeout(() => {
+          dispatch({
+            type: HANDLERS.SIGN_IN,
+            payload: user
+          });
+        }, 2000);
       } catch (err) {
         dispatch({
           type: HANDLERS.SIGN_OUT
