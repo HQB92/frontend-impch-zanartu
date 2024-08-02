@@ -39,7 +39,7 @@ export const OfferingsTableSummary = (props) => {
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{minWidth: "100%"}} mb={{minWidth: 2200}} lg={{minWidth: 2200}}>
+        <Box sx={{minWidth: 400}} mb={{minWidth: 2200}} lg={{minWidth: 2200}}>
           <Table>
             <TableHead>
               <TableRow>

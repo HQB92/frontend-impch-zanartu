@@ -70,14 +70,14 @@ export const OfferingsTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((customer) => {
+              {items.map((customer, index) => {
                 const isSelected = selected.includes(customer.rut);
                 return (
                   <TableRow hover key={customer.id} selected={isSelected}>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
                         <Typography variant="subtitle2">
-                          {customer?.id}
+                          {index+1}
                         </Typography>
                       </Stack>
                     </TableCell>

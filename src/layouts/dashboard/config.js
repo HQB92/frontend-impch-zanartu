@@ -46,7 +46,7 @@ export const items = [
           <LocalAtmIcon/>
         </SvgIcon>
     ),
-    roles: ['Administrador', 'Pastor', 'Tesorero'],
+    roles: ['Administrador', 'Pastor', 'Tesorero', 'Ofrenda'],
   },{
     title:'Banco',
     path: '/bank',

@@ -64,7 +64,6 @@ const Page = () => {
   });
 
   useEffect(() => {
-    if (roles.includes('Administrador') || roles.includes('Pastor')) {
       getSummary({
         variables: {
           churchId: null,
@@ -72,8 +71,6 @@ const Page = () => {
           anio: search.anio
         }
       });
-    }
-
     getAllOfferings({
       variables: {
         churchId: search.churchId,
