@@ -93,7 +93,7 @@ export const RegisterCustomer = () => {
     if (data) return <Alert severity="success">{"Usuario Registrado Exitosamente"}</Alert>;
     if (error) return <Alert severity="error">{"Error al registrar Usuario"}</Alert>;
 
-    const names = ['Administrador', 'Pastor', 'Secretario', 'Tesorero', 'Encargado'];
+    const names = ['Administrador', 'Pastor', 'Secretario', 'Tesorero', 'Encargado','Ofrenda'];
 
     return (
         <form autoComplete="off" noValidate onSubmit={handleSubmit}>
