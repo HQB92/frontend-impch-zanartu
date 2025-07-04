@@ -3,7 +3,10 @@ import { setContext } from '@apollo/client/link/context';
 // HttpLink para la URI de GraphQL
 const customFetch = (uri, options) => {
     const { operationName } = JSON.parse(options.body);
-    return fetch(`${process.env.NEXT_PUBLIC_URL}${process.env.NEXT_PUBLIC_PATCHGRAPHQL}/${operationName}`, options);
+    return fetch(`${process.env.NEXT_PUBLIC_URL}${process.env.NEXT_PUBLIC_PATCHGRAPHQL}/${operationName}`, {
+        ...options,
+        credentials: 'include',
+    });
 };
 const httpLink = new HttpLink({ fetch: customFetch });
 
