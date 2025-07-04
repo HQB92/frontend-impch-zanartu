@@ -11,6 +11,7 @@ const login = async (email, password) => {
     url: `${process.env.NEXT_PUBLIC_URL}${process.env.NEXT_PUBLIC_PATHLOGIN}`,
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
     data: data,
   };
