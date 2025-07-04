@@ -81,13 +81,7 @@ export const AuthProvider = (props) => {
     }
 
     if (isAuthenticated) {
-      const user = {
-        id: '5e86809283e28b96d2d38537',
-        avatar: '/assets/avatars/avatar-anika-visser.png',
-        name: 'Anika Visser',
-        email: 'anika.visser@devias.io'
-      };
-
+      const user = JSON.parse(window.localStorage.getItem('user'));
       dispatch({
         type: HANDLERS.INITIALIZE,
         payload: user
@@ -145,12 +139,10 @@ export const AuthProvider = (props) => {
         window.localStorage.setItem('authenticated', 'true');
         window.localStorage.setItem('token', token);
         window.localStorage.setItem('user', JSON.stringify(user));
-        setTimeout(() => {
-          dispatch({
-            type: HANDLERS.SIGN_IN,
-            payload: user
-          });
-        }, 2000);
+        dispatch({
+          type: HANDLERS.SIGN_IN,
+          payload: user
+        });
       } catch (err) {
         dispatch({
           type: HANDLERS.SIGN_OUT

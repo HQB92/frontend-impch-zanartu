@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
@@ -17,6 +17,13 @@ const Page = () => {
   const router = useRouter();
   const auth = useAuth();
   const [method, setMethod] = useState("email");
+
+  useEffect(() => {
+    if (!auth.isLoading && auth.isAuthenticated) {
+      router.push("/");
+    }
+  }, [auth.isLoading, auth.isAuthenticated, router]);
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -29,9 +36,7 @@ const Page = () => {
     }),
     onSubmit: async (values, helpers) => {
       try {
-        console.log(values);
         await auth.signIn(values.email, values.password);
-        router.push("/");
       } catch (err) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: err.message });
