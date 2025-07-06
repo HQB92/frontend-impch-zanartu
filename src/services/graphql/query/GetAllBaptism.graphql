@@ -1,12 +1,12 @@
 query GetAllBaptism {
     BaptismRecord {
         getAll {
-            childRut
+            childRUT
             childFullName
             childDateOfBirth
-            fatherRut
+            fatherRUT
             fatherFullName
-            motherRut
+            motherRUT
             motherFullName
             placeOfRegistration
             baptismDate
