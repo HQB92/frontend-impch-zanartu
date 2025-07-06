@@ -1,11 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useUser } from './useUser';
 
 export const useRoles = () => {
-    const [roles, setRoles] = useState([]);
-
-    useEffect(() => {
-        const storedRoles = JSON.parse(window.localStorage.getItem('user')) || [];
-        setRoles(storedRoles.roles);
-    }, []);
-    return roles;
+    const user = useUser();
+    return user.roles || [];
 };

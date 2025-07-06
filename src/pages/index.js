@@ -14,16 +14,22 @@ import { useLazyQuery } from "@apollo/client";
 import { COUNT_ALL_MEMBERS} from "../services/query";
 import {useEffect} from "react";
 import Loader from "../components/loader";
+import { useProfile } from "../hooks/useProfile";
 
 const now = new Date();
 
 const Page = () => {
   const [getCountMembers, { data, loading }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
+  const { profile, isLoaded } = useProfile();
 
   useEffect(() => {
-    getCountMembers();
-  }, []);
-  if(loading) return <Loader/>
+    if (isLoaded && profile) {
+      getCountMembers();
+    }
+  }, [isLoaded, profile, getCountMembers]);
+
+  if(loading || !isLoaded) return <Loader/>
+
   return (
   <>
     <Head>

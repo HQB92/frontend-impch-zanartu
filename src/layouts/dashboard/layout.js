@@ -36,10 +36,10 @@ export const Layout = withAuthGuard((props) => {
   });
   const profileSave = JSON.parse(window.localStorage.getItem("profile")) || {};
   const [isProfileLoaded, setIsProfileLoaded] = useState(!!profileSave.rut);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
-
 
   const handlePathnameChange = useCallback(() => {
     if (openNav) {
@@ -54,6 +54,10 @@ export const Layout = withAuthGuard((props) => {
   useEffect(() => {
     if (rut && !isProfileLoaded) {
       miProfile({ variables: { rut: rut } });
+    } else if (rut && isProfileLoaded) {
+      setIsInitialized(true);
+    } else if (!rut) {
+      setIsInitialized(true);
     }
   }, [miProfile, rut, isProfileLoaded]);
 
@@ -70,14 +74,19 @@ export const Layout = withAuthGuard((props) => {
         churchId: data?.Member?.getByRut?.churchId,
       };
       window.localStorage.setItem('profile', JSON.stringify(profile));
-      setIsProfileLoaded(true);  // Update the state to indicate profile is loaded
+      setIsProfileLoaded(true);
+      setIsInitialized(true);
     } else if (error) {
       console.error("Error fetching profile:", error);
       window.localStorage.setItem('profile', JSON.stringify({}));
+      setIsProfileLoaded(true);
+      setIsInitialized(true);
     }
   }, [data, error, rut]);
 
-  if (loading && !isProfileLoaded) return <Loader />;
+  if (!isInitialized || (loading && !isProfileLoaded)) {
+    return <Loader />;
+  }
 
   return (
       <>
