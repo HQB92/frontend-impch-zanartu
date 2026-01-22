@@ -1,0 +1,9 @@
+query GetAllChurch {
+    Church {
+        getAll {
+            id
+            name
+            address
+        }
+    }
+}

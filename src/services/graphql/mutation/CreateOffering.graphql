@@ -1,8 +1,0 @@
-mutation CreteOffering($offering: OfferingInput!) {
-    Offering {
-        create(offering: $offering) {
-            code
-            message
-        }
-    }
-}

@@ -1,5 +1,3 @@
-# queries.graphql
-
 query GetAllUser {
     User {
         getAll {
@@ -11,6 +9,3 @@ query GetAllUser {
         }
     }
 }
-
-
-

@@ -1,4 +1,4 @@
-query GetAllMerriage{
+query GetAllMerriage {
     MerriageRecord {
         getAll {
             id

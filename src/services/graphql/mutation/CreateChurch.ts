@@ -1,0 +1,10 @@
+const CreateChurch = `mutation CreateChurch($name: String!, $address: String!) {
+    Church {
+        create(name: $name, address: $address) {
+            code
+            message
+        }
+    }
+}`;
+
+export default CreateChurch;

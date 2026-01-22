@@ -1,109 +1,160 @@
-## [Material Kit - React](https://material-kit-react.devias.io/) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=%F0%9F%9A%A8Devias%20Freebie%20Alert%20-%20An%20awesome%20ready-to-use%20register%20page%20made%20with%20%23material%20%23react%0D%0Ahttps%3A%2F%2Fdevias.io%20%23createreactapp%20%23devias%20%23material%20%23freebie%20%40devias-io)
+# Frontend IMPCH Zañartu v2
 
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
+Proyecto frontend moderno para IMPCH Zañartu construido con Next.js 16, TypeScript, Tailwind CSS y shadcn/ui.
 
-[![Material Kit - React](https://github.com/devias-io/material-kit-react/blob/main/public/assets/thumbnail.png)](https://material-kit-react.devias.io/)
+## 🚀 Tecnologías
 
-> Free React Admin Dashboard made with [MUI's](https://mui.com/?ref=devias-io)
-> components, [React](https://reactjs.org/?ref=devias-io) and of
-> course [Next.js](https://github.com/vercel/next.js/?ref=devias-io) to boost your app development
-> process!
+- **Next.js 16** - Framework React con App Router
+- **TypeScript** - Tipado estático
+- **Tailwind CSS v4** - Estilos utility-first
+- **shadcn/ui** - Componentes UI modernos
+- **Apollo Client** - Cliente GraphQL
+- **GraphQL** - API de consultas
 
-## Demo
+## 📦 Instalación
 
-- [Dashboard Page](https://material-kit-react.devias.io)
-- [Companies Page](https://material-kit-react.devias.io/companies)
-- [Customers Page](https://material-kit-react.devias.io/customers)
-- [Account Page](https://material-kit-react.devias.io/account)
-- [Settings Page](https://material-kit-react.devias.io/settings)
-- [Login Page](https://material-kit-react.devias.io/auth/login)
-- [Register Page](https://material-kit-react.devias.io/auth/register)
-
-## Free Figma Community File
-
-- [Duplicate File](https://www.figma.com/community/file/1039837897183395483/Devias-Dashboard-Design-Library-Kit)
-
-## Upgrade to PRO Version
-
-We also have a pro version of this product which bundles even more pages and components if you want
-to save more time and design efforts :)
-
-| Free Version (this one) | [Material Kit Pro - React](https://mui.com/store/items/devias-kit-pro/)  |
-|-------------------------|:-------------------------------------------------------------------------|
-| **9** Demo Pages        | **40+** demo pages                                                       
-| ✔ Mocked Authentication | ✔ Authentication with **Amplify**, **Auth0**, **JWT** and **Firebase**   
-| -                       | ✔ Dark & light mode                                                      
-| -                       | ✔ CRA version                                                            
-| -                       | ✔ TypeScript version - for Standard Plus and Extended license            
-| -                       | ✔ Design files (sketch & figma) - for Standard Plus and Extended license 
-| -                       | ✔ Complete users flows                                                   
-
-## Quick start
-
-- [Download from Github](https://github.com/devias-io/material-kit-react/archive/master.zip)
-  or [Download from Devias](https://devias.io/products/material-kit-react) or clone the
-  repo: `git clone https://github.com/devias-io/material-kit-react.git`
-
-- Make sure your Node.js and npm versions are up to date for `React 18`
-
-- Install dependencies: `npm install` or `yarn`
-
-- Start the server: `npm run dev` or `yarn dev`
-
-- Views are on: `localhost:3000`
-
-## File Structure
-
-Within the download you'll find the following directories and files:
-
-```
-material-kit-react
-
-┌── .eslintrc.json
-├── .gitignore
-├── CHANGELOG.md
-├── LICENSE.md
-├── next.config.js
-├── package.json
-├── README.md
-├── public
-└── src
-	├── components
-	├── contexts
-	├── guards
-	├── hocs
-	├── hooks
-	├── layouts
-	├── sections
-	├── theme
-	├── utils
-	└── pages
-		├── 404.js
-		├── _app.js
-		├── _document.js
-		├── account.js
-		├── companies.js
-		├── customers.js
-		├── index.js
-		├── products.js
-		└── settings.js
-		└──  auth
-			├── login.js
-			└── register.js
+```bash
+npm install
+# o
+pnpm install
+# o
+yarn install
 ```
 
-## Resources
+## ⚙️ Configuración
 
-- More freebies like this one: <https://devias.io>
+1. Copia el archivo `.env.example` a `.env`:
+```bash
+cp .env.example .env
+```
 
-## Reporting Issues:
+2. Configura las variables de entorno en `.env`:
+```env
+NEXT_PUBLIC_URL=https://app.impchzanartu.online
+NEXT_PUBLIC_PATCHGRAPHQL=/graphql
+NEXT_PUBLIC_TOKEN=your_token_here
+```
 
-- [Github Issues Page](https://github.com/devias-io/react-material-dashboard/issues?ref=devias-io)
+## 🏃 Desarrollo
 
-## License
+Ejecuta el servidor de desarrollo:
 
-- Licensed under MIT (https://github.com/devias-io/react-material-dashboard/blob/master/LICENSE.md)
+```bash
+npm run dev
+# o
+pnpm dev
+# o
+yarn dev
+```
 
-## Contact Us
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-- Email Us: support@deviasio.zendesk.com
+## 📁 Estructura del Proyecto
+
+```
+frontend-impch-zanartu-v2/
+├── app/                    # App Router de Next.js
+│   ├── login/             # Página de login (shadcn login-04)
+│   ├── dashboard/         # Dashboard (shadcn dashboard-01)
+│   └── layout.tsx         # Layout principal con ApolloProvider
+├── components/            # Componentes React
+│   ├── ui/               # Componentes UI de shadcn
+│   └── providers/        # Providers (Apollo, etc.)
+├── lib/                  # Utilidades y configuraciones
+│   ├── apollo-client.ts  # Configuración de Apollo Client
+│   └── utils.ts          # Utilidades generales
+├── services/             # Servicios y lógica de negocio
+│   ├── graphql/         # Archivos GraphQL
+│   │   ├── query/       # Queries GraphQL
+│   │   └── mutation/    # Mutations GraphQL
+│   ├── query.ts         # Exportación de queries
+│   └── mutation.ts      # Exportación de mutations
+└── graphql.config.yml   # Configuración de GraphQL
+```
+
+## 🔌 GraphQL
+
+El proyecto está configurado con Apollo Client para trabajar con GraphQL.
+
+### Uso de Queries
+
+```typescript
+import { useQuery } from '@apollo/client';
+import { GET_PROFILE } from '@/services/query';
+
+function ProfileComponent({ rut }: { rut: string }) {
+  const { data, loading, error } = useQuery(GET_PROFILE, {
+    variables: { rut },
+  });
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return <div>{data?.Member?.getByRut?.names}</div>;
+}
+```
+
+### Uso de Mutations
+
+```typescript
+import { useMutation } from '@apollo/client';
+import { CREATE_MEMBER } from '@/services/mutation';
+
+function CreateMemberComponent() {
+  const [createMember, { loading, error }] = useMutation(CREATE_MEMBER);
+
+  const handleSubmit = async (memberData: any) => {
+    try {
+      const result = await createMember({
+        variables: { member: memberData },
+      });
+      console.log('Miembro creado:', result.data);
+    } catch (err) {
+      console.error('Error:', err);
+    }
+  };
+
+  return (
+    <button onClick={() => handleSubmit({...})} disabled={loading}>
+      Crear Miembro
+    </button>
+  );
+}
+```
+
+### Agregar nuevas Queries/Mutations
+
+1. Crea el archivo `.graphql` en `services/graphql/query/` o `services/graphql/mutation/`
+2. Crea el archivo `.ts` correspondiente con el mismo nombre
+3. Exporta la query/mutation en `services/query.ts` o `services/mutation.ts`
+
+Ejemplo:
+- `services/graphql/query/GetAllUsers.graphql`
+- `services/graphql/query/GetAllUsers.ts`
+- Agregar exportación en `services/query.ts`
+
+## 🎨 Componentes UI
+
+El proyecto usa shadcn/ui. Para agregar nuevos componentes:
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+## 📝 Scripts Disponibles
+
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Construye la aplicación para producción
+- `npm run start` - Inicia el servidor de producción
+- `npm run lint` - Ejecuta el linter
+
+## 🔐 Autenticación
+
+El proyecto maneja la autenticación mediante tokens JWT almacenados en `localStorage`. El token se valida automáticamente antes de cada solicitud GraphQL y se limpia si está expirado.
+
+## 📚 Recursos
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Apollo Client Documentation](https://www.apollographql.com/docs/react/)
+- [shadcn/ui Documentation](https://ui.shadcn.com/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)

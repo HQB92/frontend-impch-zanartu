@@ -1,0 +1,16 @@
+const GetProfile = `query GetProfile($rut: ID!) {
+    Member {
+        getByRut(rut: $rut) {
+            names
+            lastNameDad
+            lastNameMom
+            address
+            email
+            mobile
+            sexo
+            churchId
+        }
+    }
+}`;
+
+export default GetProfile;

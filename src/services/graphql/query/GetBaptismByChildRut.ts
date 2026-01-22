@@ -1,0 +1,19 @@
+const GetBaptismByChildRut = `query GetBaptismByChildRut($childRUT: ID!) {
+    BaptismRecord {
+        getByChildRut(childRUT: $childRUT) {
+            childRUT
+            childFullName
+            childDateOfBirth
+            fatherRUT
+            fatherFullName
+            motherRUT
+            motherFullName
+            placeOfRegistration
+            baptismDate
+            registrationNumber
+            registrationDate
+        }
+    }
+}`;
+
+export default GetBaptismByChildRut;

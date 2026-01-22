@@ -1,0 +1,19 @@
+const GetAllBaptism = `query GetAllBaptism {
+    BaptismRecord {
+        getAll {
+            childRUT
+            childFullName
+            childDateOfBirth
+            fatherRUT
+            fatherFullName
+            motherRUT
+            motherFullName
+            placeOfRegistration
+            baptismDate
+            registrationNumber
+            registrationDate
+        }
+    }
+}`;
+
+export default GetAllBaptism;

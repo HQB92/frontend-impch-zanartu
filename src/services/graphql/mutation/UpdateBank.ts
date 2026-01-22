@@ -1,0 +1,10 @@
+const UpdateBank = `mutation UpdateBank($id: ID!, $bank: BankInput!) {
+    Bank {
+        update(id: $id, bank: $bank) {
+            code
+            message
+        }
+    }
+}`;
+
+export default UpdateBank;
