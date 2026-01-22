@@ -164,39 +164,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Cannot sign in on server');
     }
 
-    const token = await login(username, password);
-    let user: User | null = null;
+    try {
+      const token = await login(username, password);
+      let user: User | null = null;
 
-    if (token) {
-      try {
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        user = {
-          id: decoded.userId || decoded.id,
-          name: decoded.username || decoded.name,
-          email: decoded.email,
-          rut: decoded.rut,
-          roles: decoded.roles,
-        };
+      if (token) {
+        try {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          user = {
+            id: decoded.userId || decoded.id,
+            name: decoded.username || decoded.name,
+            email: decoded.email,
+            rut: decoded.rut,
+            roles: decoded.roles,
+          };
 
-        window.localStorage.setItem('authenticated', 'true');
-        window.localStorage.setItem('token', token);
-        window.localStorage.setItem('user', JSON.stringify(user));
+          window.localStorage.setItem('authenticated', 'true');
+          window.localStorage.setItem('token', token);
+          window.localStorage.setItem('user', JSON.stringify(user));
 
-        dispatch({
-          type: 'SIGN_IN',
-          payload: user,
-        });
+          dispatch({
+            type: 'SIGN_IN',
+            payload: user,
+          });
 
-        // Redirigir al dashboard después del login exitoso
-        router.push('/dashboard');
-      } catch (err) {
-        console.error('Error parsing token:', err);
+          // Redirigir al dashboard después del login exitoso
+          router.push('/dashboard');
+        } catch (err) {
+          console.error('Error parsing token:', err);
+          dispatch({ type: 'SIGN_OUT' });
+          throw new Error('Error al procesar la respuesta del servidor');
+        }
+      } else {
         dispatch({ type: 'SIGN_OUT' });
-        throw new Error('Error al procesar la respuesta del servidor');
+        throw new Error('Por favor revisa tus credenciales');
       }
-    } else {
+    } catch (err: any) {
+      // Re-lanzar el error con el mensaje original para que se muestre en el formulario
       dispatch({ type: 'SIGN_OUT' });
-      throw new Error('Por favor revisa tus credenciales');
+      throw err;
     }
   };
 
