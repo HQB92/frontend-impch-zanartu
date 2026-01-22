@@ -68,7 +68,7 @@ export function Header() {
           <div className="flex items-center gap-4">
             <a 
               href="/login"
-              className="hidden sm:inline-flex h-11 px-7 items-center justify-center bg-primary text-primary-foreground text-[12px] tracking-[0.15em] font-semibold rounded-sm transition-all duration-500 hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+              className="hidden sm:inline-flex h-11 px-7 items-center justify-center bg-copper text-white text-[12px] tracking-[0.15em] font-semibold rounded-sm transition-all duration-500 hover:bg-[#1e3d6f] hover:shadow-[0_0_30px_rgba(14,39,87,0.3)]"
             >
               Intranet
             </a>
@@ -107,7 +107,7 @@ export function Header() {
           <div className="flex flex-col gap-3 mt-6">
             <Link 
               href="/login"
-              className="h-12 flex items-center justify-center border border-white/20 text-white text-[12px] tracking-[0.15em] font-medium rounded-sm"
+              className="h-12 flex items-center justify-center bg-copper text-white text-[12px] tracking-[0.15em] font-semibold rounded-sm transition-all duration-500 hover:bg-[#1e3d6f]"
               onClick={() => setIsOpen(false)}
             >
               Intranet

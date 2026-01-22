@@ -70,7 +70,7 @@ export function Hero() {
           <div className={`opacity-0 ${visible ? 'animate-fade-up' : ''}`}>
             <div className="inline-flex items-center gap-3 px-6 py-2.5 border border-white/20 rounded-full backdrop-blur-sm bg-white/5 mb-10">
               <span className="text-[11px] tracking-[0.25em] uppercase text-white/70 font-medium">
-                Iglesia Metodista Pentecostal
+                Iglesia Metodista Pentecostal de Chile
               </span>
             </div>
           </div>
