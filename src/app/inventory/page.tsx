@@ -35,7 +35,7 @@ export default function InventoryPage() {
   });
 
   const [deleteBank] = useMutation(DELETE_BANK, {
-    onCompleted: (data) => {
+    onCompleted: (data: any) => {
       const response = data?.Bank?.delete;
       if (response?.code === 200) {
         toast.success(response.message || 'Movimiento eliminado exitosamente');

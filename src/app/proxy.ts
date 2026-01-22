@@ -1,11 +1,11 @@
-import { ProxyRequest, ProxyResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function proxy(request: ProxyRequest): Promise<ProxyResponse> {
+export async function proxy(request: NextRequest) {
   // Proxy is now strictly for routing operations only
   // Authentication is handled client-side via AuthGuard component
   // This proxy file exists to satisfy Next.js 16 requirements
   
-  return ProxyResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {

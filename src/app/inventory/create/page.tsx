@@ -31,22 +31,25 @@ export default function CreateInventoryPage() {
   const [comment, setComment] = useState('');
   const [churches, setChurches] = useState<any[]>([]);
 
-  const [getChurches] = useLazyQuery(GET_ALL_CHURCH, {
+  const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, {
     fetchPolicy: 'no-cache',
-    onCompleted: (data) => {
-      setChurches((data as any)?.Church?.getAll || []);
-      if (profile?.churchId) {
-        setChurchId(profile.churchId.toString());
-      }
-    },
   });
 
   useEffect(() => {
     getChurches();
   }, [getChurches]);
 
+  useEffect(() => {
+    if (churchesData) {
+      setChurches((churchesData as any)?.Church?.getAll || []);
+      if (profile?.churchId) {
+        setChurchId(profile.churchId.toString());
+      }
+    }
+  }, [churchesData, profile]);
+
   const [createBank, { loading }] = useMutation(CREATE_BANK, {
-    onCompleted: (data) => {
+    onCompleted: (data: any) => {
       const response = data?.Bank?.create;
       if (response?.code === 200) {
         toast.success(response.message || 'Movimiento creado exitosamente');

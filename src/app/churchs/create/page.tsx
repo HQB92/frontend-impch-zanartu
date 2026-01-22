@@ -22,7 +22,7 @@ export default function CreateChurchPage() {
   const [address, setAddress] = useState('');
 
   const [createChurch, { loading }] = useMutation(CREATE_CHURCH, {
-    onCompleted: (data) => {
+    onCompleted: (data: any) => {
       const response = data?.Church?.create;
       if (response?.code === 200) {
         toast.success(response.message || 'Iglesia creada exitosamente');

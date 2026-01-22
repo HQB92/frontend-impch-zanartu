@@ -48,7 +48,7 @@ export default function EditChurchPage() {
   }, [data, id]);
 
   const [updateChurch, { loading }] = useMutation(UPDATE_CHURCH, {
-    onCompleted: (data) => {
+    onCompleted: (data: any) => {
       const response = data?.Church?.update;
       if (response?.code === 200) {
         toast.success(response.message || 'Iglesia actualizada exitosamente');

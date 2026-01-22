@@ -33,12 +33,15 @@ export default function EditInventoryPage() {
   const [comment, setComment] = useState('');
   const [churches, setChurches] = useState<any[]>([]);
 
-  const [getChurches] = useLazyQuery(GET_ALL_CHURCH, {
+  const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, {
     fetchPolicy: 'no-cache',
-    onCompleted: (data) => {
-      setChurches((data as any)?.Church?.getAll || []);
-    },
   });
+
+  useEffect(() => {
+    if (churchesData) {
+      setChurches((churchesData as any)?.Church?.getAll || []);
+    }
+  }, [churchesData]);
 
   const [getBank, { data, loading: loadingBank }] = useLazyQuery(GET_ALL_BANK, {
     fetchPolicy: 'no-cache',
@@ -69,7 +72,7 @@ export default function EditInventoryPage() {
   }, [data, id]);
 
   const [updateBank, { loading }] = useMutation(UPDATE_BANK, {
-    onCompleted: (data) => {
+    onCompleted: (data: any) => {
       const response = data?.Bank?.update;
       if (response?.code === 200) {
         toast.success(response.message || 'Movimiento actualizado exitosamente');
