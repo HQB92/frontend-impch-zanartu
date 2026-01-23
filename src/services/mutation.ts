@@ -8,6 +8,8 @@ import UpdateChurch from './graphql/mutation/UpdateChurch';
 import CreateBank from './graphql/mutation/CreateBank';
 import UpdateBank from './graphql/mutation/UpdateBank';
 import DeleteBank from './graphql/mutation/DeleteBank';
+import DeleteMerriage from './graphql/mutation/DeleteMerriage';
+import DeleteBaptism from './graphql/mutation/DeleteBaptism';
 
 const CREATE_MEMBER = gql`
     ${CreateMember}
@@ -45,6 +47,14 @@ const DELETE_BANK = gql`
     ${DeleteBank}
 `;
 
+const DELETE_MERRIAGE = gql`
+    ${DeleteMerriage}
+`;
+
+const DELETE_BAPTISM = gql`
+    ${DeleteBaptism}
+`;
+
 export {
   CREATE_MEMBER,
   UPDATE_MEMBER,
@@ -55,4 +65,6 @@ export {
   CREATE_BANK,
   UPDATE_BANK,
   DELETE_BANK,
+  DELETE_MERRIAGE,
+  DELETE_BAPTISM,
 };

@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import Link from 'next/link';
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -13,9 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader } from "@/components/loader"
 import { GET_ALL_MERRIAGE } from "@/services/query"
+import { DELETE_MERRIAGE } from "@/services/mutation"
 import { useRoles } from "@/hooks/use-roles"
 import { PlusIcon } from "@heroicons/react/24/solid"
-import { Pencil, FileDown } from "lucide-react"
+import { Pencil, FileDown, MoreVertical, Trash2 } from "lucide-react"
 import { generateMarriageCertificate } from "@/lib/certificates/marriage-certificate"
 import {
   Table,
@@ -25,15 +27,60 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function MerriagePage() {
   const [marriages, setMarriages] = useState<any[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [marriageToDelete, setMarriageToDelete] = useState<string | null>(null);
   const roles = useRoles();
   const [getMarriages, { data, loading, error }] = useLazyQuery(GET_ALL_MERRIAGE, {
     fetchPolicy: 'no-cache',
   });
+  const [deleteMerriage] = useMutation(DELETE_MERRIAGE);
 
   const canCreate = roles.includes('Administrador') || roles.includes('Pastor') || roles.includes('Secretario');
+
+  const handleDeleteClick = (id: string) => {
+    setMarriageToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!marriageToDelete) return;
+
+    try {
+      const response = await deleteMerriage({
+        variables: { id: marriageToDelete }
+      });
+
+      const result = (response.data as any)?.MerriageRecord?.delete;
+      if (result?.code === 200) {
+        toast.success(result.message || 'Matrimonio eliminado exitosamente');
+        getMarriages(); // Recargar la lista
+      } else {
+        toast.error(result?.message || 'Error al eliminar el matrimonio');
+      }
+    } catch (err: any) {
+      toast.error('Error al eliminar el matrimonio: ' + (err.message || 'Error desconocido'));
+    } finally {
+      setDeleteDialogOpen(false);
+      setMarriageToDelete(null);
+    }
+  };
 
   useEffect(() => {
     getMarriages();
@@ -104,14 +151,13 @@ export default function MerriagePage() {
                         <TableHead>Fecha Civil</TableHead>
                         <TableHead>Fecha Religiosa</TableHead>
                         <TableHead>Lugar</TableHead>
-                        <TableHead>Certificado</TableHead>
-                        {canCreate && <TableHead>Acciones</TableHead>}
+                        <TableHead>Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {marriages.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={canCreate ? 7 : 6} className="text-center text-muted-foreground">
+                          <TableCell colSpan={6} className="text-center text-muted-foreground">
                             No hay matrimonios disponibles
                           </TableCell>
                         </TableRow>
@@ -124,28 +170,37 @@ export default function MerriagePage() {
                             <TableCell>{marriage.religiousDate || '-'}</TableCell>
                             <TableCell>{marriage.civilPlace || '-'}</TableCell>
                             <TableCell>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => generateMarriageCertificate(marriage)}
-                              >
-                                <FileDown className="h-4 w-4 mr-2" />
-                                Descargar
-                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  {canCreate && (
+                                    <>
+                                      <DropdownMenuItem asChild>
+                                        <Link href={`/merriage/edit?id=${encodeURIComponent(marriage.id)}`} className="flex items-center w-full">
+                                          <Pencil className="h-4 w-4 mr-2" />
+                                          Editar
+                                        </Link>
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => handleDeleteClick(marriage.id)}
+                                        className="text-destructive focus:text-destructive"
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Eliminar
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                  <DropdownMenuItem onClick={() => generateMarriageCertificate(marriage)}>
+                                    <FileDown className="h-4 w-4 mr-2" />
+                                    Certificado
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </TableCell>
-                            {canCreate && (
-                              <TableCell>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  asChild
-                                >
-                                  <Link href={`/merriage/edit?id=${encodeURIComponent(marriage.id)}`}>
-                                    <Pencil className="h-4 w-4" />
-                                  </Link>
-                                </Button>
-                              </TableCell>
-                            )}
                           </TableRow>
                         ))
                       )}
@@ -157,6 +212,34 @@ export default function MerriagePage() {
           </Card>
         </div>
       </SidebarInset>
+      
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar eliminación</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro de que deseas eliminar este matrimonio? Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setMarriageToDelete(null);
+              }}
+            >
+              No
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+            >
+              Sí, eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   )
 }
