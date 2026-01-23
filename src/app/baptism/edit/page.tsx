@@ -3,6 +3,9 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from "sonner";
+import Rut from "rutjs";
+import { toTitleCase } from "@/lib/utils";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -42,6 +45,7 @@ function EditBaptismForm() {
   });
 
   const [createBaptism, { data, loading, error }] = useMutation(CREATE_BAPTISM);
+  const [rutErrors, setRutErrors] = useState<{ childRUT?: string; fatherRUT?: string; motherRUT?: string }>({});
 
   useEffect(() => {
     if (childRUT) {
@@ -53,13 +57,45 @@ function EditBaptismForm() {
     if (queryData) {
       const baptismData = (queryData as any)?.BaptismRecord?.getByChildRut;
       if (baptismData) {
+        // Formatear RUTs al cargar los datos
+        let formattedChildRUT = baptismData.childRUT || '';
+        let formattedFatherRUT = baptismData.fatherRUT || '';
+        let formattedMotherRUT = baptismData.motherRUT || '';
+        
+        if (formattedChildRUT) {
+          try {
+            const rut = new Rut(formattedChildRUT);
+            formattedChildRUT = rut.getNiceRut();
+          } catch {
+            // Mantener el valor original si falla el formateo
+          }
+        }
+        
+        if (formattedFatherRUT) {
+          try {
+            const rut = new Rut(formattedFatherRUT);
+            formattedFatherRUT = rut.getNiceRut();
+          } catch {
+            // Mantener el valor original si falla el formateo
+          }
+        }
+        
+        if (formattedMotherRUT) {
+          try {
+            const rut = new Rut(formattedMotherRUT);
+            formattedMotherRUT = rut.getNiceRut();
+          } catch {
+            // Mantener el valor original si falla el formateo
+          }
+        }
+        
         setBaptism({
-          childRUT: baptismData.childRUT || '',
+          childRUT: formattedChildRUT,
           childFullName: baptismData.childFullName || '',
           childDateOfBirth: baptismData.childDateOfBirth || '',
-          fatherRUT: baptismData.fatherRUT || '',
+          fatherRUT: formattedFatherRUT,
           fatherFullName: baptismData.fatherFullName || '',
-          motherRUT: baptismData.motherRUT || '',
+          motherRUT: formattedMotherRUT,
           motherFullName: baptismData.motherFullName || '',
           placeOfRegistration: baptismData.placeOfRegistration || '',
           baptismDate: baptismData.baptismDate || '',
@@ -71,22 +107,76 @@ function EditBaptismForm() {
   }, [queryData]);
 
   useEffect(() => {
-    if ((data as any)?.BaptismRecord?.create?.code === 200) {
-      setTimeout(() => {
-        router.push('/baptism');
-      }, 2000);
+    if (data) {
+      const response = (data as any)?.BaptismRecord?.create;
+      if (response?.code === 201) {
+        toast.success(response.message || 'Bautizo actualizado exitosamente');
+        setTimeout(() => {
+          router.push('/baptism');
+          router.refresh();
+        }, 1500);
+      }
     }
   }, [data, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const fieldsToUppercase = ['childFullName', 'fatherFullName', 'motherFullName', 'placeOfRegistration'];
+    const fieldsToTitleCase = ['childFullName', 'fatherFullName', 'motherFullName', 'placeOfRegistration'];
+    const rutFields = ['childRUT', 'fatherRUT', 'motherRUT'];
     
     let newValue = value;
-    if (fieldsToUppercase.includes(name)) {
-      newValue = value.toUpperCase();
+    if (fieldsToTitleCase.includes(name)) {
+      newValue = toTitleCase(value);
     } else if (name === 'registrationNumber' && value !== '') {
       newValue = value.replace(/[^0-9]/g, '');
+    } else if (rutFields.includes(name)) {
+      // Formatear RUT mientras se escribe usando rutjs
+      const cleanValue = value.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
+      
+      if (cleanValue.length > 0) {
+        try {
+          // Si tiene guión o tiene 8+ caracteres (incluyendo dígito verificador), formatear
+          if (cleanValue.includes('-') || cleanValue.length >= 8) {
+            const rut = new Rut(cleanValue);
+            newValue = rut.getNiceRut();
+          } else {
+            // Si aún no tiene formato completo, dejar como está
+            newValue = cleanValue;
+          }
+        } catch {
+          newValue = cleanValue;
+        }
+      } else {
+        newValue = '';
+      }
+      
+      // Validar RUT si tiene formato completo (con guión)
+      if (newValue && newValue.includes('-')) {
+        try {
+          const rut = new Rut(newValue);
+          const isValid = rut.isValid;
+          setRutErrors(prev => ({
+            ...prev,
+            [name]: isValid ? undefined : 'RUT inválido'
+          }));
+        } catch {
+          setRutErrors(prev => ({
+            ...prev,
+            [name]: 'RUT inválido'
+          }));
+        }
+      } else if (newValue.length > 0) {
+        // Limpiar error si aún no está completo
+        setRutErrors(prev => ({
+          ...prev,
+          [name]: undefined
+        }));
+      } else {
+        setRutErrors(prev => ({
+          ...prev,
+          [name]: undefined
+        }));
+      }
     }
 
     setBaptism(prev => ({
@@ -97,6 +187,49 @@ function EditBaptismForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar RUTs antes de enviar (solo si tienen valor)
+    let childRutValid = true;
+    let fatherRutValid = true;
+    let motherRutValid = true;
+    
+    if (baptism.childRUT) {
+      try {
+        const rut = new Rut(baptism.childRUT);
+        childRutValid = rut.isValid;
+      } catch {
+        childRutValid = false;
+      }
+    }
+    
+    if (baptism.fatherRUT) {
+      try {
+        const rut = new Rut(baptism.fatherRUT);
+        fatherRutValid = rut.isValid;
+      } catch {
+        fatherRutValid = false;
+      }
+    }
+    
+    if (baptism.motherRUT) {
+      try {
+        const rut = new Rut(baptism.motherRUT);
+        motherRutValid = rut.isValid;
+      } catch {
+        motherRutValid = false;
+      }
+    }
+    
+    if (!childRutValid || !fatherRutValid || !motherRutValid) {
+      setRutErrors({
+        childRUT: childRutValid ? undefined : 'RUT inválido',
+        fatherRUT: fatherRutValid ? undefined : 'RUT inválido',
+        motherRUT: motherRutValid ? undefined : 'RUT inválido'
+      });
+      alert('Por favor, ingresa RUTs válidos.');
+      return;
+    }
+    
     try {
       await createBaptism({
         variables: { baptismRecord: baptism }
@@ -152,13 +285,6 @@ function EditBaptismForm() {
               <CardTitle>Editar Bautizo</CardTitle>
             </CardHeader>
             <CardContent>
-              {(data as any)?.BaptismRecord?.create?.code === 200 && (
-                <Alert className="mb-4">
-                  <AlertDescription>
-                    {(data as any).BaptismRecord.create.message || 'Bautizo actualizado exitosamente'}
-                  </AlertDescription>
-                </Alert>
-              )}
               {error && (
                 <Alert variant="destructive" className="mb-4">
                   <AlertDescription>
@@ -177,7 +303,11 @@ function EditBaptismForm() {
                       onChange={handleChange}
                       required
                       placeholder="12345678-9"
+                      className={rutErrors.childRUT ? "border-destructive" : ""}
                     />
+                    {rutErrors.childRUT && (
+                      <p className="text-sm text-destructive">{rutErrors.childRUT}</p>
+                    )}
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="childFullName">Nombre Completo del Niño *</Label>
@@ -211,7 +341,11 @@ function EditBaptismForm() {
                       value={baptism.fatherRUT}
                       onChange={handleChange}
                       placeholder="12345678-9"
+                      className={rutErrors.fatherRUT ? "border-destructive" : ""}
                     />
+                    {rutErrors.fatherRUT && (
+                      <p className="text-sm text-destructive">{rutErrors.fatherRUT}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="fatherFullName">Nombre Completo del Padre</Label>
@@ -230,7 +364,11 @@ function EditBaptismForm() {
                       value={baptism.motherRUT}
                       onChange={handleChange}
                       placeholder="12345678-9"
+                      className={rutErrors.motherRUT ? "border-destructive" : ""}
                     />
+                    {rutErrors.motherRUT && (
+                      <p className="text-sm text-destructive">{rutErrors.motherRUT}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="motherFullName">Nombre Completo de la Madre</Label>
