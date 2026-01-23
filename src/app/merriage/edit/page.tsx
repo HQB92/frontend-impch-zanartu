@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from "sonner";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -17,6 +18,8 @@ import { Loader } from "@/components/loader"
 import { GET_ALL_MERRIAGE } from "@/services/query"
 import { CREATE_MERRIAGE } from "@/services/mutation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import Rut from "rutjs"
+import { toTitleCase } from "@/lib/utils"
 
 function EditMerriageForm() {
   const router = useRouter();
@@ -39,6 +42,7 @@ function EditMerriageForm() {
   });
 
   const [createMerriage, { data, loading, error }] = useMutation(CREATE_MERRIAGE);
+  const [rutErrors, setRutErrors] = useState<{ husbandId?: string; wifeId?: string }>({});
 
   useEffect(() => {
     getMarriages();
@@ -49,10 +53,33 @@ function EditMerriageForm() {
       const marriages = (queryData as any)?.MerriageRecord?.getAll || [];
       const marriageData = marriages.find((m: any) => m.id === marriageId);
       if (marriageData) {
+        const husbandId = marriageData.husbandId || '';
+        const wifeId = marriageData.wifeId || '';
+        let formattedHusbandId = husbandId;
+        let formattedWifeId = wifeId;
+        
+        if (husbandId) {
+          try {
+            const rut = new Rut(husbandId);
+            formattedHusbandId = rut.getNiceRut();
+          } catch {
+            formattedHusbandId = husbandId;
+          }
+        }
+        
+        if (wifeId) {
+          try {
+            const rut = new Rut(wifeId);
+            formattedWifeId = rut.getNiceRut();
+          } catch {
+            formattedWifeId = wifeId;
+          }
+        }
+        
         setMerriage({
-          husbandId: marriageData.husbandId || '',
+          husbandId: formattedHusbandId,
           fullNameHusband: marriageData.fullNameHusband || '',
-          wifeId: marriageData.wifeId || '',
+          wifeId: formattedWifeId,
           fullNameWife: marriageData.fullNameWife || '',
           civilCode: marriageData.civilCode?.toString() || '',
           civilDate: marriageData.civilDate || '',
@@ -64,22 +91,77 @@ function EditMerriageForm() {
   }, [queryData, marriageId]);
 
   useEffect(() => {
-    if ((data as any)?.MerriageRecord?.create?.code === 200) {
-      setTimeout(() => {
-        router.push('/merriage');
-      }, 2000);
+    if (data) {
+      const response = (data as any)?.MerriageRecord?.create;
+      if (response?.code === 201) {
+        toast.success(response.message || 'Matrimonio actualizado exitosamente');
+        setTimeout(() => {
+          router.push('/merriage');
+          // Forzar recarga de la página de listado
+          router.refresh();
+        }, 1500);
+      }
     }
   }, [data, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const fieldsToUppercase = ['fullNameHusband', 'fullNameWife', 'civilPlace'];
+    const fieldsToTitleCase = ['fullNameHusband', 'fullNameWife', 'civilPlace'];
     
     let newValue = value;
-    if (fieldsToUppercase.includes(name)) {
-      newValue = value.toUpperCase();
+    if (fieldsToTitleCase.includes(name)) {
+      newValue = toTitleCase(value);
     } else if (name === 'civilCode' && value !== '') {
       newValue = value.replace(/[^0-9]/g, '');
+    } else if (name === 'husbandId' || name === 'wifeId') {
+      // Formatear RUT mientras se escribe usando rutjs
+      // Limpiar puntos y espacios, mantener solo números y guión/dígito verificador
+      const cleanValue = value.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
+      
+      if (cleanValue.length > 0) {
+        try {
+          // Si tiene guión o tiene 8+ caracteres (incluyendo dígito verificador), formatear
+          if (cleanValue.includes('-') || cleanValue.length >= 8) {
+            const rut = new Rut(cleanValue);
+            newValue = rut.getNiceRut();
+          } else {
+            // Si aún no tiene formato completo, dejar como está
+            newValue = cleanValue;
+          }
+        } catch {
+          newValue = cleanValue;
+        }
+      } else {
+        newValue = '';
+      }
+      
+      // Validar RUT si tiene formato completo (con guión)
+      if (newValue && newValue.includes('-')) {
+        try {
+          const rut = new Rut(newValue);
+          const isValid = rut.isValid;
+          setRutErrors(prev => ({
+            ...prev,
+            [name]: isValid ? undefined : 'RUT inválido'
+          }));
+        } catch {
+          setRutErrors(prev => ({
+            ...prev,
+            [name]: 'RUT inválido'
+          }));
+        }
+      } else if (newValue.length > 0) {
+        // Limpiar error si aún no está completo
+        setRutErrors(prev => ({
+          ...prev,
+          [name]: undefined
+        }));
+      } else {
+        setRutErrors(prev => ({
+          ...prev,
+          [name]: undefined
+        }));
+      }
     }
 
     setMerriage(prev => ({
@@ -90,13 +172,71 @@ function EditMerriageForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!merriage.civilDate || !merriage.religiousDate) {
-      alert('Por favor, completa todas las fechas requeridas.');
+    
+    // Validar RUTs antes de enviar
+    let husbandRutValid = false;
+    let wifeRutValid = false;
+    
+    if (merriage.husbandId) {
+      try {
+        const rut = new Rut(merriage.husbandId);
+        husbandRutValid = rut.isValid;
+      } catch {
+        husbandRutValid = false;
+      }
+    }
+    
+    if (merriage.wifeId) {
+      try {
+        const rut = new Rut(merriage.wifeId);
+        wifeRutValid = rut.isValid;
+      } catch {
+        wifeRutValid = false;
+      }
+    }
+    
+    if (!husbandRutValid || !wifeRutValid) {
+      setRutErrors({
+        husbandId: husbandRutValid ? undefined : 'RUT inválido',
+        wifeId: wifeRutValid ? undefined : 'RUT inválido'
+      });
+      alert('Por favor, ingresa RUTs válidos.');
       return;
     }
+    
+    // Validar que todos los campos requeridos tengan valores
+    const trimmedHusbandId = merriage.husbandId?.trim() || '';
+    const trimmedFullNameHusband = merriage.fullNameHusband?.trim() || '';
+    const trimmedWifeId = merriage.wifeId?.trim() || '';
+    const trimmedFullNameWife = merriage.fullNameWife?.trim() || '';
+    const trimmedCivilPlace = merriage.civilPlace?.trim() || '';
+    
+    if (!trimmedHusbandId || !trimmedFullNameHusband || !trimmedWifeId || 
+        !trimmedFullNameWife || !merriage.civilCode || !merriage.civilDate || 
+        !trimmedCivilPlace || !merriage.religiousDate) {
+      alert('Por favor, completa todos los campos requeridos.');
+      return;
+    }
+    
     try {
+      const merriageRecord = {
+        husbandId: trimmedHusbandId,
+        fullNameHusband: trimmedFullNameHusband,
+        wifeId: trimmedWifeId,
+        fullNameWife: trimmedFullNameWife,
+        civilCode: parseInt(merriage.civilCode),
+        civilDate: merriage.civilDate,
+        civilPlace: trimmedCivilPlace,
+        religiousDate: merriage.religiousDate
+      };
+      
+      console.log('Estado merriage:', merriage);
+      console.log('Enviando datos:', merriageRecord);
+      
       await createMerriage({
-        variables: { merriageRecord: { ...merriage, civilCode: merriage.civilCode ? parseInt(merriage.civilCode) : null } }
+        variables: { 
+          merriageRecord
+        }
       });
     } catch (err) {
       console.error('Error updating marriage:', err);
@@ -149,13 +289,6 @@ function EditMerriageForm() {
               <CardTitle>Editar Matrimonio</CardTitle>
             </CardHeader>
             <CardContent>
-              {(data as any)?.MerriageRecord?.create?.code === 200 && (
-                <Alert className="mb-4">
-                  <AlertDescription>
-                    {(data as any).MerriageRecord.create.message || 'Matrimonio actualizado exitosamente'}
-                  </AlertDescription>
-                </Alert>
-              )}
               {error && (
                 <Alert variant="destructive" className="mb-4">
                   <AlertDescription>
@@ -174,7 +307,11 @@ function EditMerriageForm() {
                       onChange={handleChange}
                       required
                       placeholder="12345678-9"
+                      className={rutErrors.husbandId ? "border-destructive" : ""}
                     />
+                    {rutErrors.husbandId && (
+                      <p className="text-sm text-destructive">{rutErrors.husbandId}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="fullNameHusband">Nombre Completo del Esposo *</Label>
@@ -195,7 +332,11 @@ function EditMerriageForm() {
                       onChange={handleChange}
                       required
                       placeholder="12345678-9"
+                      className={rutErrors.wifeId ? "border-destructive" : ""}
                     />
+                    {rutErrors.wifeId && (
+                      <p className="text-sm text-destructive">{rutErrors.wifeId}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="fullNameWife">Nombre Completo de la Esposa *</Label>

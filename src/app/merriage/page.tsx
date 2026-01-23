@@ -39,6 +39,15 @@ export default function MerriagePage() {
     getMarriages();
   }, [getMarriages]);
 
+  // Recargar cuando la página vuelve a tener foco (útil cuando se vuelve desde registro/edición)
+  useEffect(() => {
+    const handleFocus = () => {
+      getMarriages();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [getMarriages]);
+
   useEffect(() => {
     if (data) {
       setMarriages((data as any)?.MerriageRecord?.getAll || []);
