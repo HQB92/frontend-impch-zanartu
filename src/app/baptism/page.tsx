@@ -15,7 +15,8 @@ import { Loader } from "@/components/loader"
 import { GET_ALL_BAPTISM } from "@/services/query"
 import { useRoles } from "@/hooks/use-roles"
 import { PlusIcon } from "@heroicons/react/24/solid"
-import { Pencil } from "lucide-react"
+import { Pencil, FileDown } from "lucide-react"
+import { generateBaptismCertificate } from "@/lib/certificates/baptism-certificate"
 import {
   Table,
   TableBody,
@@ -94,13 +95,14 @@ export default function BaptismPage() {
                         <TableHead>Padre</TableHead>
                         <TableHead>Madre</TableHead>
                         <TableHead>Fecha Bautismo</TableHead>
+                        <TableHead>Certificado</TableHead>
                         {canCreate && <TableHead>Acciones</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {baptisms.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={canCreate ? 6 : 5} className="text-center text-muted-foreground">
+                          <TableCell colSpan={canCreate ? 7 : 6} className="text-center text-muted-foreground">
                             No hay bautizos disponibles
                           </TableCell>
                         </TableRow>
@@ -112,6 +114,16 @@ export default function BaptismPage() {
                             <TableCell>{baptism.fatherFullName || '-'}</TableCell>
                             <TableCell>{baptism.motherFullName || '-'}</TableCell>
                             <TableCell>{baptism.baptismDate || '-'}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => generateBaptismCertificate(baptism)}
+                              >
+                                <FileDown className="h-4 w-4 mr-2" />
+                                Descargar
+                              </Button>
+                            </TableCell>
                             {canCreate && (
                               <TableCell>
                                 <Button

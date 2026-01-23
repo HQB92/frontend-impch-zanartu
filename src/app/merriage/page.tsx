@@ -15,7 +15,8 @@ import { Loader } from "@/components/loader"
 import { GET_ALL_MERRIAGE } from "@/services/query"
 import { useRoles } from "@/hooks/use-roles"
 import { PlusIcon } from "@heroicons/react/24/solid"
-import { Pencil } from "lucide-react"
+import { Pencil, FileDown } from "lucide-react"
+import { generateMarriageCertificate } from "@/lib/certificates/marriage-certificate"
 import {
   Table,
   TableBody,
@@ -94,13 +95,14 @@ export default function MerriagePage() {
                         <TableHead>Fecha Civil</TableHead>
                         <TableHead>Fecha Religiosa</TableHead>
                         <TableHead>Lugar</TableHead>
+                        <TableHead>Certificado</TableHead>
                         {canCreate && <TableHead>Acciones</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {marriages.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={canCreate ? 6 : 5} className="text-center text-muted-foreground">
+                          <TableCell colSpan={canCreate ? 7 : 6} className="text-center text-muted-foreground">
                             No hay matrimonios disponibles
                           </TableCell>
                         </TableRow>
@@ -112,6 +114,16 @@ export default function MerriagePage() {
                             <TableCell>{marriage.civilDate || '-'}</TableCell>
                             <TableCell>{marriage.religiousDate || '-'}</TableCell>
                             <TableCell>{marriage.civilPlace || '-'}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => generateMarriageCertificate(marriage)}
+                              >
+                                <FileDown className="h-4 w-4 mr-2" />
+                                Descargar
+                              </Button>
+                            </TableCell>
                             {canCreate && (
                               <TableCell>
                                 <Button
