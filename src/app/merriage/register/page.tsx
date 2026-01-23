@@ -161,9 +161,7 @@ export default function RegisterMerriagePage() {
         civilPlace: trimmedCivilPlace,
         religiousDate: merriage.religiousDate
       };
-      
-      console.log('Estado merriage:', merriage);
-      console.log('Enviando datos:', merriageRecord);
+
       
       await createMerriage({
         variables: { 

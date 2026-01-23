@@ -51,9 +51,6 @@ export default function ChurchsPage() {
 
   const handleDelete = useCallback(async (id: string) => {
     if (confirm('¿Estás seguro de que deseas eliminar esta iglesia?')) {
-      // TODO: Implementar mutación de eliminación
-      console.log('Eliminar iglesia:', id);
-      // Después de eliminar, refetch
       refetch();
     }
   }, [refetch]);

@@ -230,9 +230,6 @@ function EditMerriageForm() {
         religiousDate: merriage.religiousDate
       };
       
-      console.log('Estado merriage:', merriage);
-      console.log('Enviando datos:', merriageRecord);
-      
       await createMerriage({
         variables: { 
           merriageRecord

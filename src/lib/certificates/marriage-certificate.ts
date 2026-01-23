@@ -35,7 +35,6 @@ function formatDateComplete(dateString: string): [string, string, string] {
 }
 
 export function generateMarriageCertificate(data: MarriageData): void {
-  console.log(data);
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
