@@ -1,0 +1,8 @@
+mutation CreateOrUpdateBuildingDetails($buildingDetails: BuildingDetailsInput!) {
+    Inventory {
+        createOrUpdateBuildingDetails(buildingDetails: $buildingDetails) {
+            code
+            message
+        }
+    }
+}

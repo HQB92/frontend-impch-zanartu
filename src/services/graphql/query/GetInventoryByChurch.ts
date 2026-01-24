@@ -1,0 +1,31 @@
+const GetInventoryByChurch = `
+query GetInventoryByChurch($churchId: ID!) {
+    Inventory {
+        getByChurch(churchId: $churchId) {
+            id
+            churchId
+            year
+            date
+            observations
+            church {
+                id
+                name
+                address
+            }
+            buildingDetails {
+                id
+                propertyArea
+                builtArea
+            }
+            items {
+                id
+                itemName
+                category
+                quantity
+            }
+        }
+    }
+}
+`;
+
+export default GetInventoryByChurch;

@@ -11,22 +11,35 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-interface Bank {
+interface Inventory {
   id: string;
-  amount: number;
+  churchId: number;
+  year: number;
   date: string;
-  type?: string | null;
-  churchId: string;
-  userId: string;
-  state: boolean;
-  comment: string;
+  observations?: string | null;
+  church?: {
+    id: number;
+    name: string;
+    address?: string | null;
+  } | null;
+  buildingDetails?: {
+    id: number;
+    propertyArea?: number | null;
+    builtArea?: number | null;
+  } | null;
+  items?: Array<{
+    id: number;
+    itemName: string;
+    category: string;
+    quantity?: number | null;
+  }> | null;
 }
 
 interface InventoryTableProps {
-  banks: Bank[];
+  inventories: Inventory[];
   page: number;
   rowsPerPage: number;
   onPageChange: (page: number) => void;
@@ -36,7 +49,7 @@ interface InventoryTableProps {
 }
 
 export function InventoryTable({
-  banks,
+  inventories,
   page,
   rowsPerPage,
   onPageChange,
@@ -46,15 +59,13 @@ export function InventoryTable({
 }: InventoryTableProps) {
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-CL', {
-      style: 'currency',
-      currency: 'CLP',
-    }).format(amount);
-  };
-
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CL');
+  };
+
+  const getItemsCount = (items: Inventory['items']) => {
+    if (!items || items.length === 0) return 0;
+    return items.length;
   };
 
   return (
@@ -63,37 +74,52 @@ export function InventoryTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Año</TableHead>
+              <TableHead>Iglesia</TableHead>
               <TableHead>Fecha</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Monto</TableHead>
-              <TableHead>Comentario</TableHead>
-              <TableHead>Estado</TableHead>
+              <TableHead>Área Propiedad (m²)</TableHead>
+              <TableHead>Área Edificada (m²)</TableHead>
+              <TableHead>Items</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {banks.length === 0 ? (
+            {inventories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
-                  No hay movimientos registrados
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                  No hay inventarios registrados
                 </TableCell>
               </TableRow>
             ) : (
-              banks.map((bank) => (
-                <TableRow key={bank.id}>
-                  <TableCell>{formatDate(bank.date)}</TableCell>
-                  <TableCell>{bank.type || '-'}</TableCell>
-                  <TableCell className="font-medium">{formatCurrency(bank.amount)}</TableCell>
-                  <TableCell>{bank.comment || '-'}</TableCell>
+              inventories.map((inventory) => (
+                <TableRow key={inventory.id}>
+                  <TableCell className="font-medium">{inventory.year}</TableCell>
+                  <TableCell>{inventory.church?.name || '-'}</TableCell>
+                  <TableCell>{formatDate(inventory.date)}</TableCell>
                   <TableCell>
-                    <Badge variant={bank.state ? 'default' : 'secondary'}>
-                      {bank.state ? 'Activo' : 'Inactivo'}
+                    {inventory.buildingDetails?.propertyArea 
+                      ? `${inventory.buildingDetails.propertyArea} m²` 
+                      : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {inventory.buildingDetails?.builtArea 
+                      ? `${inventory.buildingDetails.builtArea} m²` 
+                      : '-'}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {getItemsCount(inventory.items)} items
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/inventory/edit/${bank.id}`}>
+                        <Link href={`/inventory/edit/${inventory.id}`}>
+                          <EyeIcon className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/inventory/edit/${inventory.id}`}>
                           <PencilIcon className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -101,7 +127,7 @@ export function InventoryTable({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => onDelete(bank.id)}
+                          onClick={() => onDelete(inventory.id)}
                         >
                           <TrashIcon className="h-4 w-4" />
                         </Button>
@@ -117,7 +143,7 @@ export function InventoryTable({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground">
-            Mostrando {page * rowsPerPage + 1} a {Math.min((page + 1) * rowsPerPage, totalCount)} de {totalCount} movimientos
+            Mostrando {page * rowsPerPage + 1} a {Math.min((page + 1) * rowsPerPage, totalCount)} de {totalCount} inventarios
           </p>
           <select
             value={rowsPerPage}

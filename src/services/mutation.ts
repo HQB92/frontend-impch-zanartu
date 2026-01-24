@@ -10,6 +10,11 @@ import UpdateBank from './graphql/mutation/UpdateBank';
 import DeleteBank from './graphql/mutation/DeleteBank';
 import DeleteMerriage from './graphql/mutation/DeleteMerriage';
 import DeleteBaptism from './graphql/mutation/DeleteBaptism';
+import CreateInventory from './graphql/mutation/CreateInventory';
+import UpdateInventory from './graphql/mutation/UpdateInventory';
+import DeleteInventory from './graphql/mutation/DeleteInventory';
+import CreateOrUpdateBuildingDetails from './graphql/mutation/CreateOrUpdateBuildingDetails';
+import CreateMultipleInventoryItems from './graphql/mutation/CreateMultipleInventoryItems';
 
 const CREATE_MEMBER = gql`
     ${CreateMember}
@@ -55,6 +60,26 @@ const DELETE_BAPTISM = gql`
     ${DeleteBaptism}
 `;
 
+const CREATE_INVENTORY = gql`
+    ${CreateInventory}
+`;
+
+const UPDATE_INVENTORY = gql`
+    ${UpdateInventory}
+`;
+
+const DELETE_INVENTORY = gql`
+    ${DeleteInventory}
+`;
+
+const CREATE_OR_UPDATE_BUILDING_DETAILS = gql`
+    ${CreateOrUpdateBuildingDetails}
+`;
+
+const CREATE_MULTIPLE_INVENTORY_ITEMS = gql`
+    ${CreateMultipleInventoryItems}
+`;
+
 export {
   CREATE_MEMBER,
   UPDATE_MEMBER,
@@ -67,4 +92,9 @@ export {
   DELETE_BANK,
   DELETE_MERRIAGE,
   DELETE_BAPTISM,
+  CREATE_INVENTORY,
+  UPDATE_INVENTORY,
+  DELETE_INVENTORY,
+  CREATE_OR_UPDATE_BUILDING_DETAILS,
+  CREATE_MULTIPLE_INVENTORY_ITEMS,
 };

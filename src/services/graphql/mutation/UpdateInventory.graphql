@@ -1,0 +1,9 @@
+mutation UpdateInventory($inventory: InventoryInput!) {
+    Inventory {
+        update(inventory: $inventory) {
+            code
+            message
+            data
+        }
+    }
+}

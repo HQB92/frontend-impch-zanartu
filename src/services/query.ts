@@ -9,6 +9,10 @@ import GetAllMerriage from './graphql/query/GetAllMerriage';
 import GetAllOfferings from './graphql/query/GetAllOfferings';
 import GetAllChurch from './graphql/query/GetAllChurch';
 import GetAllBank from './graphql/query/GetAllBank';
+import GetAllInventory from './graphql/query/GetAllInventory';
+import GetInventoryById from './graphql/query/GetInventoryById';
+import GetInventoryByChurch from './graphql/query/GetInventoryByChurch';
+import GetInventoryByChurchAndYear from './graphql/query/GetInventoryByChurchAndYear';
 
 const GET_PROFILE = gql`
     ${GetProfile}
@@ -50,6 +54,22 @@ const GET_ALL_BANK = gql`
     ${GetAllBank}
 `;
 
+const GET_ALL_INVENTORY = gql`
+    ${GetAllInventory}
+`;
+
+const GET_INVENTORY_BY_ID = gql`
+    ${GetInventoryById}
+`;
+
+const GET_INVENTORY_BY_CHURCH = gql`
+    ${GetInventoryByChurch}
+`;
+
+const GET_INVENTORY_BY_CHURCH_AND_YEAR = gql`
+    ${GetInventoryByChurchAndYear}
+`;
+
 export {
   GET_PROFILE,
   GET_ALL_MEMBERS,
@@ -61,4 +81,8 @@ export {
   GET_ALL_OFFERINGS,
   GET_ALL_CHURCH,
   GET_ALL_BANK,
+  GET_ALL_INVENTORY,
+  GET_INVENTORY_BY_ID,
+  GET_INVENTORY_BY_CHURCH,
+  GET_INVENTORY_BY_CHURCH_AND_YEAR,
 };

@@ -1,0 +1,8 @@
+mutation CreateMultipleInventoryItems($items: [InventoryItemInput!]!) {
+    Inventory {
+        createMultipleInventoryItems(items: $items) {
+            code
+            message
+        }
+    }
+}

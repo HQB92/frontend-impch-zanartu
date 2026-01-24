@@ -1,0 +1,9 @@
+mutation CreateInventory($inventory: InventoryInput!) {
+    Inventory {
+        create(inventory: $inventory) {
+            code
+            message
+            data
+        }
+    }
+}
