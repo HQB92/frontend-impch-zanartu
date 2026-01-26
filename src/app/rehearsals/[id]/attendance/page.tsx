@@ -333,29 +333,38 @@ export default function AttendancePage() {
             toast.info('URL detectada, extrayendo RUN...');
             try {
               // Extraer el valor del parámetro RUN usando regex
-              // Busca R.UN= o RUN= seguido de dígitos (ignorando puntos, solo captura dígitos)
-              const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=\.?(\d+)/);
+              // Busca R.UN= o RUN= seguido de dígitos (pueden tener puntos entre ellos)
+              // Capturamos todo hasta encontrar & o espacio
+              const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=\.?([^&\s]+)/);
               
               if (runMatch && runMatch[1]) {
-                // Solo dígitos, sin puntos ni espacios
-                const digitsOnly = runMatch[1];
-                toast.info(`RUN extraído: ${digitsOnly}`);
+                const rawValue = runMatch[1];
+                toast.info(`Valor crudo extraído: ${rawValue}`);
+                
+                // IMPORTANTE: Si hay un guión, tomar SOLO lo que está ANTES del guión
+                // Esto ignora el dígito verificador que viene en el QR
+                const beforeDash = rawValue.split('-')[0].split(' ')[0];
+                toast.info(`Antes del guión: ${beforeDash}`);
+                
+                // Extraer SOLO dígitos numéricos (sin puntos, sin guiones, sin letras)
+                // Esto asegura que solo tomamos los números del RUN, ignorando el dígito verificador del QR
+                const digitsOnly = beforeDash.replace(/[^\d]/g, '');
+                toast.info(`Solo dígitos extraídos (ignorando dígito verificador del QR): ${digitsOnly}`);
                 
                 if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
-                  // El RUN viene sin dígito verificador, el formateador Rut lo calculará automáticamente
-                  // Pasamos solo los dígitos sin guión ni dígito verificador, Rut lo calculará
+                  // El RUN viene con dígito verificador en el QR, pero lo IGNORAMOS
+                  // Pasamos SOLO los dígitos sin guión ni dígito verificador, Rut calculará el correcto
                   const rut = new Rut(digitsOnly);
                   formattedRut = rut.getNiceRut();
-                  toast.info(`RUT formateado: ${formattedRut}`);
+                  toast.info(`RUT formateado (dígito calculado, ignorando el del QR): ${formattedRut}`);
                   
                   // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
                   if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1] && formattedRut.split('-')[1].length > 0) {
                     runExtracted = true;
-                    toast.success(`RUT válido: ${formattedRut}`);
+                    toast.success(`RUT válido con dígito calculado: ${formattedRut}`);
                   } else {
                     toast.warning('RUT sin dígito verificador, intentando calcular...');
                     // Si getNiceRut() no devolvió el formato completo, intentar crear el RUT con formato manual
-                    // Primero intentar pasando el número con guión vacío para forzar el cálculo
                     try {
                       const rutWithDash = new Rut(digitsOnly + '-');
                       formattedRut = rutWithDash.getNiceRut();
@@ -378,9 +387,18 @@ export default function AttendancePage() {
                 toast.info('Método 1 falló, intentando método alternativo...');
                 const afterEquals = decodedText.split(/[Rr]\.?[Uu]\.?[Nn]\.?=/)[1];
                 if (afterEquals) {
-                  // Extraer solo dígitos consecutivos (sin puntos) hasta encontrar & o fin de string
-                  const digitsOnly = afterEquals.match(/^\d+/)?.[0] || '';
-                  toast.info(`Dígitos extraídos (método 2): ${digitsOnly}`);
+                  // Tomar hasta encontrar & o espacio
+                  const rawValue = afterEquals.split('&')[0].split(' ')[0];
+                  toast.info(`Valor crudo (método 2): ${rawValue}`);
+                  
+                  // IMPORTANTE: Si hay un guión, tomar SOLO lo que está ANTES del guión
+                  // Esto ignora el dígito verificador que viene en el QR
+                  const beforeDash = rawValue.split('-')[0];
+                  toast.info(`Antes del guión (método 2): ${beforeDash}`);
+                  
+                  // Extraer SOLO dígitos numéricos (sin puntos, sin guiones, sin letras)
+                  const digitsOnly = beforeDash.replace(/[^\d]/g, '');
+                  toast.info(`Solo dígitos (método 2, ignorando dígito verificador): ${digitsOnly}`);
                   
                   if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
                     const rut = new Rut(digitsOnly);
