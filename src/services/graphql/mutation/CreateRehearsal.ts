@@ -1,0 +1,11 @@
+const CreateRehearsal = `mutation CreateRehearsal($rehearsal: RehearsalInput!) {
+    Rehearsal {
+        create(rehearsal: $rehearsal) {
+            code
+            message
+            data
+        }
+    }
+}`;
+
+export default CreateRehearsal;

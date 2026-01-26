@@ -1,0 +1,9 @@
+query GetAllStatus {
+    Status {
+        getAll {
+            id
+            name
+            description
+        }
+    }
+}

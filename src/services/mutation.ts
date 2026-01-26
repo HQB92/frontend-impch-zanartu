@@ -15,6 +15,11 @@ import UpdateInventory from './graphql/mutation/UpdateInventory';
 import DeleteInventory from './graphql/mutation/DeleteInventory';
 import CreateOrUpdateBuildingDetails from './graphql/mutation/CreateOrUpdateBuildingDetails';
 import CreateMultipleInventoryItems from './graphql/mutation/CreateMultipleInventoryItems';
+import CreateRehearsal from './graphql/mutation/CreateRehearsal';
+import UpdateRehearsal from './graphql/mutation/UpdateRehearsal';
+import DeleteRehearsal from './graphql/mutation/DeleteRehearsal';
+import RegisterAttendance from './graphql/mutation/RegisterAttendance';
+import DeleteAttendance from './graphql/mutation/DeleteAttendance';
 
 const CREATE_MEMBER = gql`
     ${CreateMember}
@@ -80,6 +85,26 @@ const CREATE_MULTIPLE_INVENTORY_ITEMS = gql`
     ${CreateMultipleInventoryItems}
 `;
 
+const CREATE_REHEARSAL = gql`
+    ${CreateRehearsal}
+`;
+
+const UPDATE_REHEARSAL = gql`
+    ${UpdateRehearsal}
+`;
+
+const DELETE_REHEARSAL = gql`
+    ${DeleteRehearsal}
+`;
+
+const REGISTER_ATTENDANCE = gql`
+    ${RegisterAttendance}
+`;
+
+const DELETE_ATTENDANCE = gql`
+    ${DeleteAttendance}
+`;
+
 export {
   CREATE_MEMBER,
   UPDATE_MEMBER,
@@ -97,4 +122,9 @@ export {
   DELETE_INVENTORY,
   CREATE_OR_UPDATE_BUILDING_DETAILS,
   CREATE_MULTIPLE_INVENTORY_ITEMS,
+  CREATE_REHEARSAL,
+  UPDATE_REHEARSAL,
+  DELETE_REHEARSAL,
+  REGISTER_ATTENDANCE,
+  DELETE_ATTENDANCE,
 };

@@ -1,0 +1,9 @@
+mutation DeleteRehearsal($id: ID!) {
+    Rehearsal {
+        delete(id: $id) {
+            code
+            message
+            data
+        }
+    }
+}

@@ -8,6 +8,7 @@ import {
   PiggyBank as SavingsIcon,
   Church as ChurchIcon,
   Package as InventoryIcon,
+  Music as MusicIcon,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -64,6 +65,12 @@ export const sidebarItems: SidebarItem[] = [
     title: 'Inventario',
     path: '/inventory',
     icon: InventoryIcon,
+    roles: ['Administrador', 'Pastor', 'Encargado'],
+  },
+  {
+    title: 'Repasos Coros Unidos',
+    path: '/rehearsals',
+    icon: MusicIcon,
     roles: ['Administrador', 'Pastor', 'Encargado'],
   },
   {

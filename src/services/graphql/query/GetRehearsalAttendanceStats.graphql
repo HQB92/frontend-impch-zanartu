@@ -1,0 +1,9 @@
+query GetRehearsalAttendanceStats($rehearsalId: ID!) {
+    Rehearsal {
+        getAttendanceStats(rehearsalId: $rehearsalId) {
+            totalMembers
+            attendedMembers
+            attendancePercentage
+        }
+    }
+}

@@ -1,0 +1,20 @@
+const GetAttendanceByRehearsal = `query GetAttendanceByRehearsal($rehearsalId: ID!) {
+    Attendance {
+        getByRehearsal(rehearsalId: $rehearsalId) {
+            id
+            rehearsalId
+            memberRut
+            attendedAt
+            member {
+                rut
+                names
+                lastNameDad
+                lastNameMom
+            }
+            createdAt
+            updatedAt
+        }
+    }
+}`;
+
+export default GetAttendanceByRehearsal;

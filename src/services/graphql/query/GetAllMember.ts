@@ -11,6 +11,7 @@ const GetAllMember = `query GetAllMember($churchId: Int , $typeMember: Int) {
             probationStartDate
             fullMembershipDate
             sexo
+            isCorosUnidos
         }
     }
 }`;

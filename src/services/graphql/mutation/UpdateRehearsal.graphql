@@ -1,0 +1,9 @@
+mutation UpdateRehearsal($rehearsal: RehearsalInput!) {
+    Rehearsal {
+        update(rehearsal: $rehearsal) {
+            code
+            message
+            data
+        }
+    }
+}

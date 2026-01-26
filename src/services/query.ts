@@ -13,6 +13,11 @@ import GetAllInventory from './graphql/query/GetAllInventory';
 import GetInventoryById from './graphql/query/GetInventoryById';
 import GetInventoryByChurch from './graphql/query/GetInventoryByChurch';
 import GetInventoryByChurchAndYear from './graphql/query/GetInventoryByChurchAndYear';
+import GetAllRehearsals from './graphql/query/GetAllRehearsals';
+import GetRehearsalById from './graphql/query/GetRehearsalById';
+import GetRehearsalAttendanceStats from './graphql/query/GetRehearsalAttendanceStats';
+import GetAttendanceByRehearsal from './graphql/query/GetAttendanceByRehearsal';
+import GetAllStatus from './graphql/query/GetAllStatus';
 
 const GET_PROFILE = gql`
     ${GetProfile}
@@ -70,6 +75,26 @@ const GET_INVENTORY_BY_CHURCH_AND_YEAR = gql`
     ${GetInventoryByChurchAndYear}
 `;
 
+const GET_ALL_REHEARSALS = gql`
+    ${GetAllRehearsals}
+`;
+
+const GET_REHEARSAL_BY_ID = gql`
+    ${GetRehearsalById}
+`;
+
+const GET_REHEARSAL_ATTENDANCE_STATS = gql`
+    ${GetRehearsalAttendanceStats}
+`;
+
+const GET_ATTENDANCE_BY_REHEARSAL = gql`
+    ${GetAttendanceByRehearsal}
+`;
+
+const GET_ALL_STATUS = gql`
+    ${GetAllStatus}
+`;
+
 export {
   GET_PROFILE,
   GET_ALL_MEMBERS,
@@ -85,4 +110,9 @@ export {
   GET_INVENTORY_BY_ID,
   GET_INVENTORY_BY_CHURCH,
   GET_INVENTORY_BY_CHURCH_AND_YEAR,
+  GET_ALL_REHEARSALS,
+  GET_REHEARSAL_BY_ID,
+  GET_REHEARSAL_ATTENDANCE_STATS,
+  GET_ATTENDANCE_BY_REHEARSAL,
+  GET_ALL_STATUS,
 };
