@@ -331,55 +331,76 @@ export default function AttendancePage() {
           // Verificar si es una URL con parámetro RUN
           if (decodedText.includes('RUN=') || decodedText.includes('R.UN=') || decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=/)) {
             toast.info('URL detectada, extrayendo RUN...');
+            toast.info(`Texto completo escaneado: ${decodedText.substring(0, 100)}...`);
             try {
-              // Extraer el valor del parámetro RUN usando regex
-              // Busca R.UN= o RUN= seguido de dígitos (pueden tener puntos entre ellos)
-              // Capturamos todo hasta encontrar & o espacio
-              const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=\.?([^&\s]+)/);
+              // Método 1: Usar URLSearchParams si es una URL completa
+              let digitsOnly = '';
               
-              if (runMatch && runMatch[1]) {
-                const rawValue = runMatch[1];
-                toast.info(`Valor crudo extraído: ${rawValue}`);
-                
-                // IMPORTANTE: Si hay un guión, tomar SOLO lo que está ANTES del guión
-                // Esto ignora el dígito verificador que viene en el QR
-                const beforeDash = rawValue.split('-')[0].split(' ')[0];
-                toast.info(`Antes del guión: ${beforeDash}`);
-                
-                // Extraer SOLO dígitos numéricos (sin puntos, sin guiones, sin letras)
-                // Esto asegura que solo tomamos los números del RUN, ignorando el dígito verificador del QR
-                const digitsOnly = beforeDash.replace(/[^\d]/g, '');
-                toast.info(`Solo dígitos extraídos (ignorando dígito verificador del QR): ${digitsOnly}`);
-                
-                if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
-                  // El RUN viene con dígito verificador en el QR, pero lo IGNORAMOS
-                  // Pasamos SOLO los dígitos sin guión ni dígito verificador, Rut calculará el correcto
-                  const rut = new Rut(digitsOnly);
-                  formattedRut = rut.getNiceRut();
-                  toast.info(`RUT formateado (dígito calculado, ignorando el del QR): ${formattedRut}`);
-                  
-                  // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
-                  if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1] && formattedRut.split('-')[1].length > 0) {
-                    runExtracted = true;
-                    toast.success(`RUT válido con dígito calculado: ${formattedRut}`);
-                  } else {
-                    toast.warning('RUT sin dígito verificador, intentando calcular...');
-                    // Si getNiceRut() no devolvió el formato completo, intentar crear el RUT con formato manual
-                    try {
-                      const rutWithDash = new Rut(digitsOnly + '-');
-                      formattedRut = rutWithDash.getNiceRut();
-                      toast.info(`RUT con guión: ${formattedRut}`);
-                      if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
-                        runExtracted = true;
-                        toast.success(`RUT válido: ${formattedRut}`);
-                      }
-                    } catch (err) {
-                      toast.error(`Error al calcular dígito verificador: ${err}`);
-                    }
-                  }
-                } else {
-                  toast.error(`RUN inválido (longitud: ${digitsOnly.length}): ${digitsOnly}`);
+              try {
+                // Intentar parsear como URL completa
+                const url = new URL(decodedText);
+                const runValue = url.searchParams.get('RUN') || url.searchParams.get('run');
+                if (runValue) {
+                  toast.info(`RUN extraído de URLSearchParams: ${runValue}`);
+                  // Tomar solo lo que está antes del guión (ignorar dígito verificador)
+                  const beforeDash = runValue.split('-')[0];
+                  digitsOnly = beforeDash.replace(/[^\d]/g, '');
+                  toast.info(`Solo dígitos (método URLSearchParams): ${digitsOnly}`);
                 }
+              } catch (urlError) {
+                // Si no es una URL válida, usar regex
+                toast.info('No es URL válida, usando regex...');
+              }
+              
+              // Método 2: Usar regex si URLSearchParams no funcionó
+              if (!digitsOnly) {
+                // Extraer el valor del parámetro RUN usando regex
+                // Busca RUN= seguido de cualquier cosa hasta encontrar & o espacio
+                const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=([^&\s]+)/i);
+                
+                if (runMatch && runMatch[1]) {
+                  const rawValue = runMatch[1];
+                  toast.info(`Valor crudo extraído (regex): ${rawValue}`);
+                  
+                  // IMPORTANTE: Si hay un guión, tomar SOLO lo que está ANTES del guión
+                  // Esto ignora el dígito verificador que viene en el QR
+                  const beforeDash = rawValue.split('-')[0].trim();
+                  toast.info(`Antes del guión: ${beforeDash}`);
+                  
+                  // Extraer SOLO dígitos numéricos (sin puntos, sin guiones, sin letras)
+                  digitsOnly = beforeDash.replace(/[^\d]/g, '');
+                  toast.info(`Solo dígitos extraídos (ignorando dígito verificador del QR): ${digitsOnly}`);
+                }
+              }
+              
+              if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
+                // El RUN viene con dígito verificador en el QR, pero lo IGNORAMOS
+                // Pasamos SOLO los dígitos sin guión ni dígito verificador, Rut calculará el correcto
+                const rut = new Rut(digitsOnly);
+                formattedRut = rut.getNiceRut();
+                toast.info(`RUT formateado (dígito calculado, ignorando el del QR): ${formattedRut}`);
+                
+                // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
+                if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1] && formattedRut.split('-')[1].length > 0) {
+                  runExtracted = true;
+                  toast.success(`RUT válido con dígito calculado: ${formattedRut}`);
+                } else {
+                  toast.warning('RUT sin dígito verificador, intentando calcular...');
+                  // Si getNiceRut() no devolvió el formato completo, intentar crear el RUT con formato manual
+                  try {
+                    const rutWithDash = new Rut(digitsOnly + '-');
+                    formattedRut = rutWithDash.getNiceRut();
+                    toast.info(`RUT con guión: ${formattedRut}`);
+                    if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
+                      runExtracted = true;
+                      toast.success(`RUT válido: ${formattedRut}`);
+                    }
+                  } catch (err) {
+                    toast.error(`Error al calcular dígito verificador: ${err}`);
+                  }
+                }
+              } else {
+                toast.error(`RUN inválido (longitud: ${digitsOnly?.length || 0}): ${digitsOnly || 'ninguno'}`);
               }
               
               // Si no se extrajo con el primer método, intentar método alternativo
