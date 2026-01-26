@@ -363,15 +363,35 @@ export default function AttendancePage() {
                 
                 // Verificar que tenga formato con guión y dígito verificador
                 if (cleanedRut.includes('-')) {
-                  // Ya tiene guión y dígito verificador, solo formatearlo (sin validar)
-                  const rut = new Rut(cleanedRut);
-                  formattedRut = rut.getNiceRut();
-                  toast.info(`RUT formateado: ${formattedRut}`);
+                  // Separar números y dígito verificador
+                  const parts = cleanedRut.split('-');
+                  const numbersOnly = parts[0].replace(/[^\d]/g, '');
+                  const digitVerifier = parts[1]?.trim() || '';
                   
-                  // No validamos, solo formateamos ya que viene del QR del carnet
-                  if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
-                    runExtracted = true;
-                    toast.success(`RUT formateado correctamente: ${formattedRut}`);
+                  toast.info(`Números: ${numbersOnly}, Dígito verificador: ${digitVerifier}`);
+                  
+                  // Formatear solo los números con puntos, manteniendo el dígito verificador original
+                  if (numbersOnly && numbersOnly.length >= 7 && numbersOnly.length <= 9 && digitVerifier) {
+                    // Formatear números con puntos (de derecha a izquierda, cada 3 dígitos)
+                    let formattedNumbers = '';
+                    let reversed = numbersOnly.split('').reverse().join('');
+                    for (let i = 0; i < reversed.length; i++) {
+                      if (i > 0 && i % 3 === 0) {
+                        formattedNumbers = '.' + formattedNumbers;
+                      }
+                      formattedNumbers = reversed[i] + formattedNumbers;
+                    }
+                    
+                    // Combinar números formateados con el dígito verificador original
+                    formattedRut = formattedNumbers + '-' + digitVerifier;
+                    toast.info(`RUT formateado (manteniendo dígito original): ${formattedRut}`);
+                    
+                    if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
+                      runExtracted = true;
+                      toast.success(`RUT formateado correctamente: ${formattedRut}`);
+                    }
+                  } else {
+                    toast.error(`Formato inválido. Números: ${numbersOnly}, Dígito: ${digitVerifier}`);
                   }
                 } else {
                   // No tiene guión, solo dígitos, calcular el dígito verificador
