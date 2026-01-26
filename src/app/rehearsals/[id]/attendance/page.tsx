@@ -324,46 +324,68 @@ export default function AttendancePage() {
         },
         async (decodedText) => {
           let formattedRut = '';
+          let runExtracted = false;
           
           // Verificar si es una URL con parámetro RUN
-          if (decodedText.includes('RUN=') || decodedText.includes('R.UN=')) {
+          if (decodedText.includes('RUN=') || decodedText.includes('R.UN=') || decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=/)) {
             try {
-              // Normalizar la URL removiendo puntos que puedan estar en lugar de barras
-              let normalizedText = decodedText;
-              
-              // Extraer el valor del parámetro RUN usando regex para manejar formatos extraños
+              // Extraer el valor del parámetro RUN usando regex
+              // Busca R.UN= o RUN= seguido de dígitos (ignorando puntos, solo captura dígitos)
               const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=\.?(\d+)/);
               
               if (runMatch && runMatch[1]) {
-                const runValue = runMatch[1];
-                // El RUN viene sin dígito verificador, necesitamos calcularlo
-                const rut = new Rut(runValue);
-                formattedRut = rut.getNiceRut();
-              } else {
-                // Intentar con URLSearchParams si la URL está bien formada
-                const queryString = decodedText.split('?')[1] || decodedText;
-                const urlParams = new URLSearchParams(queryString.replace(/\./g, ''));
-                const runValue = urlParams.get('RUN') || urlParams.get('run');
+                // Solo dígitos, sin puntos ni espacios
+                const digitsOnly = runMatch[1];
                 
-                if (runValue) {
-                  const rut = new Rut(runValue);
+                if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
+                  // El RUN viene sin dígito verificador, el formateador Rut lo calculará y agregará puntos
+                  const rut = new Rut(digitsOnly);
                   formattedRut = rut.getNiceRut();
-                } else {
-                  throw new Error('No se encontró el parámetro RUN');
+                  runExtracted = true;
                 }
               }
-            } catch (err) {
-              // Si falla, intentar procesar como RUT directo
-              const cleanValue = decodedText.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
-              try {
-                const rut = new Rut(cleanValue);
-                formattedRut = rut.getNiceRut();
-              } catch {
-                formattedRut = cleanValue;
+              
+              // Si no se extrajo con el primer método, intentar método alternativo
+              if (!runExtracted) {
+                const afterEquals = decodedText.split(/[Rr]\.?[Uu]\.?[Nn]\.?=/)[1];
+                if (afterEquals) {
+                  // Extraer solo dígitos consecutivos (sin puntos) hasta encontrar & o fin de string
+                  const digitsOnly = afterEquals.match(/^\d+/)?.[0] || '';
+                  
+                  if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
+                    const rut = new Rut(digitsOnly);
+                    formattedRut = rut.getNiceRut();
+                    runExtracted = true;
+                  }
+                }
               }
+              
+              // Si aún no se extrajo, intentar buscar cualquier secuencia de 7-9 dígitos consecutivos en el texto
+              if (!runExtracted) {
+                const allNumbers = decodedText.match(/\d{7,9}/g);
+                if (allNumbers && allNumbers.length > 0) {
+                  // Tomar el primer número que parezca un RUN válido (solo dígitos, sin puntos)
+                  const possibleRun = allNumbers[0];
+                  if (possibleRun.length >= 7 && possibleRun.length <= 9) {
+                    const rut = new Rut(possibleRun);
+                    formattedRut = rut.getNiceRut();
+                    runExtracted = true;
+                  }
+                }
+              }
+              
+              if (!runExtracted) {
+                stopScanning();
+                toast.error('No se pudo extraer el RUT del código QR');
+                return;
+              }
+            } catch (err) {
+              stopScanning();
+              toast.error('Error al procesar el código QR. Asegúrate de que sea un código válido.');
+              return;
             }
           } else {
-            // Procesar como RUT directo
+            // Procesar como RUT directo (no es una URL)
             const cleanValue = decodedText.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
             
             try {
@@ -371,18 +393,29 @@ export default function AttendancePage() {
                 const rut = new Rut(cleanValue);
                 formattedRut = rut.getNiceRut();
               } else {
-                formattedRut = cleanValue;
+                // Intentar extraer solo números si hay muchos caracteres
+                const numbersOnly = cleanValue.match(/\d{7,9}/)?.[0];
+                if (numbersOnly) {
+                  const rut = new Rut(numbersOnly);
+                  formattedRut = rut.getNiceRut();
+                } else {
+                  stopScanning();
+                  toast.error('El código escaneado no contiene un RUT válido');
+                  return;
+                }
               }
             } catch {
-              formattedRut = cleanValue;
+              stopScanning();
+              toast.error('El código escaneado no contiene un RUT válido');
+              return;
             }
           }
           
-          // Actualizar el input con el RUT formateado
-          setRutInput(formattedRut);
-          
-          // Validar el RUT
+          // Solo actualizar el input si se extrajo un RUT válido
           if (formattedRut && formattedRut.includes('-')) {
+            setRutInput(formattedRut);
+            
+            // Validar el RUT
             try {
               const rut = new Rut(formattedRut);
               if (rut.isValid) {
@@ -403,9 +436,8 @@ export default function AttendancePage() {
               toast.error('El RUT escaneado no es válido');
             }
           } else {
-            setRutError('RUT incompleto');
             stopScanning();
-            toast.error('El RUT escaneado está incompleto');
+            toast.error('No se pudo extraer un RUT válido del código QR');
           }
         },
         (errorMessage) => {
