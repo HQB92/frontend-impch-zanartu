@@ -323,17 +323,59 @@ export default function AttendancePage() {
           qrbox: { width: 250, height: 250 }
         },
         async (decodedText) => {
-          // Formatear el RUT escaneado
-          const cleanValue = decodedText.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
-          let formattedRut = cleanValue;
+          let formattedRut = '';
           
-          try {
-            if (cleanValue.includes('-') || cleanValue.length >= 8) {
-              const rut = new Rut(cleanValue);
-              formattedRut = rut.getNiceRut();
+          // Verificar si es una URL con parámetro RUN
+          if (decodedText.includes('RUN=') || decodedText.includes('R.UN=')) {
+            try {
+              // Normalizar la URL removiendo puntos que puedan estar en lugar de barras
+              let normalizedText = decodedText;
+              
+              // Extraer el valor del parámetro RUN usando regex para manejar formatos extraños
+              const runMatch = decodedText.match(/[Rr]\.?[Uu]\.?[Nn]\.?=\.?(\d+)/);
+              
+              if (runMatch && runMatch[1]) {
+                const runValue = runMatch[1];
+                // El RUN viene sin dígito verificador, necesitamos calcularlo
+                const rut = new Rut(runValue);
+                formattedRut = rut.getNiceRut();
+              } else {
+                // Intentar con URLSearchParams si la URL está bien formada
+                const queryString = decodedText.split('?')[1] || decodedText;
+                const urlParams = new URLSearchParams(queryString.replace(/\./g, ''));
+                const runValue = urlParams.get('RUN') || urlParams.get('run');
+                
+                if (runValue) {
+                  const rut = new Rut(runValue);
+                  formattedRut = rut.getNiceRut();
+                } else {
+                  throw new Error('No se encontró el parámetro RUN');
+                }
+              }
+            } catch (err) {
+              // Si falla, intentar procesar como RUT directo
+              const cleanValue = decodedText.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
+              try {
+                const rut = new Rut(cleanValue);
+                formattedRut = rut.getNiceRut();
+              } catch {
+                formattedRut = cleanValue;
+              }
             }
-          } catch {
-            formattedRut = cleanValue;
+          } else {
+            // Procesar como RUT directo
+            const cleanValue = decodedText.replace(/\./g, '').replace(/\s/g, '').toUpperCase();
+            
+            try {
+              if (cleanValue.includes('-') || cleanValue.length >= 8) {
+                const rut = new Rut(cleanValue);
+                formattedRut = rut.getNiceRut();
+              } else {
+                formattedRut = cleanValue;
+              }
+            } catch {
+              formattedRut = cleanValue;
+            }
           }
           
           // Actualizar el input con el RUT formateado
