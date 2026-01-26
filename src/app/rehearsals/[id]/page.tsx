@@ -48,7 +48,7 @@ export default function RehearsalDetailPage() {
       const { data } = await getRehearsal({
         variables: { id: rehearsalId }
       });
-      setRehearsal(data?.Rehearsal?.getById);
+      setRehearsal((data as any)?.Rehearsal?.getById);
     } catch (err) {
       console.error('Error loading rehearsal:', err);
     }
@@ -59,7 +59,7 @@ export default function RehearsalDetailPage() {
       const { data } = await getStats({
         variables: { rehearsalId }
       });
-      setStats(data?.Rehearsal?.getAttendanceStats);
+      setStats((data as any)?.Rehearsal?.getAttendanceStats);
     } catch (err) {
       console.error('Error loading stats:', err);
     }

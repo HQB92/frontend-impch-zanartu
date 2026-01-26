@@ -55,10 +55,10 @@ export default function RehearsalsPage() {
           const { data: statsData } = await getStats({
             variables: { rehearsalId: rehearsal.id }
           });
-          if (statsData?.Rehearsal?.getAttendanceStats) {
+          if ((statsData as any)?.Rehearsal?.getAttendanceStats) {
             setStats(prev => ({
               ...prev,
-              [rehearsal.id]: statsData.Rehearsal.getAttendanceStats
+              [rehearsal.id]: (statsData as any).Rehearsal.getAttendanceStats
             }));
           }
         } catch (err) {
@@ -76,11 +76,11 @@ export default function RehearsalsPage() {
         variables: { id }
       });
 
-      if (result?.Rehearsal?.delete?.code === 200) {
+      if ((result as any)?.Rehearsal?.delete?.code === 200) {
         toast.success('Repaso eliminado exitosamente');
         refetch();
       } else {
-        toast.error(result?.Rehearsal?.delete?.message || 'Error al eliminar repaso');
+        toast.error((result as any)?.Rehearsal?.delete?.message || 'Error al eliminar repaso');
       }
     } catch (err: any) {
       toast.error(err.message || 'Error al eliminar repaso');

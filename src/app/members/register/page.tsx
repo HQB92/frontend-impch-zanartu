@@ -52,13 +52,13 @@ export default function RegisterMemberPage() {
 
   useEffect(() => {
     getChurches().then(({ data }) => {
-      if (data?.Church?.getAll) {
-        setChurches(data.Church.getAll);
+      if ((data as any)?.Church?.getAll) {
+        setChurches((data as any).Church.getAll);
       }
     });
     getStatuses().then(({ data }) => {
-      if (data?.Status?.getAll) {
-        setStatuses(data.Status.getAll);
+      if ((data as any)?.Status?.getAll) {
+        setStatuses((data as any).Status.getAll);
       }
     });
   }, [getChurches, getStatuses]);

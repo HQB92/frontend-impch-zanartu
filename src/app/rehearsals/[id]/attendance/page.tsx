@@ -60,7 +60,6 @@ export default function AttendancePage() {
 
   const [getRehearsal] = useLazyQuery(GET_REHEARSAL_BY_ID);
   const [getAttendances, { data: attendancesData, refetch: refetchAttendances }] = useLazyQuery(GET_ATTENDANCE_BY_REHEARSAL, {
-    variables: { rehearsalId },
     fetchPolicy: 'network-only',
   });
   const [getMembers] = useLazyQuery(GET_ALL_MEMBERS);
@@ -69,8 +68,8 @@ export default function AttendancePage() {
 
   // Sincronizar el estado con los datos de Apollo cuando cambien
   useEffect(() => {
-    if (attendancesData?.Attendance?.getByRehearsal) {
-      setAttendances(attendancesData.Attendance.getByRehearsal);
+    if ((attendancesData as any)?.Attendance?.getByRehearsal) {
+      setAttendances((attendancesData as any).Attendance.getByRehearsal);
     }
   }, [attendancesData]);
   const [registerAttendance] = useMutation(REGISTER_ATTENDANCE, {
@@ -102,13 +101,13 @@ export default function AttendancePage() {
 
   useEffect(() => {
     getChurches().then(({ data }) => {
-      if (data?.Church?.getAll) {
-        setChurches(data.Church.getAll);
+      if ((data as any)?.Church?.getAll) {
+        setChurches((data as any).Church.getAll);
       }
     });
     getStatuses().then(({ data }) => {
-      if (data?.Status?.getAll) {
-        setStatuses(data.Status.getAll);
+      if ((data as any)?.Status?.getAll) {
+        setStatuses((data as any).Status.getAll);
       }
     });
   }, [getChurches, getStatuses]);
@@ -129,7 +128,7 @@ export default function AttendancePage() {
       const { data } = await getRehearsal({
         variables: { id: rehearsalId }
       });
-      setRehearsal(data?.Rehearsal?.getById);
+      setRehearsal((data as any)?.Rehearsal?.getById);
     } catch (err) {
       toast.error('Error al cargar repaso');
     }
@@ -140,7 +139,7 @@ export default function AttendancePage() {
       const { data } = await getAttendances({
         variables: { rehearsalId }
       });
-      setAttendances(data?.Attendance?.getByRehearsal || []);
+      setAttendances((data as any)?.Attendance?.getByRehearsal || []);
     } catch (err) {
       toast.error('Error al cargar asistencias');
     }
@@ -220,7 +219,7 @@ export default function AttendancePage() {
         variables: { churchId: 0, typeMember: 0 }
       });
       
-      const members = membersData?.Member?.getAll || [];
+      const members = (membersData as any)?.Member?.getAll || [];
       const memberExists = members.find((m: any) => m.rut === trimmedRut);
 
       if (!memberExists) {
@@ -236,7 +235,7 @@ export default function AttendancePage() {
         }
       });
 
-      if (data?.Attendance?.register?.code === 200) {
+      if ((data as any)?.Attendance?.register?.code === 200) {
         toast.success('Asistencia registrada exitosamente');
         setRutInput('');
         setRutError(undefined);
@@ -245,7 +244,7 @@ export default function AttendancePage() {
           await loadAttendances();
         }, 300);
       } else {
-        toast.error(data?.Attendance?.register?.message || 'Error al registrar asistencia');
+        toast.error((data as any)?.Attendance?.register?.message || 'Error al registrar asistencia');
       }
     } catch (err: any) {
       // Si el error es que el miembro no existe, mostrar mensaje
@@ -268,14 +267,14 @@ export default function AttendancePage() {
         }
       });
 
-      if (data?.Attendance?.delete?.code === 200) {
+      if ((data as any)?.Attendance?.delete?.code === 200) {
         toast.success('Asistencia eliminada exitosamente');
         // Refrescar la lista de asistencias - refetchQueries ya lo hace, pero también llamamos loadAttendances por si acaso
         setTimeout(async () => {
           await loadAttendances();
         }, 300);
       } else {
-        toast.error(data?.Attendance?.delete?.message || 'Error al eliminar asistencia');
+        toast.error((data as any)?.Attendance?.delete?.message || 'Error al eliminar asistencia');
       }
     } catch (err: any) {
       toast.error(err.message || 'Error al eliminar asistencia');
@@ -496,7 +495,7 @@ export default function AttendancePage() {
         }
       });
 
-      const response = data?.Member?.create;
+      const response = (data as any)?.Member?.create;
       if (response?.code === 200 || response?.code === 201) {
         toast.success(response.message || 'Miembro creado exitosamente');
         setIsCreateMemberDialogOpen(false);

@@ -31,8 +31,8 @@ export default function CreateRehearsalPage() {
 
   useEffect(() => {
     getChurches().then(({ data }) => {
-      if (data?.Church?.getAll) {
-        setChurches(data.Church.getAll);
+      if ((data as any)?.Church?.getAll) {
+        setChurches((data as any).Church.getAll);
       }
     });
   }, [getChurches]);
@@ -56,11 +56,11 @@ export default function CreateRehearsalPage() {
         }
       });
 
-      if (data?.Rehearsal?.create?.code === 200) {
+      if ((data as any)?.Rehearsal?.create?.code === 200) {
         toast.success('Repaso creado exitosamente');
         router.push('/rehearsals');
       } else {
-        toast.error(data?.Rehearsal?.create?.message || 'Error al crear repaso');
+        toast.error((data as any)?.Rehearsal?.create?.message || 'Error al crear repaso');
       }
     } catch (err: any) {
       toast.error(err.message || 'Error al crear repaso');
