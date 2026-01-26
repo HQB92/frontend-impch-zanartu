@@ -338,10 +338,26 @@ export default function AttendancePage() {
                 const digitsOnly = runMatch[1];
                 
                 if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
-                  // El RUN viene sin dígito verificador, el formateador Rut lo calculará y agregará puntos
+                  // El RUN viene sin dígito verificador, el formateador Rut lo calculará automáticamente
+                  // Pasamos solo los dígitos sin guión ni dígito verificador, Rut lo calculará
                   const rut = new Rut(digitsOnly);
                   formattedRut = rut.getNiceRut();
-                  runExtracted = true;
+                  // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
+                  if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1] && formattedRut.split('-')[1].length > 0) {
+                    runExtracted = true;
+                  } else {
+                    // Si getNiceRut() no devolvió el formato completo, intentar crear el RUT con formato manual
+                    // Primero intentar pasando el número con guión vacío para forzar el cálculo
+                    try {
+                      const rutWithDash = new Rut(digitsOnly + '-');
+                      formattedRut = rutWithDash.getNiceRut();
+                      if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
+                        runExtracted = true;
+                      }
+                    } catch {
+                      // Si falla, el RUT ya debería estar formateado correctamente
+                    }
+                  }
                 }
               }
               
@@ -355,7 +371,10 @@ export default function AttendancePage() {
                   if (digitsOnly && digitsOnly.length >= 7 && digitsOnly.length <= 9) {
                     const rut = new Rut(digitsOnly);
                     formattedRut = rut.getNiceRut();
-                    runExtracted = true;
+                    // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
+                    if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
+                      runExtracted = true;
+                    }
                   }
                 }
               }
@@ -369,7 +388,10 @@ export default function AttendancePage() {
                   if (possibleRun.length >= 7 && possibleRun.length <= 9) {
                     const rut = new Rut(possibleRun);
                     formattedRut = rut.getNiceRut();
-                    runExtracted = true;
+                    // Verificar que el RUT tenga el formato completo con dígito verificador (debe tener guión y dígito)
+                    if (formattedRut && formattedRut.includes('-') && formattedRut.split('-')[1]) {
+                      runExtracted = true;
+                    }
                   }
                 }
               }
@@ -411,29 +433,36 @@ export default function AttendancePage() {
             }
           }
           
-          // Solo actualizar el input si se extrajo un RUT válido
+          // Solo actualizar el input si se extrajo un RUT válido con dígito verificador
           if (formattedRut && formattedRut.includes('-')) {
-            setRutInput(formattedRut);
-            
-            // Validar el RUT
-            try {
-              const rut = new Rut(formattedRut);
-              if (rut.isValid) {
-                setRutError(undefined);
-                // Registrar asistencia después de un pequeño delay
-                setTimeout(async () => {
-                  await handleRegisterAttendance(formattedRut);
+            // Verificar que tenga dígito verificador después del guión
+            const rutParts = formattedRut.split('-');
+            if (rutParts.length === 2 && rutParts[1] && rutParts[1].length > 0) {
+              setRutInput(formattedRut);
+              
+              // Validar el RUT
+              try {
+                const rut = new Rut(formattedRut);
+                if (rut.isValid) {
+                  setRutError(undefined);
+                  // Registrar asistencia después de un pequeño delay
+                  setTimeout(async () => {
+                    await handleRegisterAttendance(formattedRut);
+                    stopScanning();
+                  }, 100);
+                } else {
+                  setRutError('RUT inválido');
                   stopScanning();
-                }, 100);
-              } else {
+                  toast.error('El RUT escaneado no es válido');
+                }
+              } catch {
                 setRutError('RUT inválido');
                 stopScanning();
                 toast.error('El RUT escaneado no es válido');
               }
-            } catch {
-              setRutError('RUT inválido');
+            } else {
               stopScanning();
-              toast.error('El RUT escaneado no es válido');
+              toast.error('El RUT extraído no tiene dígito verificador válido');
             }
           } else {
             stopScanning();
