@@ -6,6 +6,7 @@ import CreateMerriage from './graphql/mutation/CreateMerriage';
 import CreateChurch from './graphql/mutation/CreateChurch';
 import UpdateChurch from './graphql/mutation/UpdateChurch';
 import CreateBank from './graphql/mutation/CreateBank';
+import CreateOffering from './graphql/mutation/CreateOffering';
 import UpdateBank from './graphql/mutation/UpdateBank';
 import DeleteBank from './graphql/mutation/DeleteBank';
 import DeleteMerriage from './graphql/mutation/DeleteMerriage';
@@ -47,6 +48,10 @@ const UPDATE_CHURCH = gql`
 
 const CREATE_BANK = gql`
     ${CreateBank}
+`;
+
+const CREATE_OFFERING = gql`
+    ${CreateOffering}
 `;
 
 const UPDATE_BANK = gql`
@@ -113,6 +118,7 @@ export {
   CREATE_CHURCH,
   UPDATE_CHURCH,
   CREATE_BANK,
+  CREATE_OFFERING,
   UPDATE_BANK,
   DELETE_BANK,
   DELETE_MERRIAGE,
