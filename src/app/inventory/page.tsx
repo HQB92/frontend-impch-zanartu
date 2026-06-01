@@ -21,8 +21,10 @@ import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useIsAdmin } from "@/hooks/use-roles"
 
 export default function InventoryPage() {
+  const isAdmin = useIsAdmin();
   const [response, setResponse] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -154,22 +156,24 @@ export default function InventoryPage() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 mb-4">
-                <div className="space-y-2 flex-1">
-                  <Label htmlFor="churchId">Iglesia</Label>
-                  <Select value={churchId} onValueChange={setChurchId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Todas las iglesias" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas las iglesias</SelectItem>
-                      {churches.map((church) => (
-                        <SelectItem key={church.id} value={church.id.toString()}>
-                          {church.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {isAdmin && (
+                  <div className="space-y-2 flex-1">
+                    <Label htmlFor="churchId">Iglesia</Label>
+                    <Select value={churchId} onValueChange={setChurchId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todas las iglesias" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las iglesias</SelectItem>
+                        {churches.map((church) => (
+                          <SelectItem key={church.id} value={church.id.toString()}>
+                            {church.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="year">Año</Label>
                   <Select value={year.toString()} onValueChange={(value) => setYear(Number(value))}>

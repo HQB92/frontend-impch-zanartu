@@ -11,7 +11,10 @@ interface User {
   email: string;
   rut?: string;
   roles?: string[];
+  churchId?: number | null;
 }
+
+export const ADMIN_ROLE = 'Administrador';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -108,6 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               window.localStorage.removeItem('authenticated');
               window.localStorage.removeItem('user');
               window.localStorage.removeItem('profile');
+              document.cookie = 'auth-session=; path=/; max-age=0';
               isAuthenticated = false;
             } else {
               isAuthenticated = true;
@@ -177,11 +181,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: decoded.email,
             rut: decoded.rut,
             roles: decoded.roles,
+            churchId: decoded.churchId ?? null,
           };
 
           window.localStorage.setItem('authenticated', 'true');
           window.localStorage.setItem('token', token);
           window.localStorage.setItem('user', JSON.stringify(user));
+          document.cookie = 'auth-session=1; path=/; SameSite=Lax';
 
           dispatch({
             type: 'SIGN_IN',
@@ -213,6 +219,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.removeItem('token');
       window.localStorage.removeItem('user');
       window.localStorage.removeItem('ally-supports-cache');
+      document.cookie = 'auth-session=; path=/; max-age=0';
     }
 
     dispatch({ type: 'SIGN_OUT' });

@@ -1,38 +1,37 @@
 import { onError } from '@apollo/client/link/error';
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
 
-export const errorLink = onError(({ graphQLErrors, networkError }: any) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }: any) => {
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-      
-      // Si el error es de autenticación, limpiar el localStorage y redirigir al login
-      if (message.includes('not authenticated') || message.includes('Authorization') || message.includes('Invalid token')) {
-        if (typeof window !== 'undefined') {
-          window.localStorage.removeItem('token');
-          window.localStorage.removeItem('authenticated');
-          window.localStorage.removeItem('user');
-          window.localStorage.removeItem('profile');
-          // Usar window.location para forzar una recarga completa
-          window.location.href = '/login';
-        }
-      }
-    });
-  }
+const AUTH_CODES = new Set(['UNAUTHENTICATED', 'FORBIDDEN']);
+const AUTH_MESSAGES = ['not authenticated', 'You are not authenticated'];
 
-  if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
-    
-    // Si es un error 401 (Unauthorized), redirigir al login
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('token');
-        window.localStorage.removeItem('authenticated');
-        window.localStorage.removeItem('user');
-        window.localStorage.removeItem('profile');
-        window.location.href = '/login';
+const isAuthError = (message: string, extensions?: Record<string, unknown>) => {
+  if (extensions?.code && AUTH_CODES.has(extensions.code as string)) return true;
+  return AUTH_MESSAGES.some((m) => message.includes(m));
+};
+
+const redirectToLogin = () => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem('token');
+  window.localStorage.removeItem('authenticated');
+  window.localStorage.removeItem('user');
+  window.localStorage.removeItem('profile');
+  document.cookie = 'auth-session=; path=/; max-age=0';
+  window.location.href = '/login';
+};
+
+export const errorLink = onError(({ error }) => {
+  if (CombinedGraphQLErrors.is(error)) {
+    for (const { message, locations, path, extensions } of error.errors) {
+      console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+      if (isAuthError(message, extensions as Record<string, unknown>)) {
+        redirectToLogin();
+        return;
       }
+    }
+  } else if (error) {
+    console.error(`[Network error]: ${error}`);
+    if ('statusCode' in (error as unknown as Record<string, unknown>) && (error as unknown as Record<string, unknown>).statusCode === 401) {
+      redirectToLogin();
     }
   }
 });
