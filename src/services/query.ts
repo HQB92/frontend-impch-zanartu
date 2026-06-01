@@ -18,6 +18,7 @@ import GetRehearsalById from './graphql/query/GetRehearsalById';
 import GetRehearsalAttendanceStats from './graphql/query/GetRehearsalAttendanceStats';
 import GetAttendanceByRehearsal from './graphql/query/GetAttendanceByRehearsal';
 import GetAllStatus from './graphql/query/GetAllStatus';
+import GetAllExpenses from './graphql/query/GetAllExpenses';
 
 const GET_PROFILE = gql`
     ${GetProfile}
@@ -95,6 +96,10 @@ const GET_ALL_STATUS = gql`
     ${GetAllStatus}
 `;
 
+const GET_ALL_EXPENSES = gql`
+    ${GetAllExpenses}
+`;
+
 export {
   GET_PROFILE,
   GET_ALL_MEMBERS,
@@ -115,4 +120,5 @@ export {
   GET_REHEARSAL_ATTENDANCE_STATS,
   GET_ATTENDANCE_BY_REHEARSAL,
   GET_ALL_STATUS,
+  GET_ALL_EXPENSES,
 };

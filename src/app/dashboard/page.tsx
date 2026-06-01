@@ -16,7 +16,7 @@ import { OverviewBudget } from "@/components/overview/overview-budget"
 import { OverviewTotalCustomers } from "@/components/overview/overview-total-customers"
 import { OverviewTotalProfit } from "@/components/overview/overview-total-profit"
 import { Loader } from "@/components/loader"
-import { COUNT_ALL_MEMBERS, GET_ALL_OFFERINGS, GET_ALL_BANK, GET_ALL_CHURCH } from "@/services/query"
+import { COUNT_ALL_MEMBERS, GET_ALL_OFFERINGS, GET_ALL_BANK, GET_ALL_CHURCH, GET_ALL_EXPENSES } from "@/services/query"
 import { useIsAdmin } from "@/hooks/use-roles"
 
 const formatCLP = (amount: number) =>
@@ -34,45 +34,53 @@ export default function Page() {
   const [getCountMembers, { data: membersData, loading: loadingMembers }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
   const [getOfferings, { data: offeringsData, loading: loadingOfferings }] = useLazyQuery(GET_ALL_OFFERINGS, { fetchPolicy: 'no-cache' });
   const [getBank, { data: bankData, loading: loadingBank }] = useLazyQuery(GET_ALL_BANK, { fetchPolicy: 'no-cache' });
+  const [getExpenses, { data: expensesData, loading: loadingExpenses }] = useLazyQuery(GET_ALL_EXPENSES, { fetchPolicy: 'no-cache' });
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     getCountMembers();
     getOfferings({ variables: { user: null, churchId: null, mes, anio } });
     getBank({ variables: { churchId: null, mes, anio } });
+    getExpenses({ variables: { churchId: null, mes, anio, source: null } });
     if (isAdmin) getChurches();
-  }, [getCountMembers, getOfferings, getBank, getChurches, isAdmin, mes, anio]);
+  }, [getCountMembers, getOfferings, getBank, getExpenses, getChurches, isAdmin, mes, anio]);
 
   const offerings = useMemo(() => (offeringsData as any)?.Offering?.getAll || [], [offeringsData]);
   const banks = useMemo(() => (bankData as any)?.Bank?.getAll || [], [bankData]);
+  const expenses = useMemo(() => (expensesData as any)?.Expense?.getAll || [], [expensesData]);
   const churches = useMemo(() => (churchesData as any)?.Church?.getAll || [], [churchesData]);
 
   const totalOfferings = useMemo(() => sumAmounts(offerings), [offerings]);
-  const totalBank = useMemo(() => sumAmounts(banks), [banks]);
+  const totalDeposits = useMemo(() => sumAmounts(banks), [banks]);
+  const totalExpCaja = useMemo(() => sumAmounts(expenses.filter((e: any) => e.source === 'CAJA')), [expenses]);
+  const totalExpBanco = useMemo(() => sumAmounts(expenses.filter((e: any) => e.source === 'BANCO')), [expenses]);
 
-  // Agrupar por iglesia (solo admin)
+  // Caja = Ofrendas − GastoCaja ; Banco = Depósitos − GastoBanco
+  const totalCaja = totalOfferings - totalExpCaja;
+  const totalBanco = totalDeposits - totalExpBanco;
+
   const byChurch = useMemo(() => {
     if (!isAdmin) return [];
-    const map = new Map<number, { name: string; offerings: number; bank: number }>();
-    churches.forEach((c: any) => map.set(Number(c.id), { name: c.name, offerings: 0, bank: 0 }));
+    const map = new Map<number, { name: string; ofrendas: number; deposito: number; gastoCaja: number; gastoBanco: number }>();
+    churches.forEach((c: any) => map.set(Number(c.id), { name: c.name, ofrendas: 0, deposito: 0, gastoCaja: 0, gastoBanco: 0 }));
 
-    offerings.forEach((o: any) => {
-      const id = Number(o.churchId);
-      const row = map.get(id) || { name: `Iglesia ${id}`, offerings: 0, bank: 0 };
-      row.offerings += Number(o.amount) || 0;
-      map.set(id, row);
-    });
-    banks.forEach((b: any) => {
-      const id = Number(b.churchId);
-      const row = map.get(id) || { name: `Iglesia ${id}`, offerings: 0, bank: 0 };
-      row.bank += Number(b.amount) || 0;
-      map.set(id, row);
+    const ensure = (id: number) => {
+      if (!map.has(id)) map.set(id, { name: `Iglesia ${id}`, ofrendas: 0, deposito: 0, gastoCaja: 0, gastoBanco: 0 });
+      return map.get(id)!;
+    };
+
+    offerings.forEach((o: any) => { ensure(Number(o.churchId)).ofrendas += Number(o.amount) || 0; });
+    banks.forEach((b: any) => { ensure(Number(b.churchId)).deposito += Number(b.amount) || 0; });
+    expenses.forEach((e: any) => {
+      const row = ensure(Number(e.churchId));
+      if (e.source === 'BANCO') row.gastoBanco += Number(e.amount) || 0;
+      else row.gastoCaja += Number(e.amount) || 0;
     });
 
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [isAdmin, churches, offerings, banks]);
+  }, [isAdmin, churches, offerings, banks, expenses]);
 
-  const loading = loadingMembers || loadingOfferings || loadingBank;
+  const loading = loadingMembers || loadingOfferings || loadingBank || loadingExpenses;
 
   if (loading) return <Loader />;
 
@@ -92,9 +100,9 @@ export default function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <OverviewBudget value={formatCLP(totalOfferings)} />
+                <OverviewBudget value={formatCLP(totalCaja)} />
                 <OverviewTotalCustomers value={(membersData as any)?.Member?.count || 0} />
-                <OverviewTotalProfit value={formatCLP(totalBank)} />
+                <OverviewTotalProfit value={formatCLP(totalBanco)} />
               </div>
 
               {isAdmin && (
@@ -103,40 +111,49 @@ export default function Page() {
                     <CardTitle>Resumen por iglesia — {mes}/{anio}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead>Iglesia</TableHead>
                             <TableHead className="text-right">Ofrendas</TableHead>
+                            <TableHead className="text-right">Gasto Caja</TableHead>
                             <TableHead className="text-right">Caja</TableHead>
-                            <TableHead className="text-right">Total</TableHead>
+                            <TableHead className="text-right">Depósitos</TableHead>
+                            <TableHead className="text-right">Gasto Banco</TableHead>
+                            <TableHead className="text-right">Banco</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {byChurch.length === 0 ? (
                             <TableRow>
-                              <TableCell colSpan={4} className="text-center text-muted-foreground">
+                              <TableCell colSpan={7} className="text-center text-muted-foreground">
                                 Sin datos para este período
                               </TableCell>
                             </TableRow>
                           ) : (
-                            byChurch.map((row) => (
-                              <TableRow key={row.name}>
-                                <TableCell>{row.name}</TableCell>
-                                <TableCell className="text-right">{formatCLP(row.offerings)}</TableCell>
-                                <TableCell className="text-right">{formatCLP(row.bank)}</TableCell>
-                                <TableCell className="text-right font-medium">{formatCLP(row.offerings + row.bank)}</TableCell>
+                            byChurch.map((r) => (
+                              <TableRow key={r.name}>
+                                <TableCell>{r.name}</TableCell>
+                                <TableCell className="text-right">{formatCLP(r.ofrendas)}</TableCell>
+                                <TableCell className="text-right">{formatCLP(r.gastoCaja)}</TableCell>
+                                <TableCell className="text-right font-medium">{formatCLP(r.ofrendas - r.gastoCaja)}</TableCell>
+                                <TableCell className="text-right">{formatCLP(r.deposito)}</TableCell>
+                                <TableCell className="text-right">{formatCLP(r.gastoBanco)}</TableCell>
+                                <TableCell className="text-right font-medium">{formatCLP(r.deposito - r.gastoBanco)}</TableCell>
                               </TableRow>
                             ))
                           )}
                         </TableBody>
                         <TableFooter>
                           <TableRow>
-                            <TableCell className="font-medium">Total general</TableCell>
+                            <TableCell className="font-medium">Total</TableCell>
                             <TableCell className="text-right font-medium">{formatCLP(totalOfferings)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCLP(totalBank)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCLP(totalOfferings + totalBank)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCLP(totalExpCaja)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCLP(totalCaja)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCLP(totalDeposits)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCLP(totalExpBanco)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCLP(totalBanco)}</TableCell>
                           </TableRow>
                         </TableFooter>
                       </Table>
