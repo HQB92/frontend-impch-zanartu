@@ -27,9 +27,6 @@ const sumAmounts = (items: any[]): number =>
 
 export default function Page() {
   const isAdmin = useIsAdmin();
-  const now = new Date();
-  const mes = now.getMonth() + 1;
-  const anio = now.getFullYear();
 
   const [getCountMembers, { data: membersData, loading: loadingMembers }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
   const [getOfferings, { data: offeringsData, loading: loadingOfferings }] = useLazyQuery(GET_ALL_OFFERINGS, { fetchPolicy: 'no-cache' });
@@ -38,12 +35,13 @@ export default function Page() {
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
+    // Histórico completo: sin filtro de mes/año (null => backend devuelve todo)
     getCountMembers();
-    getOfferings({ variables: { user: null, churchId: null, mes, anio } });
-    getBank({ variables: { churchId: null, mes, anio } });
-    getExpenses({ variables: { churchId: null, mes, anio, source: null } });
+    getOfferings({ variables: { user: null, churchId: null, mes: null, anio: null } });
+    getBank({ variables: { churchId: null, mes: null, anio: null } });
+    getExpenses({ variables: { churchId: null, mes: null, anio: null, source: null } });
     if (isAdmin) getChurches();
-  }, [getCountMembers, getOfferings, getBank, getExpenses, getChurches, isAdmin, mes, anio]);
+  }, [getCountMembers, getOfferings, getBank, getExpenses, getChurches, isAdmin]);
 
   const offerings = useMemo(() => (offeringsData as any)?.Offering?.getAll || [], [offeringsData]);
   const banks = useMemo(() => (bankData as any)?.Bank?.getAll || [], [bankData]);
@@ -108,7 +106,7 @@ export default function Page() {
               {isAdmin && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Resumen por iglesia — {mes}/{anio}</CardTitle>
+                    <CardTitle>Resumen por iglesia — Histórico total</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="rounded-md border overflow-x-auto">
