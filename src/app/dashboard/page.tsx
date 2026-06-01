@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLazyQuery } from "@apollo/client/react";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
@@ -12,6 +12,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import { OverviewBudget } from "@/components/overview/overview-budget"
 import { OverviewTotalCustomers } from "@/components/overview/overview-total-customers"
 import { OverviewTotalProfit } from "@/components/overview/overview-total-profit"
@@ -25,8 +29,24 @@ const formatCLP = (amount: number) =>
 const sumAmounts = (items: any[]): number =>
   items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
 
+const MESES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+];
+
 export default function Page() {
   const isAdmin = useIsAdmin();
+
+  // 'all' = histórico (por defecto). Año desde 2026 al actual.
+  const currentYear = new Date().getFullYear();
+  const years: number[] = [];
+  for (let y = 2026; y <= Math.max(2026, currentYear); y++) years.push(y);
+
+  const [filterYear, setFilterYear] = useState<string>('all');
+  const [filterMonth, setFilterMonth] = useState<string>('all');
+
+  const anio = filterYear === 'all' ? null : Number(filterYear);
+  const mes = filterYear === 'all' || filterMonth === 'all' ? null : Number(filterMonth);
 
   const [getCountMembers, { data: membersData, loading: loadingMembers }] = useLazyQuery(COUNT_ALL_MEMBERS, { fetchPolicy: 'no-cache' });
   const [getOfferings, { data: offeringsData, loading: loadingOfferings }] = useLazyQuery(GET_ALL_OFFERINGS, { fetchPolicy: 'no-cache' });
@@ -35,13 +55,13 @@ export default function Page() {
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
-    // Histórico completo: sin filtro de mes/año (null => backend devuelve todo)
+    // Default histórico (mes/anio null). Selector estrecha por año/mes.
     getCountMembers();
-    getOfferings({ variables: { user: null, churchId: null, mes: null, anio: null } });
-    getBank({ variables: { churchId: null, mes: null, anio: null } });
-    getExpenses({ variables: { churchId: null, mes: null, anio: null, source: null } });
+    getOfferings({ variables: { user: null, churchId: null, mes, anio } });
+    getBank({ variables: { churchId: null, mes, anio } });
+    getExpenses({ variables: { churchId: null, mes, anio, source: null } });
     if (isAdmin) getChurches();
-  }, [getCountMembers, getOfferings, getBank, getExpenses, getChurches, isAdmin]);
+  }, [getCountMembers, getOfferings, getBank, getExpenses, getChurches, isAdmin, mes, anio]);
 
   const offerings = useMemo(() => (offeringsData as any)?.Offering?.getAll || [], [offeringsData]);
   const banks = useMemo(() => (bankData as any)?.Bank?.getAll || [], [bankData]);
@@ -106,7 +126,37 @@ export default function Page() {
               {isAdmin && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Resumen por iglesia — Histórico total</CardTitle>
+                    <div className="flex flex-wrap items-end justify-between gap-4">
+                      <CardTitle>
+                        Resumen por iglesia — {filterYear === 'all'
+                          ? 'Histórico total'
+                          : filterMonth === 'all'
+                            ? `Año ${filterYear}`
+                            : `${MESES[Number(filterMonth) - 1]} ${filterYear}`}
+                      </CardTitle>
+                      <div className="flex gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Año</Label>
+                          <Select value={filterYear} onValueChange={(v) => { setFilterYear(v); if (v === 'all') setFilterMonth('all'); }}>
+                            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Histórico</SelectItem>
+                              {years.map((y) => (<SelectItem key={y} value={String(y)}>{y}</SelectItem>))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Mes</Label>
+                          <Select value={filterMonth} onValueChange={setFilterMonth} disabled={filterYear === 'all'}>
+                            <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Todo el año</SelectItem>
+                              {MESES.map((m, i) => (<SelectItem key={m} value={String(i + 1)}>{m}</SelectItem>))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="rounded-md border overflow-x-auto">
