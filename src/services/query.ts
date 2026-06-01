@@ -19,6 +19,7 @@ import GetRehearsalAttendanceStats from './graphql/query/GetRehearsalAttendanceS
 import GetAttendanceByRehearsal from './graphql/query/GetAttendanceByRehearsal';
 import GetAllStatus from './graphql/query/GetAllStatus';
 import GetAllExpenses from './graphql/query/GetAllExpenses';
+import GetMemberByRut from './graphql/query/GetMemberByRut';
 
 const GET_PROFILE = gql`
     ${GetProfile}
@@ -100,6 +101,10 @@ const GET_ALL_EXPENSES = gql`
     ${GetAllExpenses}
 `;
 
+const GET_MEMBER_BY_RUT = gql`
+    ${GetMemberByRut}
+`;
+
 export {
   GET_PROFILE,
   GET_ALL_MEMBERS,
@@ -121,4 +126,5 @@ export {
   GET_ATTENDANCE_BY_REHEARSAL,
   GET_ALL_STATUS,
   GET_ALL_EXPENSES,
+  GET_MEMBER_BY_RUT,
 };

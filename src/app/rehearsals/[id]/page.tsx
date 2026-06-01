@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -11,10 +11,17 @@ import {
 } from "@/components/ui/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog"
 import { GET_REHEARSAL_BY_ID, GET_REHEARSAL_ATTENDANCE_STATS } from "@/services/query"
+import { UPDATE_REHEARSAL } from "@/services/mutation"
 import { Loader } from "@/components/loader"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { toast } from "sonner"
 
 const getAttendanceColor = (percentage: number): string => {
   if (percentage < 40) {
@@ -35,6 +42,36 @@ export default function RehearsalDetailPage() {
 
   const [getRehearsal, { loading: loadingRehearsal }] = useLazyQuery(GET_REHEARSAL_BY_ID);
   const [getStats, { loading: loadingStats }] = useLazyQuery(GET_REHEARSAL_ATTENDANCE_STATS);
+  const [updateRehearsal, { loading: savingEdit }] = useMutation(UPDATE_REHEARSAL);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ date: '', description: '' });
+
+  const openEdit = () => {
+    setEditForm({
+      date: rehearsal?.date ? String(rehearsal.date).slice(0, 10) : '',
+      description: rehearsal?.description || '',
+    });
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    try {
+      const res: any = await updateRehearsal({
+        variables: { rehearsal: { id: rehearsalId, date: editForm.date, description: editForm.description } },
+      });
+      const r = res?.data?.Rehearsal?.update;
+      if (r?.code === 200) {
+        toast.success(r.message || 'Repaso actualizado');
+        setEditOpen(false);
+        loadRehearsal();
+      } else {
+        toast.error(r?.message || 'Error al actualizar');
+      }
+    } catch (e: any) {
+      toast.error('Error: ' + e.message);
+    }
+  };
 
   useEffect(() => {
     if (rehearsalId) {
@@ -90,9 +127,37 @@ export default function RehearsalDetailPage() {
         <div className="flex flex-1 flex-col p-6 gap-4">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Detalles del Repaso</h1>
-            <Button variant="outline" onClick={() => router.back()}>
-              Volver
-            </Button>
+            <div className="flex gap-2">
+              <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" onClick={openEdit}>Editar</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader><DialogTitle>Editar Repaso</DialogTitle></DialogHeader>
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="date">Fecha</Label>
+                      <Input id="date" type="date" value={editForm.date}
+                        onChange={(e) => setEditForm({ ...editForm, date: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Descripción</Label>
+                      <Input id="description" value={editForm.description}
+                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button>
+                    <Button onClick={handleEditSave} disabled={savingEdit}>
+                      {savingEdit ? 'Guardando...' : 'Guardar'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              <Button variant="outline" onClick={() => router.back()}>
+                Volver
+              </Button>
+            </div>
           </div>
 
           {rehearsal && (

@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/select"
 import { Loader } from "@/components/loader"
 import { GET_ALL_OFFERINGS, GET_ALL_CHURCH } from "@/services/query"
-import { CREATE_OFFERING } from "@/services/mutation"
+import { CREATE_OFFERING, DELETE_OFFERING } from "@/services/mutation"
 import { useIsAdmin } from "@/hooks/use-roles"
-import { PlusIcon } from "@heroicons/react/24/solid"
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid"
 import { toast } from "sonner"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -48,6 +48,23 @@ export default function OfferingPage() {
   });
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
   const [createOffering, { loading: creating }] = useMutation(CREATE_OFFERING);
+  const [deleteOffering] = useMutation(DELETE_OFFERING);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('¿Eliminar esta ofrenda?')) return;
+    try {
+      const res: any = await deleteOffering({ variables: { id: Number(id) } });
+      const r = res?.data?.Offering?.delete;
+      if (r?.code === 200) {
+        toast.success(r.message || 'Ofrenda eliminada');
+        loadOfferings();
+      } else {
+        toast.error(r?.message || 'Error al eliminar');
+      }
+    } catch (e: any) {
+      toast.error('Error: ' + e.message);
+    }
+  };
 
   const loadOfferings = () => getOfferings({ variables: { user: null, churchId: null, mes: null, anio: null } });
 
@@ -209,12 +226,13 @@ export default function OfferingPage() {
                         <TableHead>Monto</TableHead>
                         <TableHead>Tipo</TableHead>
                         <TableHead>Estado</TableHead>
+                        <TableHead className="w-12"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {offerings.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={4} className="text-center text-muted-foreground">
+                          <TableCell colSpan={5} className="text-center text-muted-foreground">
                             No hay ofrendas disponibles
                           </TableCell>
                         </TableRow>
@@ -225,6 +243,11 @@ export default function OfferingPage() {
                             <TableCell>${(parseFloat(offering.amount) || 0).toLocaleString('es-CL')}</TableCell>
                             <TableCell>{offering.type || '-'}</TableCell>
                             <TableCell>{offering.state ? 'Activo' : 'Inactivo'}</TableCell>
+                            <TableCell>
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(offering.id)}>
+                                <TrashIcon className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         ))
                       )}

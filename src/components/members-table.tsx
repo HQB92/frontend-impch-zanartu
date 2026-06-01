@@ -10,7 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import Link from 'next/link';
 
 interface Member {
   rut: string;
@@ -30,6 +31,7 @@ interface MembersTableProps {
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
   totalCount: number;
+  onDelete?: (rut: string) => void;
 }
 
 export function MembersTable({
@@ -39,6 +41,7 @@ export function MembersTable({
   onPageChange,
   onRowsPerPageChange,
   totalCount,
+  onDelete,
 }: MembersTableProps) {
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
@@ -53,12 +56,13 @@ export function MembersTable({
               <TableHead>Apellidos</TableHead>
               <TableHead>Teléfono</TableHead>
               <TableHead>Fecha de Nacimiento</TableHead>
+              <TableHead className="w-24 text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {members.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   No hay miembros disponibles
                 </TableCell>
               </TableRow>
@@ -72,6 +76,20 @@ export function MembersTable({
                   </TableCell>
                   <TableCell>{member.mobile || '-'}</TableCell>
                   <TableCell>{member.dateOfBirth || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/members/edit/${encodeURIComponent(member.rut)}`}>
+                          <PencilIcon className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      {onDelete && (
+                        <Button variant="ghost" size="sm" onClick={() => onDelete(member.rut)}>
+                          <TrashIcon className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             )}

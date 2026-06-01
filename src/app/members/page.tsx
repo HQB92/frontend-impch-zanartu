@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { DELETE_MEMBER } from "@/services/mutation"
+import { toast } from "sonner"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -27,12 +29,29 @@ export default function MembersPage() {
   const [getMember, { data, loading, error }] = useLazyQuery(GET_ALL_MEMBERS, {
     fetchPolicy: 'no-cache',
   });
+  const [deleteMember] = useMutation(DELETE_MEMBER);
 
   useEffect(() => {
     getMember({
       variables: { churchId, typeMember }
     });
   }, [typeMember, churchId, getMember]);
+
+  const handleDelete = useCallback(async (rut: string) => {
+    if (!confirm('¿Eliminar este miembro?')) return;
+    try {
+      const res: any = await deleteMember({ variables: { rut } });
+      const r = res?.data?.Member?.delete;
+      if (r?.code === 200) {
+        toast.success(r.message || 'Miembro eliminado');
+        getMember({ variables: { churchId, typeMember } });
+      } else {
+        toast.error(r?.message || 'Error al eliminar');
+      }
+    } catch (e: any) {
+      toast.error('Error: ' + e.message);
+    }
+  }, [deleteMember, getMember, churchId, typeMember]);
 
   useEffect(() => {
     if (data) {
@@ -112,6 +131,7 @@ export default function MembersPage() {
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 totalCount={response.length}
+                onDelete={handleDelete}
               />
             </CardContent>
           </Card>

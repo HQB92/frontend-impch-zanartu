@@ -9,6 +9,8 @@ import CreateBank from './graphql/mutation/CreateBank';
 import CreateOffering from './graphql/mutation/CreateOffering';
 import CreateExpense from './graphql/mutation/CreateExpense';
 import DeleteExpense from './graphql/mutation/DeleteExpense';
+import DeleteOffering from './graphql/mutation/DeleteOffering';
+import DeleteMember from './graphql/mutation/DeleteMember';
 import UpdateBank from './graphql/mutation/UpdateBank';
 import DeleteBank from './graphql/mutation/DeleteBank';
 import DeleteMerriage from './graphql/mutation/DeleteMerriage';
@@ -62,6 +64,14 @@ const CREATE_EXPENSE = gql`
 
 const DELETE_EXPENSE = gql`
     ${DeleteExpense}
+`;
+
+const DELETE_OFFERING = gql`
+    ${DeleteOffering}
+`;
+
+const DELETE_MEMBER = gql`
+    ${DeleteMember}
 `;
 
 const UPDATE_BANK = gql`
@@ -131,6 +141,8 @@ export {
   CREATE_OFFERING,
   CREATE_EXPENSE,
   DELETE_EXPENSE,
+  DELETE_OFFERING,
+  DELETE_MEMBER,
   UPDATE_BANK,
   DELETE_BANK,
   DELETE_MERRIAGE,
