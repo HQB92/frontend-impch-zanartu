@@ -3,11 +3,14 @@ import CreateMember from './graphql/mutation/CreateMember';
 import UpdateMember from './graphql/mutation/UpdateMember';
 import CreateBaptism from './graphql/mutation/CreateBaptism';
 import CreateMerriage from './graphql/mutation/CreateMerriage';
+import UpdateMerriage from './graphql/mutation/UpdateMerriage';
 import CreateChurch from './graphql/mutation/CreateChurch';
 import UpdateChurch from './graphql/mutation/UpdateChurch';
 import CreateBank from './graphql/mutation/CreateBank';
 import CreateOffering from './graphql/mutation/CreateOffering';
+import UpdateOffering from './graphql/mutation/UpdateOffering';
 import CreateExpense from './graphql/mutation/CreateExpense';
+import UpdateExpense from './graphql/mutation/UpdateExpense';
 import DeleteExpense from './graphql/mutation/DeleteExpense';
 import DeleteOffering from './graphql/mutation/DeleteOffering';
 import DeleteMember from './graphql/mutation/DeleteMember';
@@ -42,6 +45,10 @@ const CREATE_MERRIAGE = gql`
     ${CreateMerriage}
 `;
 
+const UPDATE_MERRIAGE = gql`
+    ${UpdateMerriage}
+`;
+
 const CREATE_CHURCH = gql`
     ${CreateChurch}
 `;
@@ -58,8 +65,16 @@ const CREATE_OFFERING = gql`
     ${CreateOffering}
 `;
 
+const UPDATE_OFFERING = gql`
+    ${UpdateOffering}
+`;
+
 const CREATE_EXPENSE = gql`
     ${CreateExpense}
+`;
+
+const UPDATE_EXPENSE = gql`
+    ${UpdateExpense}
 `;
 
 const DELETE_EXPENSE = gql`
@@ -135,11 +150,14 @@ export {
   UPDATE_MEMBER,
   CREATE_BAPTISM,
   CREATE_MERRIAGE,
+  UPDATE_MERRIAGE,
   CREATE_CHURCH,
   UPDATE_CHURCH,
   CREATE_BANK,
   CREATE_OFFERING,
+  UPDATE_OFFERING,
   CREATE_EXPENSE,
+  UPDATE_EXPENSE,
   DELETE_EXPENSE,
   DELETE_OFFERING,
   DELETE_MEMBER,

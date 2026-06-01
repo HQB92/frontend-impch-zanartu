@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader } from "@/components/loader"
 import { GET_ALL_MERRIAGE } from "@/services/query"
-import { CREATE_MERRIAGE } from "@/services/mutation"
+import { UPDATE_MERRIAGE } from "@/services/mutation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Rut from "rutjs"
 import { toTitleCase } from "@/lib/utils"
@@ -41,7 +41,7 @@ function EditMerriageForm() {
     fetchPolicy: 'no-cache',
   });
 
-  const [createMerriage, { data, loading, error }] = useMutation(CREATE_MERRIAGE);
+  const [updateMerriage, { data, loading, error }] = useMutation(UPDATE_MERRIAGE);
   const [rutErrors, setRutErrors] = useState<{ husbandId?: string; wifeId?: string }>({});
 
   useEffect(() => {
@@ -92,8 +92,8 @@ function EditMerriageForm() {
 
   useEffect(() => {
     if (data) {
-      const response = (data as any)?.MerriageRecord?.create;
-      if (response?.code === 201) {
+      const response = (data as any)?.MerriageRecord?.update;
+      if (response?.code === 200) {
         toast.success(response.message || 'Matrimonio actualizado exitosamente');
         setTimeout(() => {
           router.push('/merriage');
@@ -230,8 +230,9 @@ function EditMerriageForm() {
         religiousDate: merriage.religiousDate
       };
       
-      await createMerriage({
-        variables: { 
+      await updateMerriage({
+        variables: {
+          id: marriageId,
           merriageRecord
         }
       });

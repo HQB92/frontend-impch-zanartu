@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/select"
 import { Loader } from "@/components/loader"
 import { GET_ALL_EXPENSES, GET_ALL_CHURCH } from "@/services/query"
-import { CREATE_EXPENSE, DELETE_EXPENSE } from "@/services/mutation"
+import { CREATE_EXPENSE, UPDATE_EXPENSE, DELETE_EXPENSE } from "@/services/mutation"
 import { useIsAdmin } from "@/hooks/use-roles"
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid"
+import { PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid"
 import { toast } from "sonner"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -31,20 +31,42 @@ export default function ExpensesPage() {
   const isAdmin = useIsAdmin();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [churches, setChurches] = useState<any[]>([]);
 
-  const [form, setForm] = useState({
+  const emptyForm = {
     amount: '',
     date: new Date().toISOString().slice(0, 10),
     type: 'Compras',
     description: '',
     source: 'CAJA',
     churchId: '',
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setOpen(true);
+  };
+
+  const openEdit = (ex: any) => {
+    setEditingId(String(ex.id));
+    setForm({
+      amount: String(ex.amount ?? ''),
+      date: ex.date ? String(ex.date).slice(0, 10) : new Date().toISOString().slice(0, 10),
+      type: ex.type || 'Compras',
+      description: ex.description || '',
+      source: ex.source || 'CAJA',
+      churchId: ex.churchId ? String(ex.churchId) : '',
+    });
+    setOpen(true);
+  };
 
   const [getExpenses, { data, loading, error }] = useLazyQuery(GET_ALL_EXPENSES, { fetchPolicy: 'no-cache' });
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
   const [createExpense, { loading: creating }] = useMutation(CREATE_EXPENSE);
+  const [updateExpense, { loading: updating }] = useMutation(UPDATE_EXPENSE);
   const [deleteExpense] = useMutation(DELETE_EXPENSE);
 
   const loadExpenses = () => getExpenses({ variables: { churchId: null, mes: null, anio: null, source: null } });
@@ -71,30 +93,34 @@ export default function ExpensesPage() {
       toast.error('Selecciona una iglesia');
       return;
     }
+    const expenseInput = {
+      amount: Number(form.amount),
+      date: form.date,
+      type: form.type,
+      description: form.description,
+      source: form.source,
+      ...(isAdmin && form.churchId ? { churchId: Number(form.churchId) } : {}),
+    };
     try {
-      const res: any = await createExpense({
-        variables: {
-          expense: {
-            amount: Number(form.amount),
-            date: form.date,
-            type: form.type,
-            description: form.description,
-            source: form.source,
-            ...(isAdmin && form.churchId ? { churchId: Number(form.churchId) } : {}),
-          },
-        },
-      });
-      const r = res?.data?.Expense?.create;
+      let r: any;
+      if (editingId) {
+        const res: any = await updateExpense({ variables: { id: editingId, expense: expenseInput } });
+        r = res?.data?.Expense?.update;
+      } else {
+        const res: any = await createExpense({ variables: { expense: expenseInput } });
+        r = res?.data?.Expense?.create;
+      }
       if (r?.code === 200) {
-        toast.success(r.message || 'Gasto registrado');
+        toast.success(r.message || 'Gasto guardado');
         setOpen(false);
-        setForm({ amount: '', date: new Date().toISOString().slice(0, 10), type: 'Compras', description: '', source: 'CAJA', churchId: '' });
+        setEditingId(null);
+        setForm(emptyForm);
         loadExpenses();
       } else {
-        toast.error(r?.message || 'Error al registrar gasto');
+        toast.error(r?.message || 'Error al guardar gasto');
       }
     } catch (e: any) {
-      toast.error('Error al registrar gasto: ' + e.message);
+      toast.error('Error al guardar gasto: ' + e.message);
     }
   };
 
@@ -146,14 +172,14 @@ export default function ExpensesPage() {
                 <CardTitle>Gastos</CardTitle>
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button onClick={openCreate}>
                       <PlusIcon className="h-4 w-4 mr-2" />
                       Nuevo Gasto
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Registrar Gasto</DialogTitle>
+                      <DialogTitle>{editingId ? 'Editar Gasto' : 'Registrar Gasto'}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                       <div className="space-y-2">
@@ -204,8 +230,8 @@ export default function ExpensesPage() {
                     </div>
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                      <Button onClick={handleSubmit} disabled={creating}>
-                        {creating ? 'Guardando...' : 'Guardar'}
+                      <Button onClick={handleSubmit} disabled={creating || updating}>
+                        {(creating || updating) ? 'Guardando...' : 'Guardar'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -248,9 +274,14 @@ export default function ExpensesPage() {
                             <TableCell>{ex.type || '-'}</TableCell>
                             <TableCell>{ex.description || '-'}</TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="sm" onClick={() => handleDelete(ex.id)}>
-                                <TrashIcon className="h-4 w-4 text-destructive" />
-                              </Button>
+                              <div className="flex gap-1">
+                                <Button variant="ghost" size="sm" onClick={() => openEdit(ex)}>
+                                  <PencilIcon className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(ex.id)}>
+                                  <TrashIcon className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))

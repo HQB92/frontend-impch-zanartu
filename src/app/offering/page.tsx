@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/select"
 import { Loader } from "@/components/loader"
 import { GET_ALL_OFFERINGS, GET_ALL_CHURCH } from "@/services/query"
-import { CREATE_OFFERING, DELETE_OFFERING } from "@/services/mutation"
+import { CREATE_OFFERING, UPDATE_OFFERING, DELETE_OFFERING } from "@/services/mutation"
 import { useIsAdmin } from "@/hooks/use-roles"
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid"
+import { PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid"
 import { toast } from "sonner"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -34,20 +34,40 @@ export default function OfferingPage() {
   const isAdmin = useIsAdmin();
   const [offerings, setOfferings] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [churches, setChurches] = useState<any[]>([]);
 
-  const [form, setForm] = useState({
+  const emptyForm = {
     amount: '',
     date: new Date().toISOString().slice(0, 10),
     type: 'Ofrenda',
     churchId: '',
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setOpen(true);
+  };
+
+  const openEdit = (o: any) => {
+    setEditingId(Number(o.id));
+    setForm({
+      amount: String(o.amount ?? ''),
+      date: o.date ? String(o.date).slice(0, 10) : new Date().toISOString().slice(0, 10),
+      type: o.type || 'Ofrenda',
+      churchId: o.churchId ? String(o.churchId) : '',
+    });
+    setOpen(true);
+  };
 
   const [getOfferings, { data, loading, error }] = useLazyQuery(GET_ALL_OFFERINGS, {
     fetchPolicy: 'no-cache',
   });
   const [getChurches, { data: churchesData }] = useLazyQuery(GET_ALL_CHURCH, { fetchPolicy: 'no-cache' });
   const [createOffering, { loading: creating }] = useMutation(CREATE_OFFERING);
+  const [updateOffering, { loading: updating }] = useMutation(UPDATE_OFFERING);
   const [deleteOffering] = useMutation(DELETE_OFFERING);
 
   const handleDelete = async (id: string) => {
@@ -90,29 +110,33 @@ export default function OfferingPage() {
       toast.error('Selecciona una iglesia');
       return;
     }
+    const offeringInput = {
+      amount: Number(form.amount),
+      date: form.date,
+      type: form.type,
+      state: true,
+      ...(isAdmin && form.churchId ? { churchId: Number(form.churchId) } : {}),
+    };
     try {
-      const res: any = await createOffering({
-        variables: {
-          offering: {
-            amount: Number(form.amount),
-            date: form.date,
-            type: form.type,
-            state: true,
-            ...(isAdmin && form.churchId ? { churchId: Number(form.churchId) } : {}),
-          },
-        },
-      });
-      const r = res?.data?.Offering?.create;
+      let r: any;
+      if (editingId) {
+        const res: any = await updateOffering({ variables: { id: editingId, offering: offeringInput } });
+        r = res?.data?.Offering?.update;
+      } else {
+        const res: any = await createOffering({ variables: { offering: offeringInput } });
+        r = res?.data?.Offering?.create;
+      }
       if (r?.code === 200 || r?.code === 201) {
-        toast.success(r.message || 'Ofrenda registrada');
+        toast.success(r.message || 'Ofrenda guardada');
         setOpen(false);
-        setForm({ amount: '', date: new Date().toISOString().slice(0, 10), type: 'Ofrenda', churchId: '' });
+        setEditingId(null);
+        setForm(emptyForm);
         loadOfferings();
       } else {
-        toast.error(r?.message || 'Error al registrar ofrenda');
+        toast.error(r?.message || 'Error al guardar ofrenda');
       }
     } catch (e: any) {
-      toast.error('Error al registrar ofrenda: ' + e.message);
+      toast.error('Error al guardar ofrenda: ' + e.message);
     }
   };
 
@@ -147,14 +171,14 @@ export default function OfferingPage() {
                 <CardTitle>Ofrendas</CardTitle>
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button onClick={openCreate}>
                       <PlusIcon className="h-4 w-4 mr-2" />
                       Nueva Ofrenda
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Registrar Ofrenda</DialogTitle>
+                      <DialogTitle>{editingId ? 'Editar Ofrenda' : 'Registrar Ofrenda'}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                       <div className="space-y-2">
@@ -203,8 +227,8 @@ export default function OfferingPage() {
                     </div>
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                      <Button onClick={handleSubmit} disabled={creating}>
-                        {creating ? 'Guardando...' : 'Guardar'}
+                      <Button onClick={handleSubmit} disabled={creating || updating}>
+                        {(creating || updating) ? 'Guardando...' : 'Guardar'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -244,9 +268,14 @@ export default function OfferingPage() {
                             <TableCell>{offering.type || '-'}</TableCell>
                             <TableCell>{offering.state ? 'Activo' : 'Inactivo'}</TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="sm" onClick={() => handleDelete(offering.id)}>
-                                <TrashIcon className="h-4 w-4 text-destructive" />
-                              </Button>
+                              <div className="flex gap-1">
+                                <Button variant="ghost" size="sm" onClick={() => openEdit(offering)}>
+                                  <PencilIcon className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(offering.id)}>
+                                  <TrashIcon className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
