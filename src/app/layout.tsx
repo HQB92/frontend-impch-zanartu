@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ApolloProviderWrapper } from "@/components/providers/apollo-provider";
 import { AuthProvider } from "@/contexts/auth-context";
+import { SectorRouteGuard } from "@/components/sector-route-guard";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
@@ -32,7 +33,9 @@ export default function RootLayout({
       >
         <ApolloProviderWrapper>
           <AuthProvider>
-            {children}
+            <SectorRouteGuard>
+              {children}
+            </SectorRouteGuard>
           </AuthProvider>
         </ApolloProviderWrapper>
         <Toaster />

@@ -31,6 +31,7 @@ export const sidebarItems: SidebarItem[] = [
     title: 'Iglesias',
     path: '/churchs',
     icon: ChurchIcon,
+    roles: ['Administrador', 'Pastor', 'Secretario', 'Encargado', 'Tesorero', 'Ofrenda'],
   },
   {
     title: 'Miembros',
@@ -85,5 +86,35 @@ export const sidebarItems: SidebarItem[] = [
     path: '/account',
     icon: UserIcon,
     roles: ['Administrador', 'Pastor', 'Secretario', 'Encargado', 'Tesorero'],
+  },
+  {
+    title: 'Bautizos',
+    path: '/sector/baptism',
+    icon: ChildFriendlyIcon,
+    roles: ['PastorSector'],
+  },
+  {
+    title: 'Matrimonios',
+    path: '/sector/merriage',
+    icon: WcIcon,
+    roles: ['PastorSector'],
+  },
+  {
+    title: 'Mi Perfil',
+    path: '/sector/profile',
+    icon: UserIcon,
+    roles: ['PastorSector'],
+  },
+  {
+    title: 'Bautizos Sector',
+    path: '/sector/baptism',
+    icon: ChildFriendlyIcon,
+    roles: ['Administrador'],
+  },
+  {
+    title: 'Matrimonios Sector',
+    path: '/sector/merriage',
+    icon: WcIcon,
+    roles: ['Administrador'],
   },
 ];
