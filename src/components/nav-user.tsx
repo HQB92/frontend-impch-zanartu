@@ -7,6 +7,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react"
 import { useAuth } from "@/contexts/auth-context"
+import { profilePathFor } from "@/lib/sector-access"
 
 import {
   Avatar,
@@ -39,7 +40,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const { signOut } = useAuth()
+  const { signOut, user: authUser } = useAuth()
 
   const handleSignOut = () => {
     signOut()
@@ -97,7 +98,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/account">
+                <Link href={profilePathFor(authUser?.roles)}>
                   <IconUserCircle />
                   Mi Perfil
                 </Link>

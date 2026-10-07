@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { canAccessPath, isAdminAccount, isSectorAccount, isSectorPath } from './sector-access.ts';
+import { canAccessPath, isAdminAccount, isSectorAccount, isSectorPath, profilePathFor } from './sector-access.ts';
 
 const pastor = ['PastorSector'];
 const admin = ['Administrador'];
@@ -62,4 +62,12 @@ test('Administrador y PastorSector a la vez se trata como pastor', () => {
   const ambos = ['Administrador', 'PastorSector'];
   assert.equal(canAccessPath(ambos, '/bank'), false);
   assert.equal(canAccessPath(ambos, '/sector/profile'), true);
+});
+
+test('el enlace Mi Perfil lleva a cada cuenta a su propio perfil', () => {
+  assert.equal(profilePathFor(pastor), '/sector/profile');
+  assert.equal(profilePathFor(admin), '/account');
+  assert.equal(profilePathFor(secretario), '/account');
+  assert.equal(profilePathFor(undefined), '/account');
+  assert.equal(canAccessPath(pastor, profilePathFor(pastor)), true);
 });

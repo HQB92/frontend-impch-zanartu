@@ -36,3 +36,8 @@ export function canAccessPath(roles: unknown, pathname: string): boolean {
   }
   return true;
 }
+
+// Ruta del perfil propio: las cuentas de sector no pueden abrir /account.
+export function profilePathFor(roles: unknown): string {
+  return isSectorAccount(roles) ? '/sector/profile' : '/account';
+}
