@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { GET_SECTOR_CHURCHES } from "@/services/sector-graphql"
+import { GET_SECTOR_CHURCHES, typedDoc } from "@/services/sector-graphql"
 
 interface ChurchesData {
   SectorChurch: { getAll: { id: string; name: string }[] | null } | null;
@@ -23,7 +23,7 @@ interface SectorChurchFilterProps {
 
 // Filtro por iglesia para el administrador. 'all' significa todas.
 export function SectorChurchFilter({ value, onChange }: SectorChurchFilterProps) {
-  const [getChurches, { data }] = useLazyQuery<ChurchesData>(GET_SECTOR_CHURCHES, {
+  const [getChurches, { data }] = useLazyQuery(typedDoc<ChurchesData>(GET_SECTOR_CHURCHES), {
     fetchPolicy: 'no-cache',
   });
 

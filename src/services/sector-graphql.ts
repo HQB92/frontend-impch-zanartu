@@ -1,4 +1,9 @@
 import { gql } from '@apollo/client';
+import type { DocumentNode, OperationVariables, TypedDocumentNode } from '@apollo/client';
+
+// Da tipo al resultado de un documento para que los hooks de Apollo lo infieran.
+export const typedDoc = <TData,>(document: DocumentNode): TypedDocumentNode<TData, OperationVariables> =>
+  document as TypedDocumentNode<TData, OperationVariables>;
 
 export interface ServiceResult {
   code: number;
