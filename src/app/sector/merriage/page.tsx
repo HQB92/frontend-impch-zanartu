@@ -52,7 +52,7 @@ export default function SectorMerriagePage() {
   const [getMarriages, { data, loading, error }] = useLazyQuery(typedDoc<AllData>(GET_ALL_SECTOR_MERRIAGE), {
     fetchPolicy: 'no-cache',
   });
-  const [deleteMerriage] = useMutation(typedDoc<DeleteData>(DELETE_SECTOR_MERRIAGE));
+  const [deleteMerriage, { loading: deleting }] = useMutation(typedDoc<DeleteData>(DELETE_SECTOR_MERRIAGE));
 
   // Un pastor siempre recibe los suyos; el filtro solo lo usa el administrador.
   const reload = useCallback(() => {
@@ -186,6 +186,7 @@ export default function SectorMerriagePage() {
         description="¿Estás seguro de que deseas eliminar este matrimonio? Esta acción no se puede deshacer."
         onCancel={() => setMarriageToDelete(null)}
         onConfirm={handleDeleteConfirm}
+        busy={deleting}
       />
     </PageShell>
   )

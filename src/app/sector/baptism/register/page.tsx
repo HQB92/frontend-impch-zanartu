@@ -17,6 +17,8 @@ interface CreateData {
 export default function RegisterSectorBaptismPage() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
+  // Tras guardar se navega al listado; hasta entonces no se puede reenviar.
+  const [done, setDone] = useState(false);
   const [createBaptism, { loading }] = useMutation(typedDoc<CreateData>(CREATE_SECTOR_BAPTISM));
 
   const handleSubmit = async (baptism: BaptismFormValues) => {
@@ -25,6 +27,7 @@ export default function RegisterSectorBaptismPage() {
       const response = await createBaptism({ variables: { baptismRecord: baptism } });
       const result = response.data?.SectorBaptismRecord?.create;
       if (result?.code === 201) {
+        setDone(true);
         toast.success(result.message || 'Bautizo registrado exitosamente');
         router.push('/sector/baptism');
       } else {
@@ -49,7 +52,7 @@ export default function RegisterSectorBaptismPage() {
           )}
           <BaptismForm
             strict
-            submitting={loading}
+            submitting={loading || done}
             submitLabel="Registrar Bautizo"
             submittingLabel="Registrando..."
             onSubmit={handleSubmit}

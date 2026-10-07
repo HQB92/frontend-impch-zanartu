@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { canAccessPath, isAdminAccount, isSectorAccount, isSectorPath, profilePathFor } from './sector-access.ts';
+import { canAccessPath, isAdminAccount, isSectorAccount, isSectorPath, normalizeRoles, profilePathFor } from './sector-access.ts';
 
 const pastor = ['PastorSector'];
 const admin = ['Administrador'];
@@ -70,4 +70,12 @@ test('el enlace Mi Perfil lleva a cada cuenta a su propio perfil', () => {
   assert.equal(profilePathFor(secretario), '/account');
   assert.equal(profilePathFor(undefined), '/account');
   assert.equal(canAccessPath(pastor, profilePathFor(pastor)), true);
+});
+
+test('una sesión antigua con roles de forma inesperada se lee como sin roles', () => {
+  assert.deepEqual(normalizeRoles(['Secretario', 'Tesorero']), ['Secretario', 'Tesorero']);
+  for (const roles of [undefined, null, 'PastorSector', {}, 42]) {
+    assert.deepEqual(normalizeRoles(roles), []);
+  }
+  assert.deepEqual(normalizeRoles(['Secretario', 7, null]), ['Secretario']);
 });

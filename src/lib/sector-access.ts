@@ -41,3 +41,9 @@ export function canAccessPath(roles: unknown, pathname: string): boolean {
 export function profilePathFor(roles: unknown): string {
   return isSectorAccount(roles) ? '/sector/profile' : '/account';
 }
+
+// Lo guardado en el navegador puede venir de una versión anterior: solo se
+// aceptan arreglos de texto.
+export function normalizeRoles(roles: unknown): string[] {
+  return Array.isArray(roles) ? roles.filter((role): role is string => typeof role === 'string') : [];
+}

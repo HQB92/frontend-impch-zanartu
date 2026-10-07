@@ -1,9 +1,9 @@
 import { useAuth } from '@/contexts/auth-context';
-import { isAdminAccount, isSectorAccount } from '@/lib/sector-access';
+import { isAdminAccount, isSectorAccount, normalizeRoles } from '@/lib/sector-access';
 
 export const useRoles = () => {
   const { user } = useAuth();
-  return user?.roles || [];
+  return normalizeRoles(user?.roles);
 };
 
 export const useIsAdmin = () => {

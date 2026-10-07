@@ -17,6 +17,8 @@ interface CreateData {
 export default function RegisterSectorMerriagePage() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
+  // Tras guardar se navega al listado; hasta entonces no se puede reenviar.
+  const [done, setDone] = useState(false);
   const [createMerriage, { loading }] = useMutation(typedDoc<CreateData>(CREATE_SECTOR_MERRIAGE));
 
   const handleSubmit = async (merriageRecord: MerriageRecordInput) => {
@@ -25,6 +27,7 @@ export default function RegisterSectorMerriagePage() {
       const response = await createMerriage({ variables: { merriageRecord } });
       const result = response.data?.SectorMerriageRecord?.create;
       if (result?.code === 201) {
+        setDone(true);
         toast.success(result.message || 'Matrimonio registrado exitosamente');
         router.push('/sector/merriage');
       } else {
@@ -48,7 +51,7 @@ export default function RegisterSectorMerriagePage() {
             </Alert>
           )}
           <MerriageForm
-            submitting={loading}
+            submitting={loading || done}
             submitLabel="Registrar Matrimonio"
             submittingLabel="Registrando..."
             onSubmit={handleSubmit}

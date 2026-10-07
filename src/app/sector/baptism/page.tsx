@@ -52,7 +52,7 @@ export default function SectorBaptismPage() {
   const [getBaptisms, { data, loading, error }] = useLazyQuery(typedDoc<AllData>(GET_ALL_SECTOR_BAPTISM), {
     fetchPolicy: 'no-cache',
   });
-  const [deleteBaptism] = useMutation(typedDoc<DeleteData>(DELETE_SECTOR_BAPTISM));
+  const [deleteBaptism, { loading: deleting }] = useMutation(typedDoc<DeleteData>(DELETE_SECTOR_BAPTISM));
 
   // Un pastor siempre recibe los suyos; el filtro solo lo usa el administrador.
   const reload = useCallback(() => {
@@ -192,6 +192,7 @@ export default function SectorBaptismPage() {
         description="¿Estás seguro de que deseas eliminar este bautizo? Esta acción no se puede deshacer."
         onCancel={() => setBaptismToDelete(null)}
         onConfirm={handleDeleteConfirm}
+        busy={deleting}
       />
     </PageShell>
   )
