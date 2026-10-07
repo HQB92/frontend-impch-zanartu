@@ -3,6 +3,10 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '@/services/login';
+import { loginSector } from '@/services/sector-login';
+import { decodeJwtPayload } from '@/lib/jwt';
+
+export { ADMIN_ROLE, SECTOR_ROLE } from '@/lib/sector-access';
 
 interface User {
   id: string;
@@ -12,9 +16,8 @@ interface User {
   rut?: string;
   roles?: string[];
   churchId?: number | null;
+  sectorChurchId?: number | null;
 }
-
-export const ADMIN_ROLE = 'Administrador';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -24,6 +27,7 @@ interface AuthState {
 
 interface AuthContextType extends AuthState {
   signIn: (username: string, password: string) => Promise<void>;
+  signInSector: (sectorChurchId: number, password: string) => Promise<void>;
   signOut: () => void;
 }
 
@@ -72,12 +76,34 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
+const clearSession = () => {
+  window.localStorage.removeItem('profile');
+  window.localStorage.removeItem('authenticated');
+  window.localStorage.removeItem('token');
+  window.localStorage.removeItem('user');
+  document.cookie = 'auth-session=; path=/; max-age=0';
+};
+
+const asString = (value: unknown): string => (typeof value === 'string' ? value : '');
+
+// Arma el usuario de la sesión a partir del payload del token. Sirve tanto
+// para un usuario de Zañartu como para una cuenta de iglesia del sector.
+const userFromPayload = (payload: Record<string, unknown>): User => ({
+  id: String(payload.userId ?? payload.id ?? payload.sectorChurchId ?? ''),
+  name: asString(payload.username) || asString(payload.name),
+  email: asString(payload.email),
+  rut: asString(payload.rut) || undefined,
+  roles: Array.isArray(payload.roles) ? (payload.roles as string[]) : [],
+  churchId: typeof payload.churchId === 'number' ? payload.churchId : null,
+  sectorChurchId: typeof payload.sectorChurchId === 'number' ? payload.sectorChurchId : null,
+});
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const initialized = useRef(false);
   const router = useRouter();
 
-  const initialize = async () => {
+  const initialize = () => {
     if (initialized.current) {
       return;
     }
@@ -89,79 +115,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    let isAuthenticated = false;
+    let user: User | null = null;
 
     try {
-      // Check both the authenticated flag and the token validity
       const authenticatedFlag = window.localStorage.getItem('authenticated') === 'true';
       const token = window.localStorage.getItem('token');
-      
+
       if (authenticatedFlag && token) {
-        // Validate token format and expiration
-        const tokenParts = token.split('.');
-        if (tokenParts.length === 3) {
-          try {
-            const decoded = JSON.parse(atob(tokenParts[1]));
-            const exp = decoded.exp;
-            
-            // Check if token is expired
-            if (exp && Date.now() >= exp * 1000) {
-              // Token expired, clear auth data
-              window.localStorage.removeItem('token');
-              window.localStorage.removeItem('authenticated');
-              window.localStorage.removeItem('user');
-              window.localStorage.removeItem('profile');
-              document.cookie = 'auth-session=; path=/; max-age=0';
-              isAuthenticated = false;
-            } else {
-              isAuthenticated = true;
-            }
-          } catch (decodeError) {
-            // Token can't be decoded, consider it invalid
-            console.error('Error decoding token:', decodeError);
-            window.localStorage.removeItem('token');
-            window.localStorage.removeItem('authenticated');
-            window.localStorage.removeItem('user');
-            window.localStorage.removeItem('profile');
-            isAuthenticated = false;
-          }
+        const payload = decodeJwtPayload(token);
+        const exp = typeof payload?.exp === 'number' ? payload.exp : null;
+
+        if (!payload || (exp !== null && Date.now() >= exp * 1000)) {
+          // Token ilegible o vencido
+          clearSession();
         } else {
-          // Invalid token format
-          window.localStorage.removeItem('token');
-          window.localStorage.removeItem('authenticated');
-          window.localStorage.removeItem('user');
-          window.localStorage.removeItem('profile');
-          isAuthenticated = false;
+          const userData = window.localStorage.getItem('user');
+          user = userData ? (JSON.parse(userData) as User) : null;
         }
-      } else {
-        // No token or authenticated flag is false
-        isAuthenticated = false;
       }
     } catch (err) {
       console.error('Error initializing auth:', err);
-      isAuthenticated = false;
+      user = null;
     }
 
-    if (isAuthenticated) {
-      try {
-        const userData = window.localStorage.getItem('user');
-        const user = userData ? JSON.parse(userData) : null;
-        dispatch({
-          type: 'INITIALIZE',
-          payload: user,
-        });
-      } catch (err) {
-        console.error('Error parsing user data:', err);
-        dispatch({ type: 'INITIALIZE' });
-      }
-    } else {
-      dispatch({ type: 'INITIALIZE' });
-    }
+    dispatch(user ? { type: 'INITIALIZE', payload: user } : { type: 'INITIALIZE' });
   };
 
   useEffect(() => {
     initialize();
   }, []);
+
+  const startSession = (token: string | null) => {
+    if (!token) {
+      dispatch({ type: 'SIGN_OUT' });
+      throw new Error('Por favor revisa tus credenciales');
+    }
+
+    const payload = decodeJwtPayload(token);
+    if (!payload) {
+      dispatch({ type: 'SIGN_OUT' });
+      throw new Error('Error al procesar la respuesta del servidor');
+    }
+
+    const user = userFromPayload(payload);
+
+    window.localStorage.setItem('authenticated', 'true');
+    window.localStorage.setItem('token', token);
+    window.localStorage.setItem('user', JSON.stringify(user));
+    document.cookie = 'auth-session=1; path=/; SameSite=Lax';
+
+    dispatch({ type: 'SIGN_IN', payload: user });
+
+    // Redirigir al dashboard después del login exitoso
+    router.push('/dashboard');
+  };
 
   const signIn = async (username: string, password: string) => {
     if (typeof window === 'undefined') {
@@ -169,44 +176,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const token = await login(username, password);
-      let user: User | null = null;
-
-      if (token) {
-        try {
-          const decoded = JSON.parse(atob(token.split('.')[1]));
-          user = {
-            id: decoded.userId || decoded.id,
-            name: decoded.username || decoded.name,
-            email: decoded.email,
-            rut: decoded.rut,
-            roles: decoded.roles,
-            churchId: decoded.churchId ?? null,
-          };
-
-          window.localStorage.setItem('authenticated', 'true');
-          window.localStorage.setItem('token', token);
-          window.localStorage.setItem('user', JSON.stringify(user));
-          document.cookie = 'auth-session=1; path=/; SameSite=Lax';
-
-          dispatch({
-            type: 'SIGN_IN',
-            payload: user,
-          });
-
-          // Redirigir al dashboard después del login exitoso
-          router.push('/dashboard');
-        } catch (err) {
-          console.error('Error parsing token:', err);
-          dispatch({ type: 'SIGN_OUT' });
-          throw new Error('Error al procesar la respuesta del servidor');
-        }
-      } else {
-        dispatch({ type: 'SIGN_OUT' });
-        throw new Error('Por favor revisa tus credenciales');
-      }
-    } catch (err: any) {
+      startSession(await login(username, password));
+    } catch (err) {
       // Re-lanzar el error con el mensaje original para que se muestre en el formulario
+      dispatch({ type: 'SIGN_OUT' });
+      throw err;
+    }
+  };
+
+  const signInSector = async (sectorChurchId: number, password: string) => {
+    if (typeof window === 'undefined') {
+      throw new Error('Cannot sign in on server');
+    }
+
+    try {
+      startSession(await loginSector(sectorChurchId, password));
+    } catch (err) {
       dispatch({ type: 'SIGN_OUT' });
       throw err;
     }
@@ -214,12 +199,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = () => {
     if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('profile');
-      window.localStorage.removeItem('authenticated');
-      window.localStorage.removeItem('token');
-      window.localStorage.removeItem('user');
+      clearSession();
       window.localStorage.removeItem('ally-supports-cache');
-      document.cookie = 'auth-session=; path=/; max-age=0';
     }
 
     dispatch({ type: 'SIGN_OUT' });
@@ -231,6 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         ...state,
         signIn,
+        signInSector,
         signOut,
       }}
     >
