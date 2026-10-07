@@ -21,7 +21,9 @@ import { OverviewTotalCustomers } from "@/components/overview/overview-total-cus
 import { OverviewTotalProfit } from "@/components/overview/overview-total-profit"
 import { Loader } from "@/components/loader"
 import { COUNT_ALL_MEMBERS, GET_ALL_OFFERINGS, GET_ALL_BANK, GET_ALL_CHURCH, GET_ALL_EXPENSES } from "@/services/query"
-import { useIsAdmin } from "@/hooks/use-roles"
+import { useIsAdmin, useIsSector } from "@/hooks/use-roles"
+import { useAuth } from "@/contexts/auth-context"
+import { SectorDashboard } from "@/components/sector-dashboard"
 
 const formatCLP = (amount: number) =>
   new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(amount);
@@ -34,7 +36,7 @@ const MESES = [
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
-export default function Page() {
+function MainDashboard() {
   const isAdmin = useIsAdmin();
 
   // 'all' = histórico (por defecto). Año desde 2026 al actual.
@@ -215,4 +217,16 @@ export default function Page() {
       </SidebarInset>
     </SidebarProvider>
   )
+}
+
+
+export default function Page() {
+  const { isLoading } = useAuth();
+  const isSector = useIsSector();
+
+  // Hasta saber quién es el usuario no se monta ningún dashboard: el de
+  // Zañartu dispara consultas que una cuenta de sector no puede hacer.
+  if (isLoading) return <Loader />;
+
+  return isSector ? <SectorDashboard /> : <MainDashboard />;
 }
